@@ -108,7 +108,7 @@
                     //throw new ArgumentNullException("Neither a source was specified, nor it could be retrieved from the DataContext!");
             }
 
-            if (String.IsNullOrWhiteSpace(path))
+            if (String.IsNullOrEmpty(path) || String.IsNullOrEmpty(path.Trim()))
                 return null;
                 //throw new ArgumentNullException("No path was specified!");
 

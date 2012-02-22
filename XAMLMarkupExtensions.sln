@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFMarkupExtensions", "XAML
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLMarkupExtensions", "XAMLMarkupExtensions\SLMarkupExtensions.csproj", "{311171ED-80C9-49AC-A635-3E5E4BD4B00E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFMarkupExtensions-3.5", "XAMLMarkupExtensions\WPFMarkupExtensions-3.5.csproj", "{4EAF896D-9C9A-4654-891A-BC9919864886}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{311171ED-80C9-49AC-A635-3E5E4BD4B00E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{311171ED-80C9-49AC-A635-3E5E4BD4B00E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{311171ED-80C9-49AC-A635-3E5E4BD4B00E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EAF896D-9C9A-4654-891A-BC9919864886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EAF896D-9C9A-4654-891A-BC9919864886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EAF896D-9C9A-4654-891A-BC9919864886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EAF896D-9C9A-4654-891A-BC9919864886}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
