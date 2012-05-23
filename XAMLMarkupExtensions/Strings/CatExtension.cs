@@ -22,7 +22,6 @@
         public List<object> Items
         {
             get { return items; }
-            set { if (value != null) items = value; }
         }
 
         public string Format { get; set; }

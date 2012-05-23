@@ -122,7 +122,7 @@
 
             foreach (var info in objList)
             {
-                if (info.IsDependencyObject)
+                if (info.IsEndpoint)
                 {
                     TargetPath path = new TargetPath(info);
                     list.Add(path);
@@ -181,27 +181,26 @@
         /// <returns>The value of the extension, or this if something gone wrong (needed for Templates).</returns>
         public sealed override object ProvideValue(IServiceProvider serviceProvider)
         {
-            // if the service provider is null, return this
+            // If the service provider is null, return this
             if (serviceProvider == null)
                 return this;
 
-            // try to cast the passed serviceProvider to a IProvideValueTarget
+            // Try to cast the passed serviceProvider to a IProvideValueTarget
             IProvideValueTarget service = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
 
-            // if the cast fails, return this
+            // If the cast fails, return this
             if (service == null)
                 return this;
 
-            // declare a target object and property
+            // Declare a target object and property
             object targetObject = service.TargetObject;
             object targetProperty = service.TargetProperty;
             int targetPropertyIndex = -1;
             Type targetPropertyType = null;
-            //IList targetList = null;
 
             // First, check if the service provider is of type SimpleProvideValueServiceProvider
             //      -> If yes, get the target property type and index.
-            // check if the service.TargetProperty is a DependencyProperty or a PropertyInfo and set the type info
+            // Check if the service.TargetProperty is a DependencyProperty or a PropertyInfo and set the type info
             if (serviceProvider is SimpleProvideValueServiceProvider)
             {
                 targetPropertyType = ((SimpleProvideValueServiceProvider)serviceProvider).TargetPropertyType;
@@ -233,73 +232,26 @@
                 }
                 else
                     return this;
-
-                #region Lists - not used
-                //// Check, if a List is the target and get it.
-                //if (typeof(IList).IsAssignableFrom(targetPropertyType))
-                //{
-                //    // Try to read out the own return type.
-                //    var att = (MarkupExtensionReturnTypeAttribute)this.GetType().GetCustomAttributes(typeof(MarkupExtensionReturnTypeAttribute), true).FirstOrDefault();
-
-                //    if ((att == null) || !typeof(IList).IsAssignableFrom(att.ReturnType))
-                //    {
-                //        // We've got the case, that this extension does not return a list, although being assigned to one.
-                //        // We now have to set the appropriate index value and we have to return the list itself with our own member added to the end.
-                //        if (targetLists.ContainsKey(targetObject))
-                //            targetList = targetLists[targetObject];
-                //        else
-                //        {
-                //            targetList = (IList)GetPropertyValue(new TargetInfo(targetObject, targetProperty, targetPropertyType, -1));
-                        
-                //            // The list does not yet exist? Create it!
-                //            if (targetList == null)
-                //                targetList = (IList)Activator.CreateInstance(targetPropertyType);
-
-                //            targetLists.Add(targetObject, targetList);
-                //        }
-
-                //        // Store the count value to our index.
-                //        targetPropertyIndex = targetList.Count;
-
-                //        // If our own return type is unknown or an object, add null to the list.
-                //        // If we have value type, add a default instance.
-                //        if ((att == null) || !att.ReturnType.IsValueType)
-                //            targetList.Add(null);
-                //        else
-                //            targetList.Add(Activator.CreateInstance(att.ReturnType));
-
-                //        System.IO.StreamWriter writer = new System.IO.StreamWriter(@"C:\Temp\Test.txt", true);
-                //        writer.WriteLine("***************************************");
-                //        writer.WriteLine(targetList.Count);
-                //        writer.WriteLine(targetLists.Count);
-                //        writer.WriteLine((this as WPFMarkupExtensions.Binding.DynBindingExtension).Path);
-                //        writer.WriteLine();
-                //        writer.Close();
-                //    }
-                //}
-                #endregion
             }
 
-            // if the service.TargetObject is System.Windows.SharedDp (= not a DependencyObject), we return "this".
-            // the SharedDp will call this instance later again.
+            // If the service.TargetObject is System.Windows.SharedDp (= not a DependencyObject and not a PropertyInfo), we return "this".
+            // The SharedDp will call this instance later again.
             if (!(targetObject is DependencyObject) && !(targetProperty is PropertyInfo))
                 return this;
+
+            // If the target object is a DictionaryEntry we presumably are facing a resource scenario.
+            // We will be called again later with the proper target.
+            if (targetObject is DictionaryEntry)
+                return null;
             
-            // check supported types and throw exceptions on errors
-            if (!(targetObject is DependencyObject || targetObject is INestedMarkupExtension))
-                throw new InvalidOperationException("Only dependency objects and objects implementing ITargetMarkupExtension are supported!\r\n" + targetObject + "\r\n" + targetProperty); ;
-            
-            if (targetObject is Binding)
-                throw new InvalidOperationException("Binding is not supported!"); ;
-            
-            // search for the target in the target object list
+            // Search for the target in the target object list
             WeakReference wr = (from kvp in targetObjects
                                 where kvp.Key.Target == targetObject
                                 select kvp.Key).FirstOrDefault();
 
             if (wr == null)
             {
-                // if it's the first object, call the appropriate action
+                // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
                 {
                     EndpointReachedEvent.AddListener(this);
@@ -307,26 +259,26 @@
                         OnFirstTarget();
                 }
 
-                // add the target as an dependency object as weakreference to the dependency object list
+                // Add the target as a WeakReference to the target object list
                 wr = new WeakReference(targetObject);
                 targetObjects.Add(wr, new Dictionary<Tuple<object, int>, Type>());
 
-                // add this extension to the ObjectDependencyManager to ensure the lifetime along with the targetobject
+                // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
                 ObjectDependencyManager.AddObjectDependency(new WeakReference(service.TargetObject), this);
             }
 
-            // finally, add the target prop and info to the list of this weakreference
+            // Finally, add the target prop and info to the list of this WeakReference
             Tuple<object, int> tuple = new Tuple<object, int>(targetProperty, targetPropertyIndex);
             if (!targetObjects[wr].ContainsKey(tuple))
                 targetObjects[wr].Add(tuple, targetPropertyType);
 
-            // create the target info
+            // Create the target info
             TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
 
-            // return the result of FormatOutput
+            // Return the result of FormatOutput
             object result = null;
 
-            if (info.IsDependencyObject)
+            if (info.IsEndpoint)
             {
                 var args = new EndpointReachedEventArgs(info);
                 EndpointReachedEvent.Invoke(this, args);
@@ -335,23 +287,11 @@
             else
                 result = FormatOutput(null, info);
 
-            #region Lists - not used
-            //// check again the list issue from above...
-            //if ((targetList != null) && (targetPropertyIndex >= 0) && (targetList.Count > targetPropertyIndex))
-            //{
-            //    // Substitute the value in the list using the supplied target index.
-            //    targetList[targetPropertyIndex] = result;
-
-            //    // Now, set the list as the result.
-            //    result = targetList;
-            //} 
-            #endregion
-
-            // check type
+            // Check type
             if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
                 return result;
             
-            // finally, if nothing was there, return null or default
+            // Finally, if nothing was there, return null or default
             if (targetPropertyType.IsValueType)
                 return Activator.CreateInstance(targetPropertyType);
             else
@@ -394,9 +334,9 @@
                 // Set the property of the target to the new value.
                 SetPropertyValue(output, info, false);
 
-                // Have we reached a DependencyObject?
+                // Have we reached the endpoint?
                 // If not, call the UpdateNewValue function of the next ITargetMarkupExtension
-                if (info.IsDependencyObject)
+                if (info.IsEndpoint)
                     return output;
                 else
                     return ((INestedMarkupExtension)info.TargetObject).UpdateNewValue(targetPath);

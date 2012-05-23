@@ -18,14 +18,17 @@
         /// Gets the target object.
         /// </summary>
         public object TargetObject { get; private set; }
+
         /// <summary>
         /// Gets the target property.
         /// </summary>
         public object TargetProperty { get; private set; }
+
         /// <summary>
         /// Gets the target property type.
         /// </summary>
         public Type TargetPropertyType { get; private set; }
+
         /// <summary>
         /// Gets the target property index.
         /// </summary>
@@ -35,6 +38,11 @@
         /// True, if the target object is a DependencyObject.
         /// </summary>
         public bool IsDependencyObject { get { return TargetObject is DependencyObject; } }
+
+        /// <summary>
+        /// True, if the target object is an endpoint (not another nested markup extension).
+        /// </summary>
+        public bool IsEndpoint { get { return !(TargetObject is INestedMarkupExtension); } }
 
         /// <summary>
         /// Determines, whether both objects are equal.
@@ -125,8 +133,8 @@
         /// <param name="endPoint">The endpoints TargetInfo of the path.</param>
         public TargetPath(TargetInfo endPoint)
         {
-            if (!endPoint.IsDependencyObject)
-                throw new ArgumentException("A path endpoint can only be of type DependencyObject.");
+            if (!endPoint.IsEndpoint)
+                throw new ArgumentException("A path endpoint cannot be another INestedMarkupExtension.");
 
             EndPoint = endPoint;
             Path = new Stack<TargetInfo>();
