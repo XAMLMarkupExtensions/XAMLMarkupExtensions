@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <version>1.0.2</version>
+    <authors>Uwe Mayer,Konrad Mattheis</authors>
+    <owners>ukma</owners>
+    <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
+    <projectUrl>http://xamlmarkupextensions.codeplex.com/</projectUrl>
+    <id>XAMLMarkupExtensions</id>
+    <title>XAML Markup Extensions</title>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.0 and SL 5.0.</description>
+    <summary>GitHub Commit:
+SHA cd68619586c95bf20b3ad36eca1f9a0648284e9c 
+https://github.com/MrCircuit/XAMLMarkupExtensions</summary>
+    <tags>WPF SL markup extension nesting</tags>
+  </metadata>
+  <files>
+    <file src="XAMLMarkupExtensions\BinWPF35\Release\XAMLMarkupExtensions.dll" target="lib\net35\XAMLMarkupExtensions.dll" />
+    <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.dll" target="lib\net40\XAMLMarkupExtensions.dll" />
+    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.dll" target="lib\sl50\XAMLMarkupExtensions.dll" />
+  </files>
+</package>
