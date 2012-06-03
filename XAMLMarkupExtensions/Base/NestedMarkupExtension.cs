@@ -29,6 +29,11 @@
         public object EndpointValue { get; set; }
 
         /// <summary>
+        /// Get or set a flag indicating that the event was handled.
+        /// </summary>
+        public bool Handled { get; set; }
+
+        /// <summary>
         /// Creates a new <see cref="EndpointReachedEventArgs"/> object.
         /// </summary>
         /// <param name="endPoint">The endpoint.</param>
@@ -479,15 +484,16 @@
         /// <param name="args">The event args containing the endpoint information.</param>
         private void OnEndpointReached(NestedMarkupExtension sender, EndpointReachedEventArgs args)
         {
-            var path = GetPathToEndpoint(args.Endpoint);
-
-            if (path == null)
+            if (args.Handled || this == sender)
                 return;
 
-            if ((this != sender) && !UpdateOnEndpoint(path.EndPoint))
+            var path = GetPathToEndpoint(args.Endpoint);
+
+            if (path == null || !UpdateOnEndpoint(path.EndPoint))
                 return;
 
             args.EndpointValue = UpdateNewValue(path);
+            args.Handled = true;
         }
 
         /// <summary>
@@ -501,7 +507,7 @@
 
         #region EndpointReachedEvent
         /// <summary>
-        /// A static proxy class that handles endpoint reached events for a list of weak references of TargetMarkupExtensions.
+        /// A static proxy class that handles endpoint reached events for a list of weak references of <see cref="NestedMarkupExtension"/>.
         /// This circumvents the usage of a WeakEventManager while providing a static instance that is capable of firing the event.
         /// </summary>
         internal static class EndpointReachedEvent
