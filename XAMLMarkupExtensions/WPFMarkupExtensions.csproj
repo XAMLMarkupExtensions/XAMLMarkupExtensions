@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\INestedMarkupExtension.cs" />
+    <Compile Include="Base\ParentChangedNotifier.cs" />
     <Compile Include="Binding\DynBindingExtension.cs" />
     <Compile Include="Binding\BindingProxy.cs" />
     <Compile Include="Base\ObjectDependencyManager.cs" />
