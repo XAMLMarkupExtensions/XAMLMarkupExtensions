@@ -12,6 +12,9 @@ XAMLMarkupExtensions.Base
  - ObjectDependencyManager and SimpleProvideValueServiceProvider:
    Internal used helper classes.
 
+ - ParentChangedNotifier:
+   Helper class for changes on the Parent property of FrameworkElement objects.
+
 XAMLMarkupExtensions.Binding
 ----------------------------
 
@@ -26,6 +29,12 @@ XAMLMarkupExtensions.Strings
 
  - CatExtension:
    Concatenate strings coming from various sources.
+
+XAMLMarkupExtensions.Design
+----------------------------
+
+ - AlternatingGridColorExtension:
+   Return a specific color for odd and even rows in grids.
 
 
 To Be Continued...
