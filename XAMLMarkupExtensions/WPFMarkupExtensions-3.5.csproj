@@ -49,6 +49,7 @@
     <Compile Include="Base\ObjectDependencyManager.cs" />
     <Compile Include="Base\SimpleProvideValueServiceProvider.cs" />
     <Compile Include="Base\NestedMarkupExtension.cs" />
+    <Compile Include="Design\AlternatingGridColorExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings\CatExtension.cs" />
   </ItemGroup>
