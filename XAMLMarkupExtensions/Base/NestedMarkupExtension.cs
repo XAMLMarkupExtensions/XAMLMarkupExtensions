@@ -82,7 +82,7 @@
     /// Based on <see cref="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
 #if SILVERLIGHT
-    public abstract class NestedMarkupExtension : System.Windows.Controls.ContentControl, System.Xaml.IMarkupExtension<object>, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : FrameworkElement, System.Xaml.IMarkupExtension<object>, INestedMarkupExtension, IDisposable
     {
         /// <summary>
         /// A notification helper for changes on the Parent property.
@@ -103,11 +103,14 @@
                 {
                     var targetObjectType = targetObject.GetType();
                     var properties = targetObjectType.GetProperties();
-                    
+
                     foreach (var p in properties)
                     {
                         if (p.GetValue(targetObject, null) == this)
-                            this.Content = ProvideValue(new SimpleProvideValueServiceProvider(targetObject, p, p.PropertyType, -1));
+                        {
+                            var info = new TargetInfo(targetObject, p, p.PropertyType, -1);
+                            SetPropertyValue(ProvideValue(new SimpleProvideValueServiceProvider(info)), info, false);
+                        }
                     }
                 }
             });

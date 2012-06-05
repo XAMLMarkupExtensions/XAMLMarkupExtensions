@@ -59,5 +59,17 @@ namespace XAMLMarkupExtensions.Base
             TargetPropertyType = targetPropertyType;
             TargetPropertyIndex = targetPropertyIndex;
         }
+
+        /// <summary>
+        /// Create a new instance of a SimpleProvideValueServiceProvider.
+        /// </summary>
+        /// <param name="info">Information about the target.</param>
+        public SimpleProvideValueServiceProvider(TargetInfo info)
+        {
+            TargetObject = info.TargetObject;
+            TargetProperty = info.TargetProperty;
+            TargetPropertyType = info.TargetPropertyType;
+            TargetPropertyIndex = info.TargetPropertyIndex;
+        }
     }
 }
