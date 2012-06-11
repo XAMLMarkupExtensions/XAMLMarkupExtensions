@@ -11,6 +11,9 @@
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Collections;
+#if SILVERLIGHT
+    using System.Xaml;
+#endif
     #endregion
 
     /// <summary>
@@ -82,7 +85,7 @@
     /// Based on <see cref="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
 #if SILVERLIGHT
-    public abstract class NestedMarkupExtension : FrameworkElement, System.Xaml.IMarkupExtension<object>, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : FrameworkElement, IMarkupExtension<object>, INestedMarkupExtension, IDisposable
     {
         /// <summary>
         /// A notification helper for changes on the Parent property.
