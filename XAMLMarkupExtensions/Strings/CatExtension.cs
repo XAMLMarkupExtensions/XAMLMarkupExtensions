@@ -24,7 +24,19 @@
             get { return items; }
         }
 
-        public string Format { get; set; }
+        private string format = "";
+        public string Format
+        {
+            get { return format; }
+            set
+            {
+                if (format != value)
+                {
+                    format = value;
+                    UpdateNewValue();
+                }
+            }
+        }
         
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
@@ -50,7 +62,7 @@
                         if (nme.IsConnected(ti))
                             t = nme.FormatOutput(endPoint, ti);
                         else
-                            t = GetValue<string>(t, pi, i);
+                            t = GetValue<string>(t, pi, i, endPoint);
                     }
 
                     if (t != null)

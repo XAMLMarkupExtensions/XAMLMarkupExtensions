@@ -69,6 +69,8 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddAlphaExtension.cs" />
+    <Compile Include="AlternatingGridColorExtension.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>

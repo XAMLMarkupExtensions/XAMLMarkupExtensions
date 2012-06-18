@@ -14,7 +14,7 @@
         /// <summary>
         /// An attached property that will take over control of change notification.
         /// </summary>
-        public static DependencyProperty ParentProperty = DependencyProperty.RegisterAttached("Parent", typeof(FrameworkElement), typeof(ParentChangedNotifier), new PropertyMetadata(ParentChanged));
+        public static DependencyProperty ParentProperty = DependencyProperty.RegisterAttached("Parent", typeof(DependencyObject), typeof(ParentChangedNotifier), new PropertyMetadata(ParentChanged));
 
         /// <summary>
         /// Get method for the attached property.

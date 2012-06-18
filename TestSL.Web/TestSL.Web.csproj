@@ -14,7 +14,8 @@
     <AssemblyName>TestSL.Web</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
-    <SilverlightApplicationList>{4C4ED9BD-548C-4FFB-AD3A-C90FDAA849D8}|..\TestSL\TestSL.csproj|ClientBin|False</SilverlightApplicationList>
+    <SilverlightApplicationList>
+    </SilverlightApplicationList>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

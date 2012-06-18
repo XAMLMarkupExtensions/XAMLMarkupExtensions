@@ -247,7 +247,11 @@
             if (service == null)
                 return this;
 
+            // Sign up to the EndpointReachedEvent.
+            EndpointReachedEvent.AddListener(this);
+                        
             // Declare a target object and property
+            TargetInfo endPoint = null;
             object targetObject = service.TargetObject;
             object targetProperty = service.TargetProperty;
             int targetPropertyIndex = -1;
@@ -260,6 +264,7 @@
             {
                 targetPropertyType = ((SimpleProvideValueServiceProvider)serviceProvider).TargetPropertyType;
                 targetPropertyIndex = ((SimpleProvideValueServiceProvider)serviceProvider).TargetPropertyIndex;
+                endPoint = ((SimpleProvideValueServiceProvider)serviceProvider).EndPoint;
             }
             else
             {
@@ -309,7 +314,6 @@
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
                 {
-                    EndpointReachedEvent.AddListener(this);
                     if (OnFirstTarget != null)
                         OnFirstTarget();
                 }
@@ -340,10 +344,12 @@
                 result = args.EndpointValue;
             }
             else
-                result = FormatOutput(null, info);
+                result = FormatOutput(endPoint, info);
 
             // Check type
-            if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
+            if (typeof(IList).IsAssignableFrom(targetPropertyType))
+                return result;
+            else if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
                 return result;
             
             // Finally, if nothing was there, return null or default
@@ -477,18 +483,32 @@
         /// <returns>The value or default.</returns>
         protected T GetValue<T>(object value, PropertyInfo property, int index)
         {
+            return GetValue<T>(value, property, index, null);
+        }
+
+        /// <summary>
+        /// Safely get the value of a property that might be set by a further MarkupExtension.
+        /// </summary>
+        /// <typeparam name="T">The return type.</typeparam>
+        /// <param name="value">The value supplied by the set accessor of the property.</param>
+        /// <param name="property">The property information.</param>
+        /// <param name="index">The index of the indexed property, if applicable.</param>
+        /// <param name="endPoint">An optional endpoint information.</param>
+        /// <returns>The value or default.</returns>
+        protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint)
+        {
             // Simple case: value is of same type
             if (value is T)
                 return (T)value;
-            
+
             // No property supplied
             if (property == null)
                 return default(T);
-            
+
             // Is value of type MarkupExtension?
             if (value is MarkupExtension)
             {
-                object result = ((MarkupExtension)value).ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index));
+                object result = ((MarkupExtension)value).ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint));
                 if (result != null)
                     return (T)result;
                 else
@@ -539,7 +559,10 @@
 
             var path = GetPathToEndpoint(args.Endpoint);
 
-            if (path == null || !UpdateOnEndpoint(path.EndPoint))
+            if (path == null)
+                return;
+
+            if ((this != sender) && !UpdateOnEndpoint(path.EndPoint))
                 return;
 
             args.EndpointValue = UpdateNewValue(path);
@@ -601,6 +624,15 @@
                 if (listener == null)
                     return;
 
+                // Check, if this listener already was added.
+                var existing = (from l in listeners
+                                where l.Target == listener
+                                select l.Target).FirstOrDefault();
+
+                if (existing == listener)
+                    return;
+
+                // Add it now.
                 listeners.Add(new WeakReference(listener));
             }
 
