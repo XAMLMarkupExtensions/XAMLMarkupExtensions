@@ -246,9 +246,6 @@
             // If the cast fails, return this
             if (service == null)
                 return this;
-
-            // Sign up to the EndpointReachedEvent.
-            EndpointReachedEvent.AddListener(this);
                         
             // Declare a target object and property
             TargetInfo endPoint = null;
@@ -330,6 +327,9 @@
             Tuple<object, int> tuple = new Tuple<object, int>(targetProperty, targetPropertyIndex);
             if (!targetObjects[wr].ContainsKey(tuple))
                 targetObjects[wr].Add(tuple, targetPropertyType);
+
+            // Sign up to the EndpointReachedEvent.
+            EndpointReachedEvent.AddListener(this);
 
             // Create the target info
             TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
@@ -609,10 +609,7 @@
                         purgeList.Add(wr);
                 }
 
-                foreach (WeakReference wr in purgeList)
-                    listeners.Remove(wr);
-
-                purgeList.Clear();
+                Purge(purgeList);
             }
 
             /// <summary>
@@ -625,12 +622,36 @@
                     return;
 
                 // Check, if this listener already was added.
-                var existing = (from l in listeners
-                                where l.Target == listener
-                                select l.Target).FirstOrDefault();
+                List<WeakReference> purgeList = new List<WeakReference>();
 
-                if (existing == listener)
-                    return;
+                foreach (var wr in listeners)
+                {
+                    if (!wr.IsAlive)
+                        purgeList.Add(wr);
+                    else if (wr.Target == listener)
+                        return;
+                    else
+                    {
+                        var existing = (NestedMarkupExtension)wr.Target;
+
+                        var purge = false;
+                        var targets = existing.GetTargetObjectsAndProperties();
+
+                        foreach (var target in targets)
+                        {
+                            if (listener.IsConnected(target))
+                            {
+                                purge = true;
+                                break;
+                            }
+                        }
+
+                        if (purge)
+                            purgeList.Add(wr);
+                    }
+                }
+
+                Purge(purgeList);
 
                 // Add it now.
                 listeners.Add(new WeakReference(listener));
@@ -654,6 +675,8 @@
                     else if ((NestedMarkupExtension)wr.Target == listener)
                         purgeList.Add(wr);
                 }
+
+                Purge(purgeList);
             }
 
             /// <summary>
@@ -666,6 +689,7 @@
                     listeners.Remove(wr);
 
                 purgeList.Clear();
+                ObjectDependencyManager.CleanUp();
             }
         }
         #endregion
