@@ -8,7 +8,7 @@
     /// <summary>
     /// A class that helps listening to changes on the Parent property of FrameworkElement objects.
     /// </summary>
-    public class ParentChangedNotifier : DependencyObject
+    public class ParentChangedNotifier : DependencyObject, IDisposable
     {
         #region Parent property
         /// <summary>
@@ -48,17 +48,26 @@
             var notifier = obj as FrameworkElement;
 
             if (notifier != null && OnParentChangedList.ContainsKey(notifier))
-                foreach (var OnParentChanged in OnParentChangedList[notifier])
+            {
+                var list = new List<Action>(OnParentChangedList[notifier]);
+                foreach (var OnParentChanged in list)
                     OnParentChanged();
+                list.Clear();
+            }
         } 
         #endregion
 
         /// <summary>
         /// A static list of actions that should be performed on parent change events.
-        /// - Entries are added by each call of the constructor.
-        /// - All elements are called by the parent changed callback with the particular sender as the key.
+        /// <para>- Entries are added by each call of the constructor.</para>
+        /// <para>- All elements are called by the parent changed callback with the particular sender as the key.</para>
         /// </summary>
         private static Dictionary<FrameworkElement, List<Action>> OnParentChangedList = new Dictionary<FrameworkElement, List<Action>>();
+
+        /// <summary>
+        /// The element this notifier is bound to. Needed to release the binding and Action entry.
+        /// </summary>
+        private FrameworkElement element = null;
 
         /// <summary>
         /// Constructor.
@@ -67,6 +76,8 @@
         /// <param name="onParentChanged">The action that will be performed upon change events.</param>
         public ParentChangedNotifier(FrameworkElement element, Action onParentChanged)
         {
+            this.element = element;
+
             if (onParentChanged != null)
             {
                 if (!OnParentChangedList.ContainsKey(element))
@@ -81,6 +92,29 @@
             b.RelativeSource.AncestorType = typeof(FrameworkElement);
 
             BindingOperations.SetBinding(element, ParentProperty, b);
+        }
+
+        /// <summary>
+        /// Disposes all used resources of the instance.
+        /// </summary>
+        public void Dispose()
+        {
+            var temp = element;
+
+            if (temp == null)
+                return;
+
+            temp.ClearValue(ParentProperty);
+
+            if (OnParentChangedList.ContainsKey(temp))
+            {
+                var list = OnParentChangedList[temp];
+                list.Clear();
+                OnParentChangedList.Remove(temp);
+            }
+
+            temp = null;
+            element = null;
         }
     }
 }
