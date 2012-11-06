@@ -104,17 +104,22 @@
             if (temp == null)
                 return;
 
-            temp.ClearValue(ParentProperty);
-
-            if (OnParentChangedList.ContainsKey(temp))
+            try
             {
-                var list = OnParentChangedList[temp];
-                list.Clear();
-                OnParentChangedList.Remove(temp);
-            }
+                temp.ClearValue(ParentProperty);
 
-            temp = null;
-            element = null;
+                if (OnParentChangedList.ContainsKey(temp))
+                {
+                    var list = OnParentChangedList[temp];
+                    list.Clear();
+                    OnParentChangedList.Remove(temp);
+                }
+            }
+            finally
+            {
+                temp = null;
+                element = null;
+            }
         }
     }
 }
