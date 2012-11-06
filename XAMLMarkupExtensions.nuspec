@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <authors>Uwe Mayer,Konrad Mattheis</authors>
     <owners>ukma</owners>
     <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
@@ -11,9 +11,9 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.0 and SL 5.0.</description>
     <summary>GitHub Commit:
-SHA cd68619586c95bf20b3ad36eca1f9a0648284e9c 
+SHA 1ad0aeeb49f5ead4e15bff6e22a032b648d7a2d6 
 https://github.com/MrCircuit/XAMLMarkupExtensions</summary>
-    <releaseNotes>- fixed a bug in design mode - when changing properties of an extension at design time, a new extension is created - this lead to multiple registrations at the EndpointReachedEvent.</releaseNotes>
+    <releaseNotes>* Fix for memory leak in ParentChangedNotifier - call Dispose() when using this class after it has done its work :-).</releaseNotes>
     <tags>WPF SL markup extension nesting</tags>
   </metadata>
   <files>
