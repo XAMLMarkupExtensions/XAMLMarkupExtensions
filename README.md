@@ -21,6 +21,8 @@
 
 * ParentChangedNotifier:
   Helper class for changes on the Parent property of FrameworkElement objects.
+  
+* Type, Static & Null extension (known from WPF)
 
 ### XAMLMarkupExtensions.Binding ###
 
