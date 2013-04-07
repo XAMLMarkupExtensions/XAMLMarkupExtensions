@@ -1,12 +1,17 @@
-﻿namespace XAMLMarkupExtensions.Design
+﻿#region Copyright information
+// <copyright file="AlternatingGridColorExtension.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Design
 {
-    using XAMLMarkupExtensions.Base;
     using System.Windows;
-    using System.Windows.Media;
     using System.Windows.Controls;
-    using System.Windows.Markup;
-    using System;
-    using System.Reflection;
+    using System.Windows.Media;
+    using XAMLMarkupExtensions.Base;
 
     public class AlternatingGridColorExtension : NestedMarkupExtension
     {

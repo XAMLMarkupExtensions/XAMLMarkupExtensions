@@ -1,14 +1,20 @@
-﻿namespace XAMLMarkupExtensions.Strings
+﻿#region Copyright information
+// <copyright file="CatExtension.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Strings
 {
     #region Uses
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using XAMLMarkupExtensions.Base;
-    using System.Windows.Markup;
     using System.ComponentModel;
     using System.Reflection;
+    using System.Windows.Markup;
+    using XAMLMarkupExtensions.Base;
     #endregion
 
 #if SILVERLIGHT

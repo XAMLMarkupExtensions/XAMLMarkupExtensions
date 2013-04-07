@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Markup;
+﻿#region Copyright information
+// <copyright file="SimpleProvideValueServiceProvider.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
 
 namespace XAMLMarkupExtensions.Base
 {
+    using System;
+    using System.Windows.Markup;
+
     /// <summary>
     /// This class implements the interfaces IServiceProvider and IProvideValueTarget for ProvideValue calls on markup extensions.
     /// </summary>

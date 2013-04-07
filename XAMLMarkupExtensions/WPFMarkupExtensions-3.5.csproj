@@ -44,7 +44,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base\INestedMarkupExtension.cs" />
+    <Compile Include="Base\NullExtension.cs" />
     <Compile Include="Base\ParentChangedNotifier.cs" />
+    <Compile Include="Base\StaticExtension.cs" />
+    <Compile Include="Base\TypeExtension.cs" />
     <Compile Include="Binding\DynBindingExtension.cs" />
     <Compile Include="Binding\BindingProxy.cs" />
     <Compile Include="Base\ObjectDependencyManager.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="Design\AlternatingGridColorExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings\CatExtension.cs" />
+    <Compile Include="XmlnsDefinitions.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

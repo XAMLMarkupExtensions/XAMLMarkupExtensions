@@ -1,14 +1,18 @@
-﻿namespace XAMLMarkupExtensions.Binding
+﻿#region Copyright information
+// <copyright file="BindingProxy.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Binding
 {
     #region Uses
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
     using System.Windows;
     using System.Windows.Data;
     using XAMLMarkupExtensions.Base;
-    using System.Reflection;
     #endregion
 
     /// <summary>

@@ -1,9 +1,17 @@
-﻿namespace XAMLMarkupExtensions.Base
+﻿#region Copyright information
+// <copyright file="ParentChangedNotifier.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Base
 {
     using System;
+    using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Data;
-    using System.Collections.Generic;
     
     /// <summary>
     /// A class that helps listening to changes on the Parent property of FrameworkElement objects.

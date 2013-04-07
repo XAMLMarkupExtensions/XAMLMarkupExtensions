@@ -88,6 +88,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -96,7 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XAMLMarkupExtensions\WPFMarkupExtensions.csproj">
-      <Project>{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}</Project>
+      <Project>{d6a34739-e9e5-4e5d-bcf2-e36fac2fce44}</Project>
       <Name>WPFMarkupExtensions</Name>
     </ProjectReference>
   </ItemGroup>

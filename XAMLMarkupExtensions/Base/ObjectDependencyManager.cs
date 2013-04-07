@@ -1,4 +1,12 @@
-﻿namespace XAMLMarkupExtensions.Base
+﻿#region Copyright information
+// <copyright file="ObjectDependencyManager.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Base
 {
     #region Uses
     using System;

@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFMarkupExtensions", "XAMLMarkupExtensions\WPFMarkupExtensions.csproj", "{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLMarkupExtensions", "XAMLMarkupExtensions\SLMarkupExtensions.csproj", "{311171ED-80C9-49AC-A635-3E5E4BD4B00E}"

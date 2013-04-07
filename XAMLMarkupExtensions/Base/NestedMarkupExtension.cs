@@ -1,16 +1,21 @@
-﻿namespace XAMLMarkupExtensions.Base
+﻿#region Copyright information
+// <copyright file="NestedMarkupExtension.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     http://xamlmarkupextensions.codeplex.com/license
+// </copyright>
+// <author>Uwe Mayer</author>
+#endregion
+
+namespace XAMLMarkupExtensions.Base
 {
     #region Uses
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using System.Windows.Markup;
-    using System.Windows;
-    using System.Windows.Data;
     using System.Reflection;
-    using System.Runtime.CompilerServices;
-    using System.Collections;
+    using System.Windows;
+    using System.Windows.Markup;
 #if SILVERLIGHT
     using System.Xaml;
 #endif
@@ -226,9 +231,18 @@
         }
 
         /// <summary>
+        /// Override this function, if (and only if) additional information is needed from the <see cref="IServiceProvider"/> instance that is passed to <see cref="NestedMarkupExtension.ProvideValue"/>.
+        /// </summary>
+        /// <param name="serviceProvider">A service provider.</param>
+        protected virtual void OnServiceProviderChanged(IServiceProvider serviceProvider)
+        {
+            // Do nothing in the base class.
+        }
+
+        /// <summary>
         /// The ProvideValue method of the <see cref="MarkupExtension"/> base class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider</param>
+        /// <param name="serviceProvider">A service provider.</param>
         /// <returns>The value of the extension, or this if something gone wrong (needed for Templates).</returns>
 #if SILVERLIGHT
         public object ProvideValue(IServiceProvider serviceProvider)
@@ -239,6 +253,8 @@
             // If the service provider is null, return this
             if (serviceProvider == null)
                 return this;
+
+            OnServiceProviderChanged(serviceProvider);
 
             // Try to cast the passed serviceProvider to a IProvideValueTarget
             IProvideValueTarget service = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
@@ -320,7 +336,7 @@
                 targetObjects.Add(wr, new Dictionary<Tuple<object, int>, Type>());
 
                 // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
-                ObjectDependencyManager.AddObjectDependency(new WeakReference(service.TargetObject), this);
+                ObjectDependencyManager.AddObjectDependency(wr, this);
             }
 
             // Finally, add the target prop and info to the list of this WeakReference
@@ -690,6 +706,13 @@
 
                 purgeList.Clear();
                 ObjectDependencyManager.CleanUp();
+            }
+
+            /// <summary>
+            /// An empty static constructor to prevent the class from being marked as beforefieldinit.
+            /// </summary>
+            static EndpointReachedEvent()
+            {
             }
         }
         #endregion
