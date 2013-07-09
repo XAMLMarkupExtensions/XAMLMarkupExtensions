@@ -615,14 +615,15 @@ namespace XAMLMarkupExtensions.Base
             {
                 List<WeakReference> purgeList = new List<WeakReference>();
 
-                for (int i = 0; i < listeners.Count; i++)
+                lock (listeners)
                 {
-                    WeakReference wr = listeners[i];
-                 
-                    if (wr.IsAlive)
-                        ((NestedMarkupExtension)wr.Target).OnEndpointReached(sender, args);
-                    else
-                        purgeList.Add(wr);
+                    foreach (var wr in listeners)
+                    {
+                        if (wr.IsAlive)
+                            ((NestedMarkupExtension)wr.Target).OnEndpointReached(sender, args);
+                        else
+                            purgeList.Add(wr);
+                    }
                 }
 
                 Purge(purgeList);
@@ -640,37 +641,43 @@ namespace XAMLMarkupExtensions.Base
                 // Check, if this listener already was added.
                 List<WeakReference> purgeList = new List<WeakReference>();
 
-                foreach (var wr in listeners)
+                lock (listeners)
                 {
-                    if (!wr.IsAlive)
-                        purgeList.Add(wr);
-                    else if (wr.Target == listener)
-                        return;
-                    else
+                    foreach (var wr in listeners)
                     {
-                        var existing = (NestedMarkupExtension)wr.Target;
-
-                        var purge = false;
-                        var targets = existing.GetTargetObjectsAndProperties();
-
-                        foreach (var target in targets)
-                        {
-                            if (listener.IsConnected(target))
-                            {
-                                purge = true;
-                                break;
-                            }
-                        }
-
-                        if (purge)
+                        if (!wr.IsAlive)
                             purgeList.Add(wr);
+                        else if (wr.Target == listener)
+                            return;
+                        else
+                        {
+                            var existing = (NestedMarkupExtension)wr.Target;
+
+                            var purge = false;
+                            var targets = existing.GetTargetObjectsAndProperties();
+
+                            foreach (var target in targets)
+                            {
+                                if (listener.IsConnected(target))
+                                {
+                                    purge = true;
+                                    break;
+                                }
+                            }
+
+                            if (purge)
+                                purgeList.Add(wr);
+                        }
                     }
                 }
 
                 Purge(purgeList);
 
                 // Add it now.
-                listeners.Add(new WeakReference(listener));
+                lock (listeners)
+                {
+                    listeners.Add(new WeakReference(listener));
+                }
             }
 
             /// <summary>
@@ -684,12 +691,15 @@ namespace XAMLMarkupExtensions.Base
 
                 List<WeakReference> purgeList = new List<WeakReference>();
 
-                foreach (WeakReference wr in listeners)
+                lock (listeners)
                 {
-                    if (!wr.IsAlive)
-                        purgeList.Add(wr);
-                    else if ((NestedMarkupExtension)wr.Target == listener)
-                        purgeList.Add(wr);
+                    foreach (WeakReference wr in listeners)
+                    {
+                        if (!wr.IsAlive)
+                            purgeList.Add(wr);
+                        else if ((NestedMarkupExtension)wr.Target == listener)
+                            purgeList.Add(wr);
+                    }
                 }
 
                 Purge(purgeList);
@@ -701,8 +711,11 @@ namespace XAMLMarkupExtensions.Base
             /// <param name="purgeList">The list of references to remove.</param>
             private static void Purge(List<WeakReference> purgeList)
             {
-                foreach (WeakReference wr in purgeList)
-                    listeners.Remove(wr);
+                lock (listeners)
+                {
+                    foreach (WeakReference wr in purgeList)
+                        listeners.Remove(wr);
+                }
 
                 purgeList.Clear();
                 ObjectDependencyManager.CleanUp();
