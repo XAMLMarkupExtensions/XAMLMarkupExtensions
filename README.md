@@ -47,4 +47,4 @@ To Be Continued...
 
 ## License ##
 
-Ms-PL
+[MS-PL](https://github.com/MrCircuit/XAMLMarkupExtensions/blob/master/LICENSE)
