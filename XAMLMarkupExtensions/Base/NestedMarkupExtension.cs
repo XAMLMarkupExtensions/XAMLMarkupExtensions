@@ -281,20 +281,7 @@ namespace XAMLMarkupExtensions.Base
             }
             else
             {
-                if (targetProperty is DependencyProperty)
-                {
-                    DependencyProperty dp = (DependencyProperty)targetProperty;
-
-                    #region Get the property type
-#if SILVERLIGHT
-                    // Dirty reflection hack - get the property type (property not included in the SL DependencyProperty class) from the internal declared field.
-                    targetPropertyType = typeof(DependencyProperty).GetField("_propertyType", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(dp) as Type;
-#else
-                    targetPropertyType = dp.PropertyType;
-#endif 
-                    #endregion
-                }
-                else if (targetProperty is PropertyInfo)
+                if (targetProperty is PropertyInfo)
                 {
                     PropertyInfo pi = (PropertyInfo)targetProperty;
                     targetPropertyType = pi.PropertyType;
@@ -302,6 +289,15 @@ namespace XAMLMarkupExtensions.Base
                     // Kick out indexers.
                     if (pi.GetIndexParameters().Count() > 0)
                         throw new InvalidOperationException("Indexers are not supported!");
+                }
+                else if (targetProperty is DependencyProperty)
+                {
+#if SILVERLIGHT
+                    targetPropertyType = typeof(Object);
+#else
+                    DependencyProperty dp = (DependencyProperty)targetProperty;
+                    targetPropertyType = dp.PropertyType;
+#endif
                 }
                 else
                     return this;
@@ -605,6 +601,7 @@ namespace XAMLMarkupExtensions.Base
             /// The list of listeners
             /// </summary>
             private static List<WeakReference> listeners = new List<WeakReference>();
+            private static object listenersLock = new object();
 
             /// <summary>
             /// Fire the event.
@@ -613,19 +610,16 @@ namespace XAMLMarkupExtensions.Base
             /// <param name="args">The event args containing the endpoint information.</param>
             internal static void Invoke(NestedMarkupExtension sender, EndpointReachedEventArgs args)
             {
-                List<WeakReference> purgeList = new List<WeakReference>();
-
-                for (int i = 0; i < listeners.Count; i++)
+                lock (listenersLock)
                 {
-                    WeakReference wr = listeners[i];
-                 
-                    if (wr.IsAlive)
-                        ((NestedMarkupExtension)wr.Target).OnEndpointReached(sender, args);
-                    else
-                        purgeList.Add(wr);
+                    foreach (var wr in listeners.ToList())
+                    {
+                        if (wr.IsAlive)
+                            ((NestedMarkupExtension)wr.Target).OnEndpointReached(sender, args);
+                        else
+                            listeners.Remove(wr);
+                    }
                 }
-
-                Purge(purgeList);
             }
 
             /// <summary>
@@ -637,40 +631,34 @@ namespace XAMLMarkupExtensions.Base
                 if (listener == null)
                     return;
 
-                // Check, if this listener already was added.
-                List<WeakReference> purgeList = new List<WeakReference>();
-
-                foreach (var wr in listeners)
+                lock (listenersLock)
                 {
-                    if (!wr.IsAlive)
-                        purgeList.Add(wr);
-                    else if (wr.Target == listener)
-                        return;
-                    else
+                    // Check, if this listener already was added.
+                    foreach (var wr in listeners.ToList())
                     {
-                        var existing = (NestedMarkupExtension)wr.Target;
-
-                        var purge = false;
-                        var targets = existing.GetTargetObjectsAndProperties();
-
-                        foreach (var target in targets)
+                        if (!wr.IsAlive)
+                            listeners.Remove(wr);
+                        else if (wr.Target == listener)
+                            return;
+                        else
                         {
-                            if (listener.IsConnected(target))
+                            var existing = (NestedMarkupExtension)wr.Target;
+                            var targets = existing.GetTargetObjectsAndProperties();
+
+                            foreach (var target in targets)
                             {
-                                purge = true;
-                                break;
+                                if (listener.IsConnected(target))
+                                {
+                                    listeners.Remove(wr);
+                                    break;
+                                }
                             }
                         }
-
-                        if (purge)
-                            purgeList.Add(wr);
                     }
+
+                    // Add it now.
+                    listeners.Add(new WeakReference(listener));
                 }
-
-                Purge(purgeList);
-
-                // Add it now.
-                listeners.Add(new WeakReference(listener));
             }
 
             /// <summary>
@@ -682,30 +670,16 @@ namespace XAMLMarkupExtensions.Base
                 if (listener == null)
                     return;
 
-                List<WeakReference> purgeList = new List<WeakReference>();
-
-                foreach (WeakReference wr in listeners)
+                lock (listenersLock)
                 {
-                    if (!wr.IsAlive)
-                        purgeList.Add(wr);
-                    else if ((NestedMarkupExtension)wr.Target == listener)
-                        purgeList.Add(wr);
+                    foreach (var wr in listeners.ToList())
+                    {
+                        if (!wr.IsAlive)
+                            listeners.Remove(wr);
+                        else if ((NestedMarkupExtension)wr.Target == listener)
+                            listeners.Remove(wr);
+                    }
                 }
-
-                Purge(purgeList);
-            }
-
-            /// <summary>
-            /// Remove a list of weak references from the list.
-            /// </summary>
-            /// <param name="purgeList">The list of references to remove.</param>
-            private static void Purge(List<WeakReference> purgeList)
-            {
-                foreach (WeakReference wr in purgeList)
-                    listeners.Remove(wr);
-
-                purgeList.Clear();
-                ObjectDependencyManager.CleanUp();
             }
 
             /// <summary>
