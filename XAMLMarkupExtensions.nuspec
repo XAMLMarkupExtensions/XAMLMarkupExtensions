@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <version>1.1.6.1</version>
+    <version>1.1.6.2</version>
     <authors>Uwe Mayer,Konrad Mattheis</authors>
     <owners></owners>
     <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
@@ -11,10 +11,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.0 and SL 5.0.</description>
     <summary></summary>
-    <releaseNotes>* Fixes to #879 and #880
-* Common XAML-namespace for all library namespaces
-* Added License information
-* Added Static, Type and Null extensions</releaseNotes>
+    <releaseNotes>* Fixes a bug related to DependencyProperties and SL.</releaseNotes>
     <tags>WPF SL markup extension nesting</tags>
   </metadata>
   <files>
