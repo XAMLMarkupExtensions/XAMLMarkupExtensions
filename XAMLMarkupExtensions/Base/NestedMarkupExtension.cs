@@ -157,11 +157,12 @@ namespace XAMLMarkupExtensions.Base
             // Select all targets that are still alive.
             foreach (var target in targetObjects)
             {
-                if (!target.Key.IsAlive)
+	            var targetReference = target.Key.Target;
+                if (targetReference == null)
                     continue;
 
                 list.AddRange(from kvp in target.Value
-                              select new TargetInfo(target.Key.Target, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
+                              select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
             }
 
             return list;
@@ -614,8 +615,9 @@ namespace XAMLMarkupExtensions.Base
                 {
                     foreach (var wr in listeners.ToList())
                     {
-                        if (wr.IsAlive)
-                            ((NestedMarkupExtension)wr.Target).OnEndpointReached(sender, args);
+						var targetReference = wr.Target;
+                        if (targetReference != null)
+                            ((NestedMarkupExtension)targetReference).OnEndpointReached(sender, args);
                         else
                             listeners.Remove(wr);
                     }
@@ -636,13 +638,14 @@ namespace XAMLMarkupExtensions.Base
                     // Check, if this listener already was added.
                     foreach (var wr in listeners.ToList())
                     {
-                        if (!wr.IsAlive)
+						var targetReference = wr.Target;
+                        if (targetReference == null)
                             listeners.Remove(wr);
-                        else if (wr.Target == listener)
+                        else if (targetReference == listener)
                             return;
                         else
                         {
-                            var existing = (NestedMarkupExtension)wr.Target;
+                            var existing = (NestedMarkupExtension)targetReference;
                             var targets = existing.GetTargetObjectsAndProperties();
 
                             foreach (var target in targets)
@@ -674,9 +677,10 @@ namespace XAMLMarkupExtensions.Base
                 {
                     foreach (var wr in listeners.ToList())
                     {
-                        if (!wr.IsAlive)
+						var targetReference = wr.Target;
+                        if (targetReference == null)
                             listeners.Remove(wr);
-                        else if ((NestedMarkupExtension)wr.Target == listener)
+                        else if ((NestedMarkupExtension)targetReference == listener)
                             listeners.Remove(wr);
                     }
                 }
