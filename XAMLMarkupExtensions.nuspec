@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <version>1.1.6.3</version>
+    <version>1.2</version>
     <authors>Uwe Mayer,Konrad Mattheis</authors>
     <owners></owners>
     <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
@@ -9,9 +9,9 @@
     <id>XAMLMarkupExtensions</id>
     <title>XAML Markup Extensions</title>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.0 and SL 5.0.</description>
+    <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.x and SL 5.0.</description>
     <summary></summary>
-    <releaseNotes>* Fixes a bug related to DependencyProperties and SL.</releaseNotes>
+    <releaseNotes>* Introduces support for multiple UI threads.</releaseNotes>
     <tags>WPF SL markup extension nesting</tags>
   </metadata>
   <files>

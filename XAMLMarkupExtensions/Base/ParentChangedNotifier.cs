@@ -31,7 +31,7 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The target's parent FrameworkElement object.</returns>
         public static FrameworkElement GetParent(FrameworkElement element)
         {
-            return (FrameworkElement)element.GetValue(ParentProperty);
+            return element.GetValueSync<FrameworkElement>(ParentProperty);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="value">The target's parent FrameworkElement object.</param>
         public static void SetParent(FrameworkElement element, FrameworkElement value)
         {
-            element.SetValue(ParentProperty, value);
+            element.SetValueSync(ParentProperty, value);
         } 
         #endregion
 
@@ -94,12 +94,25 @@ namespace XAMLMarkupExtensions.Base
                 OnParentChangedList[element].Add(onParentChanged);
             }
             
-            Binding b = new Binding("Parent");
-            b.RelativeSource = new RelativeSource();
-            b.RelativeSource.Mode = RelativeSourceMode.FindAncestor;
-            b.RelativeSource.AncestorType = typeof(FrameworkElement);
+#if SILVERLIGHT
+            SetBinding();
+#else
+            if (element.CheckAccess())
+                SetBinding();
+            else
+                element.Dispatcher.Invoke(new Action(SetBinding));
+#endif
+        }
 
-            BindingOperations.SetBinding(element, ParentProperty, b);
+        private void SetBinding()
+        {
+            var binding = new Binding("Parent")
+            {
+                RelativeSource = new RelativeSource()
+            };
+            binding.RelativeSource.Mode = RelativeSourceMode.FindAncestor;
+            binding.RelativeSource.AncestorType = typeof(FrameworkElement);
+            BindingOperations.SetBinding(element, ParentProperty, binding);
         }
 
         /// <summary>

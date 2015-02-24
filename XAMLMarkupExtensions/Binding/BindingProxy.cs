@@ -39,8 +39,8 @@ namespace XAMLMarkupExtensions.Binding
 
         public Object Source
         {
-            get { return GetValue(BindingProxy.SourceProperty); }
-            set { SetValue(BindingProxy.SourceProperty, value); }
+            get { return this.GetValueSync<object>(BindingProxy.SourceProperty); }
+            set { this.SetValueSync(BindingProxy.SourceProperty, value); }
         }
         #endregion
 

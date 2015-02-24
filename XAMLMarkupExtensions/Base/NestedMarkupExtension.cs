@@ -435,7 +435,7 @@ namespace XAMLMarkupExtensions.Base
 
             // Set the value.
             if (info.TargetProperty is DependencyProperty)
-                ((DependencyObject)info.TargetObject).SetValue((DependencyProperty)info.TargetProperty, value);
+                ((DependencyObject)info.TargetObject).SetValueSync((DependencyProperty)info.TargetProperty, value);
             else
             {
                 PropertyInfo pi = (PropertyInfo)info.TargetProperty;
@@ -464,7 +464,7 @@ namespace XAMLMarkupExtensions.Base
         public static object GetPropertyValue(TargetInfo info)
         {
             if (info.TargetProperty is DependencyProperty)
-                return ((DependencyObject)info.TargetObject).GetValue((DependencyProperty)info.TargetProperty);
+                return ((DependencyObject)info.TargetObject).GetValueSync<object>((DependencyProperty)info.TargetProperty);
             else if (info.TargetProperty is PropertyInfo)
             {
                 PropertyInfo pi = (PropertyInfo)info.TargetProperty;

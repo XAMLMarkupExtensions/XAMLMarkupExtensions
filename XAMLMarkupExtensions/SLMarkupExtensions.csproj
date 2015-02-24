@@ -55,6 +55,7 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Base\DependencyObjectHelper.cs" />
     <Compile Include="Base\INestedMarkupExtension.cs" />
     <Compile Include="Base\NestedMarkupExtension.cs" />
     <Compile Include="Base\NullExtension.cs" />

@@ -5,6 +5,7 @@
 * Full support of nested markup extensions
 * **Design time support** under SL 5.0
 * A couple of interesting markup extensions
+* Multiple UI threads
 
 ## Content ##
 
