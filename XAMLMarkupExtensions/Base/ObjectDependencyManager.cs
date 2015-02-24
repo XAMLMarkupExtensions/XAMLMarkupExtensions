@@ -148,7 +148,8 @@ namespace XAMLMarkupExtensions.Base
                 for (int i = kvp.Value.Count - 1; i >= 0; i--)
                 {
                     // if this weak reference is no more alive, remove it
-                    if (!kvp.Value[i].IsAlive)
+					var targetReference = kvp.Value[i].Target;
+                    if (targetReference == null)
                     {
                         kvp.Value.RemoveAt(i);
                     }
