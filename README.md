@@ -46,6 +46,10 @@
 To Be Continued...
 (contributions are welcome)
 
+## NuGet Package ##
+
+https://www.nuget.org/packages/XAMLMarkupExtensions
+
 ## License ##
 
 [MS-PL](https://github.com/MrCircuit/XAMLMarkupExtensions/blob/master/LICENSE)
