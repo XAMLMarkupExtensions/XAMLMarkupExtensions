@@ -6,13 +6,15 @@
 // <author>Uwe Mayer</author>
 #endregion
 
+using System.Linq;
+
 namespace XAMLMarkupExtensions.Base
 {
     using System;
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Data;
-    
+
     /// <summary>
     /// A class that helps listening to changes on the Parent property of FrameworkElement objects.
     /// </summary>
@@ -42,7 +44,7 @@ namespace XAMLMarkupExtensions.Base
         public static void SetParent(FrameworkElement element, FrameworkElement value)
         {
             element.SetValueSync(ParentProperty, value);
-        } 
+        }
         #endregion
 
         #region ParentChanged callback
@@ -55,14 +57,18 @@ namespace XAMLMarkupExtensions.Base
         {
             var notifier = obj as FrameworkElement;
 
-            if (notifier != null && OnParentChangedList.ContainsKey(notifier))
+            if (notifier == null) return;
+
+            var weakNotifier = OnParentChangedList.Keys.SingleOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
+
+            if (weakNotifier != null)
             {
-                var list = new List<Action>(OnParentChangedList[notifier]);
+                var list = new List<Action>(OnParentChangedList[weakNotifier]);
                 foreach (var OnParentChanged in list)
                     OnParentChanged();
                 list.Clear();
             }
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -70,12 +76,13 @@ namespace XAMLMarkupExtensions.Base
         /// <para>- Entries are added by each call of the constructor.</para>
         /// <para>- All elements are called by the parent changed callback with the particular sender as the key.</para>
         /// </summary>
-        private static Dictionary<FrameworkElement, List<Action>> OnParentChangedList = new Dictionary<FrameworkElement, List<Action>>();
+        private static Dictionary<WeakReference, List<Action>> OnParentChangedList =
+            new Dictionary<WeakReference, List<Action>>();
 
         /// <summary>
         /// The element this notifier is bound to. Needed to release the binding and Action entry.
         /// </summary>
-        private FrameworkElement element = null;
+        private WeakReference element = null;
 
         /// <summary>
         /// Constructor.
@@ -84,16 +91,16 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="onParentChanged">The action that will be performed upon change events.</param>
         public ParentChangedNotifier(FrameworkElement element, Action onParentChanged)
         {
-            this.element = element;
+            this.element = new WeakReference(element);
 
             if (onParentChanged != null)
             {
-                if (!OnParentChangedList.ContainsKey(element))
-                    OnParentChangedList.Add(element, new List<Action>());
+                if (!OnParentChangedList.ContainsKey(this.element))
+                    OnParentChangedList.Add(this.element, new List<Action>());
 
-                OnParentChangedList[element].Add(onParentChanged);
+                OnParentChangedList[this.element].Add(onParentChanged);
             }
-            
+
 #if SILVERLIGHT
             SetBinding();
 #else
@@ -112,7 +119,7 @@ namespace XAMLMarkupExtensions.Base
             };
             binding.RelativeSource.Mode = RelativeSourceMode.FindAncestor;
             binding.RelativeSource.AncestorType = typeof(FrameworkElement);
-            BindingOperations.SetBinding(element, ParentProperty, binding);
+            BindingOperations.SetBinding((FrameworkElement)element.Target, ParentProperty, binding);
         }
 
         /// <summary>
@@ -120,25 +127,25 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
-            var temp = element;
+            var weakElement = element;
+            var weakElementReference = weakElement.Target;
 
-            if (temp == null)
+            if (weakElementReference == null || !weakElement.IsAlive)
                 return;
 
             try
             {
-                temp.ClearValue(ParentProperty);
+                ((FrameworkElement)weakElementReference).ClearValue(ParentProperty);
 
-                if (OnParentChangedList.ContainsKey(temp))
+                if (OnParentChangedList.ContainsKey(weakElement))
                 {
-                    var list = OnParentChangedList[temp];
+                    var list = OnParentChangedList[weakElement];
                     list.Clear();
-                    OnParentChangedList.Remove(temp);
+                    OnParentChangedList.Remove(weakElement);
                 }
             }
             finally
             {
-                temp = null;
                 element = null;
             }
         }
