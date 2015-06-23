@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <version>1.2.1</version>
-    <authors>Uwe Mayer,Konrad Mattheis</authors>
+    <version>1.2.1.1</version>
+    <authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</authors>
     <owners></owners>
     <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
     <projectUrl>http://xamlmarkupextensions.codeplex.com/</projectUrl>
