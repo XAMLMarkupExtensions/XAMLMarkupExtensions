@@ -59,7 +59,7 @@ namespace XAMLMarkupExtensions.Base
 
             if (notifier == null) return;
 
-            var weakNotifier = OnParentChangedList.Keys.SingleOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
+            var weakNotifier = OnParentChangedList.Keys.FirstOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
 
             if (weakNotifier != null)
             {
