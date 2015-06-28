@@ -56,10 +56,10 @@ namespace XAMLMarkupExtensions.Base
         private static void ParentChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
             var notifier = obj as FrameworkElement;
+            if (notifier == null)
+                return;
 
-            if (notifier == null) return;
-
-            var weakNotifier = OnParentChangedList.Keys.FirstOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
+            var weakNotifier = OnParentChangedList.Keys.SingleOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
 
             if (weakNotifier != null)
             {
@@ -96,7 +96,22 @@ namespace XAMLMarkupExtensions.Base
             if (onParentChanged != null)
             {
                 if (!OnParentChangedList.ContainsKey(this.element))
-                    OnParentChangedList.Add(this.element, new List<Action>());
+                {
+                    var foundOne = false;
+
+                    foreach (var key in OnParentChangedList.Keys)
+                    {
+                        if (ReferenceEquals(key.Target, element))
+                        {
+                            this.element = key;
+                            foundOne = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundOne)
+                        OnParentChangedList.Add(this.element, new List<Action>());
+                }
 
                 OnParentChangedList[this.element].Add(onParentChanged);
             }
