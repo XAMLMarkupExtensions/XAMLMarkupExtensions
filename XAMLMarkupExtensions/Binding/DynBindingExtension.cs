@@ -98,7 +98,7 @@ namespace XAMLMarkupExtensions.Binding
             Binding binding = new Binding();
             object src = source;
 
-            if ((src == null) || (".".CompareTo(src) == 0))
+            if ((src == null) || ((src is string) && (".".CompareTo(src) == 0)))
             {
                 if (obj is FrameworkElement)
                     src = ((FrameworkElement)obj).DataContext;
