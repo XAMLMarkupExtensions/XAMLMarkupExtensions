@@ -16,7 +16,13 @@
   </metadata>
   <files>
     <file src="XAMLMarkupExtensions\BinWPF35\Release\XAMLMarkupExtensions.dll" target="lib\net35\XAMLMarkupExtensions.dll" />
+    <file src="XAMLMarkupExtensions\BinWPF35\Release\XAMLMarkupExtensions.pdb" target="lib\net35\XAMLMarkupExtensions.pdb" />
+    <file src="XAMLMarkupExtensions\BinWPF35\Release\XAMLMarkupExtensions.xml" target="lib\net35\XAMLMarkupExtensions.xml" />
     <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.dll" target="lib\net40\XAMLMarkupExtensions.dll" />
+    <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.pdb" target="lib\net40\XAMLMarkupExtensions.pdb" />
+    <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.xml" target="lib\net40\XAMLMarkupExtensions.xml" />
     <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.dll" target="lib\sl50\XAMLMarkupExtensions.dll" />
+    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.pdb" target="lib\sl50\XAMLMarkupExtensions.pdb" />
+    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.xml" target="lib\sl50\XAMLMarkupExtensions.xml" />
   </files>
 </package>
