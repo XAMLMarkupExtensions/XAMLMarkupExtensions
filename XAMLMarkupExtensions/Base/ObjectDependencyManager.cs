@@ -16,7 +16,7 @@ namespace XAMLMarkupExtensions.Base
 
     /// <summary>
     /// This class ensures, that a specific object lives as long a associated object is alive.
-    /// Based on: <see cref="https://github.com/SeriousM/WPFLocalizationExtension"/>
+    /// Based on: <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
     public static class ObjectDependencyManager
     {

@@ -17,6 +17,9 @@ namespace XAMLMarkupExtensions.Strings
     using XAMLMarkupExtensions.Base;
     #endregion
 
+    /// <summary>
+    /// A string concatenation extension.
+    /// </summary>
 #if SILVERLIGHT
 #else
     [MarkupExtensionReturnType(typeof(String))]
@@ -25,12 +28,18 @@ namespace XAMLMarkupExtensions.Strings
     public class CatExtension : NestedMarkupExtension
     {
         private List<object> items = new List<object>();
+        /// <summary>
+        /// Gets the list of items.
+        /// </summary>
         public List<object> Items
         {
             get { return items; }
         }
 
         private string format = "";
+        /// <summary>
+        /// Gets or sets the format string.
+        /// </summary>
         public string Format
         {
             get { return format; }
@@ -43,7 +52,12 @@ namespace XAMLMarkupExtensions.Strings
                 }
             }
         }
-        
+
+        /// <summary>
+        /// This function returns the properly prepared output of the markup extension.
+        /// </summary>
+        /// <param name="info">Information about the target.</param>
+        /// <param name="endPoint">Information about the endpoint.</param>
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
             string s = Format;
@@ -79,6 +93,12 @@ namespace XAMLMarkupExtensions.Strings
             return s;
         }
 
+        /// <summary>
+        /// This method must return true, if an update shall be executed when the given endpoint is reached.
+        /// This method is called each time an endpoint is reached.
+        /// </summary>
+        /// <param name="endpoint">Information on the specific endpoint.</param>
+        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return false;

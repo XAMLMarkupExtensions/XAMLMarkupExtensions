@@ -17,6 +17,9 @@ namespace XAMLMarkupExtensions.Binding
     using XAMLMarkupExtensions.Base;
     #endregion
 
+    /// <summary>
+    /// A dynamic binding extension.
+    /// </summary>
 #if SILVERLIGHT
 #else
     [MarkupExtensionReturnType(typeof(BindingExpression))]
@@ -49,6 +52,9 @@ namespace XAMLMarkupExtensions.Binding
 
         #region Variables and Properties
         private object source = null;
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
         public object Source
         {
             get { return source; }
@@ -56,6 +62,9 @@ namespace XAMLMarkupExtensions.Binding
         }
 
         private string path = null;
+        /// <summary>
+        /// Gets or sets the path.
+        /// </summary>
         public string Path
         {
             get { return path; }
@@ -63,6 +72,9 @@ namespace XAMLMarkupExtensions.Binding
         }
 
         private IValueConverter converter = null;
+        /// <summary>
+        /// Gets or sets the converter.
+        /// </summary>
         public IValueConverter Converter
         {
             get { return converter; }
@@ -70,6 +82,9 @@ namespace XAMLMarkupExtensions.Binding
         }
 
         private object converterParameter = null;
+        /// <summary>
+        /// Gets or sets the converter parameter.
+        /// </summary>
         public object ConverterParameter
         {
             get { return converterParameter; }
@@ -77,15 +92,27 @@ namespace XAMLMarkupExtensions.Binding
         } 
         #endregion
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public DynBindingExtension()
         {
         }
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="path">The binding path.</param>
         public DynBindingExtension(string path)
         {
             this.path = path;
         }
 
+        /// <summary>
+        /// This function returns the properly prepared output of the markup extension.
+        /// </summary>
+        /// <param name="info">Information about the target.</param>
+        /// <param name="endPoint">Information about the endpoint.</param>
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
             //if (!info.IsDependencyObject)
@@ -137,6 +164,12 @@ namespace XAMLMarkupExtensions.Binding
             return ret;
         }
 
+        /// <summary>
+        /// This method must return true, if an update shall be executed when the given endpoint is reached.
+        /// This method is called each time an endpoint is reached.
+        /// </summary>
+        /// <param name="endpoint">Information on the specific endpoint.</param>
+        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return true;

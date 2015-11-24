@@ -17,14 +17,16 @@ namespace XAMLMarkupExtensions.Binding
 
     /// <summary>
     /// A binding proxy class that accepts bindings and forwards them to a normal property.
-    /// Based on: <see cref="http://www.codeproject.com/Articles/71348/Binding-on-a-Property-which-is-not-a-DependencyPro"/> and
+    /// Based on: <see href="http://www.codeproject.com/Articles/71348/Binding-on-a-Property-which-is-not-a-DependencyPro"/> and
     /// </summary>
     public class BindingProxy : FrameworkElement
     {
         // TODO: Test and develop SilverLight compatibility.
         
         #region Source DP
-        // We don't know what will be the Source/target type so we keep 'object'.
+        /// <summary>
+        /// The source dependency property.
+        /// </summary>
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register("Source", typeof(object), typeof(BindingProxy),
 #if SILVERLIGHT
@@ -37,6 +39,9 @@ namespace XAMLMarkupExtensions.Binding
             });
 #endif
 
+        /// <summary>
+        /// Gets or sets the binding source.
+        /// </summary>
         public Object Source
         {
             get { return this.GetValueSync<object>(BindingProxy.SourceProperty); }
@@ -46,6 +51,9 @@ namespace XAMLMarkupExtensions.Binding
 
         #region Target
         private TargetInfo target = null;
+        /// <summary>
+        /// Gets or sets the target.
+        /// </summary>
         public TargetInfo Target
         {
             get { return target; }
@@ -61,6 +69,10 @@ namespace XAMLMarkupExtensions.Binding
         #region OnPropertyChanged
 #if SILVERLIGHT
 #else
+        /// <summary>
+        /// Gets called, when a property changed.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -73,6 +85,9 @@ namespace XAMLMarkupExtensions.Binding
 #endif
         #endregion
 
+        /// <summary>
+        /// Gets the target value.
+        /// </summary>
         public object TargetValue
         {
             get { return NestedMarkupExtension.GetPropertyValue(target); }

@@ -40,6 +40,7 @@ namespace XAMLMarkupExtensions.Base
         }
         #endregion
 
+        #region Properties
         private Type type = null;
         /// <summary>
         /// The resolved type.
@@ -85,19 +86,31 @@ namespace XAMLMarkupExtensions.Base
                     RaisePropertyChanged("TypeName");
                 }
             }
-        }
+        } 
+        #endregion
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
         public TypeExtension()
             : base()
         {
         }
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="type">The name of the type.</param>
         public TypeExtension(string type)
             : this()
         {
             this.TypeName = type;
         }
 
+        /// <summary>
+        /// Override this function, if (and only if) additional information is needed from the <see cref="IServiceProvider"/> instance that is passed to <see cref="NestedMarkupExtension.ProvideValue"/>.
+        /// </summary>
+        /// <param name="serviceProvider">A service provider.</param>
         protected override void OnServiceProviderChanged(IServiceProvider serviceProvider)
         {
             if (typeName == null || typeName.Trim() == "")
@@ -122,11 +135,22 @@ namespace XAMLMarkupExtensions.Base
             }
         }
 
+        /// <summary>
+        /// This function returns the properly prepared output of the markup extension.
+        /// </summary>
+        /// <param name="info">Information about the target.</param>
+        /// <param name="endPoint">Information about the endpoint.</param>
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
             return type;
         }
 
+        /// <summary>
+        /// This method must return true, if an update shall be executed when the given endpoint is reached.
+        /// This method is called each time an endpoint is reached.
+        /// </summary>
+        /// <param name="endpoint">Information on the specific endpoint.</param>
+        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return false;
