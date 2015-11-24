@@ -579,7 +579,9 @@ namespace XAMLMarkupExtensions.Base
                 return;
 
             args.EndpointValue = UpdateNewValue(path);
-            args.Handled = true;
+            
+            // Removed, because of no use:
+            // args.Handled = true;
         }
 
         /// <summary>
