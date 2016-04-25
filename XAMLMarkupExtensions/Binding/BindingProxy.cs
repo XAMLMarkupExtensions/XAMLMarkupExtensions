@@ -21,23 +21,17 @@ namespace XAMLMarkupExtensions.Binding
     /// </summary>
     public class BindingProxy : FrameworkElement
     {
-        // TODO: Test and develop SilverLight compatibility.
-        
         #region Source DP
         /// <summary>
         /// The source dependency property.
         /// </summary>
         public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register("Source", typeof(object), typeof(BindingProxy),
-#if SILVERLIGHT
-            null);
-#else
             new FrameworkPropertyMetadata()
             {
                 BindsTwoWayByDefault = true,
                 DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
             });
-#endif
 
         /// <summary>
         /// Gets or sets the binding source.
@@ -67,8 +61,6 @@ namespace XAMLMarkupExtensions.Binding
         #endregion
 
         #region OnPropertyChanged
-#if SILVERLIGHT
-#else
         /// <summary>
         /// Gets called, when a property changed.
         /// </summary>
@@ -82,7 +74,6 @@ namespace XAMLMarkupExtensions.Binding
                     NestedMarkupExtension.SetPropertyValue(this.Source, target, false);
             }
         }
-#endif
         #endregion
 
         /// <summary>

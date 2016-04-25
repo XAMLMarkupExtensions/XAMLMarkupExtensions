@@ -17,10 +17,7 @@ namespace XAMLMarkupExtensions.Base
     /// A static extension.
     /// <para>Adopted from the work of Henrik Jonsson: http://www.codeproject.com/Articles/305932/Static-and-Type-markup-extensions-for-Silverlight, Licensed under Code Project Open License (CPOL).</para>
     /// </summary>
-#if SILVERLIGHT
-#else
     [MarkupExtensionReturnType(typeof(Type))]
-#endif
     [ContentProperty("Member"), DefaultProperty("Member")]
     public class StaticExtension : NestedMarkupExtension, INotifyPropertyChanged
     {

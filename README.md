@@ -1,9 +1,8 @@
-# XAML Markup Extensions for WPF and SL #
+# XAML Markup Extensions for WPF #
 
 ## Key features ##
 
 * Full support of nested markup extensions
-* **Design time support** under SL 5.0
 * A couple of interesting markup extensions
 * Multiple UI threads
 

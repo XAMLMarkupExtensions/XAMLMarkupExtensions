@@ -116,14 +116,10 @@ namespace XAMLMarkupExtensions.Base
                 OnParentChangedList[this.element].Add(onParentChanged);
             }
 
-#if SILVERLIGHT
-            SetBinding();
-#else
             if (element.CheckAccess())
                 SetBinding();
             else
                 element.Dispatcher.Invoke(new Action(SetBinding));
-#endif
         }
 
         private void SetBinding()

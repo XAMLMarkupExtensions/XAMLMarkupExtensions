@@ -25,14 +25,10 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The value.</returns>
         public static T GetValueSync<T>(this DependencyObject obj, DependencyProperty property)
         {
-#if SILVERLIGHT
-            return (T)obj.GetValue(property);
-#else
             if (obj.CheckAccess())
                 return (T)obj.GetValue(property);
             else
                 return (T)obj.Dispatcher.Invoke(new Func<object>(() => obj.GetValue(property)));
-#endif
         }
 
         /// <summary>
@@ -44,14 +40,10 @@ namespace XAMLMarkupExtensions.Base
         /// <typeparam name="T">The type of the value.</typeparam>
         public static void SetValueSync<T>(this DependencyObject obj, DependencyProperty property, T value)
         {
-#if SILVERLIGHT
-            obj.SetValue(property, value);
-#else
             if (obj.CheckAccess())
                 obj.SetValue(property, value);
             else
                 obj.Dispatcher.Invoke(new Action(() => obj.SetValue(property, value)));
-#endif
         }
     }
 }
