@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <version>1.2.1.4</version>
+    <version>1.2.2</version>
     <authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</authors>
     <owners></owners>
     <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
@@ -9,10 +9,10 @@
     <id>XAMLMarkupExtensions</id>
     <title>XAML Markup Extensions</title>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.x and SL 5.0.</description>
+    <description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5 and 4.x.</description>
     <summary></summary>
-    <releaseNotes>* A fix for https://github.com/SeriousM/WPFLocalizationExtension/issues/79</releaseNotes>
-    <tags>WPF SL markup extension nesting</tags>
+    <releaseNotes>* Drop of SL support</releaseNotes>
+    <tags>WPF markup extension nesting</tags>
   </metadata>
   <files>
     <file src="XAMLMarkupExtensions\BinWPF35\Release\XAMLMarkupExtensions.dll" target="lib\net35\XAMLMarkupExtensions.dll" />
@@ -21,8 +21,5 @@
     <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.dll" target="lib\net40\XAMLMarkupExtensions.dll" />
     <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.pdb" target="lib\net40\XAMLMarkupExtensions.pdb" />
     <file src="XAMLMarkupExtensions\BinWPF\Release\XAMLMarkupExtensions.xml" target="lib\net40\XAMLMarkupExtensions.xml" />
-    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.dll" target="lib\sl50\XAMLMarkupExtensions.dll" />
-    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.pdb" target="lib\sl50\XAMLMarkupExtensions.pdb" />
-    <file src="XAMLMarkupExtensions\BinSL\Release\XAMLMarkupExtensions.xml" target="lib\sl50\XAMLMarkupExtensions.xml" />
   </files>
 </package>
