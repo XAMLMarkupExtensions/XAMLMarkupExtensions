@@ -20,10 +20,7 @@ namespace XAMLMarkupExtensions.Strings
     /// <summary>
     /// A string concatenation extension.
     /// </summary>
-#if SILVERLIGHT
-#else
     [MarkupExtensionReturnType(typeof(String))]
-#endif
     [ContentProperty("Items"), DefaultProperty("Items")]
     public class CatExtension : NestedMarkupExtension
     {

@@ -16,9 +16,6 @@ namespace XAMLMarkupExtensions.Base
     using System.Reflection;
     using System.Windows;
     using System.Windows.Markup;
-#if SILVERLIGHT
-    using System.Xaml;
-#endif
     #endregion
 
     /// <summary>
@@ -151,55 +148,9 @@ namespace XAMLMarkupExtensions.Base
     /// This class walks up the tree of markup extensions to support nesting.
     /// Based on <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
-#if SILVERLIGHT
-    public abstract class NestedMarkupExtension : FrameworkElement, IMarkupExtension<object>, INestedMarkupExtension, IDisposable
-    {
-        /// <summary>
-        /// A notification helper for changes on the Parent property.
-        /// </summary>
-        private ParentChangedNotifier parentChangedNotifier;
-
-        /// <summary>
-        /// Register the parent notifier.
-        /// Call the constructor of this class to register.
-        /// Otherwise register in your own implementation by calling this function.
-        /// </summary>
-        protected void RegisterParentNotifier()
-        {
-            parentChangedNotifier = new ParentChangedNotifier(this, () =>
-            {
-                var targetObject = this.Parent;
-                if (targetObject != null)
-                {
-                    var targetObjectType = targetObject.GetType();
-                    var properties = targetObjectType.GetProperties();
-
-                    foreach (var p in properties)
-                    {
-                        if (p.GetValue(targetObject, null) == this)
-                        {
-                            var info = new TargetInfo(targetObject, p, p.PropertyType, -1);
-                            SetPropertyValue(ProvideValue(new SimpleProvideValueServiceProvider(info)), info, false);
-                        }
-                    }
-                }
-            });
-        }
-
-        /// <summary>
-        /// Base class constructor.
-        /// Call this constructor to automatically register to Parent changed events.
-        /// </summary>
-        public NestedMarkupExtension()
-        {
-            RegisterParentNotifier();
-        }
-
-#else
     [MarkupExtensionReturnType(typeof(object))]
     public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
     {
-#endif
         /// <summary>
         /// Holds the collection of assigned dependency objects as WeakReferences
         /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
@@ -307,11 +258,7 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         /// <param name="serviceProvider">A service provider.</param>
         /// <returns>The value of the extension, or this if something gone wrong (needed for Templates).</returns>
-#if SILVERLIGHT
-        public object ProvideValue(IServiceProvider serviceProvider)
-#else
         public sealed override object ProvideValue(IServiceProvider serviceProvider)
-#endif
         {
             // If the service provider is null, return this
             if (serviceProvider == null)
@@ -355,12 +302,8 @@ namespace XAMLMarkupExtensions.Base
                 }
                 else if (targetProperty is DependencyProperty)
                 {
-#if SILVERLIGHT
-                    targetPropertyType = typeof(Object);
-#else
                     DependencyProperty dp = (DependencyProperty)targetProperty;
                     targetPropertyType = dp.PropertyType;
-#endif
                 }
                 else
                     return this;

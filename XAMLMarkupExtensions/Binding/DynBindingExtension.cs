@@ -20,10 +20,7 @@ namespace XAMLMarkupExtensions.Binding
     /// <summary>
     /// A dynamic binding extension.
     /// </summary>
-#if SILVERLIGHT
-#else
     [MarkupExtensionReturnType(typeof(BindingExpression))]
-#endif
     [ContentProperty("Path")]
     public class DynBindingExtension : NestedMarkupExtension, INotifyPropertyChanged
     {
@@ -129,11 +126,8 @@ namespace XAMLMarkupExtensions.Binding
             {
                 if (obj is FrameworkElement)
                     src = ((FrameworkElement)obj).DataContext;
-#if SILVERLIGHT
-#else
                 else if (obj is FrameworkContentElement)
                     src = ((FrameworkContentElement)obj).DataContext;
-#endif
 
                 if (src == null)
                     return null;
