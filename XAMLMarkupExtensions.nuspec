@@ -4,8 +4,8 @@
     <version>1.2.2</version>
     <authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</authors>
     <owners></owners>
-    <licenseUrl>http://xamlmarkupextensions.codeplex.com/license</licenseUrl>
-    <projectUrl>http://xamlmarkupextensions.codeplex.com/</projectUrl>
+    <licenseUrl>https://github.com/MrCircuit/XAMLMarkupExtensions/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/MrCircuit/XAMLMarkupExtensions</projectUrl>
     <id>XAMLMarkupExtensions</id>
     <title>XAML Markup Extensions</title>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
