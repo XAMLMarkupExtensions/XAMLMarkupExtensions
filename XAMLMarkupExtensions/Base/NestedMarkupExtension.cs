@@ -656,7 +656,7 @@ namespace XAMLMarkupExtensions.Base
 
                             foreach (var target in targets)
                             {
-                                if (listener.IsConnected(target))
+                                if (!listener.IsConnected(target))
                                 {
                                     listeners.Remove(wr);
                                     break;
