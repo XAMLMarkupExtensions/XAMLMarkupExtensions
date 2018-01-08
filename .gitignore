@@ -31,3 +31,5 @@ _ReSharper*/
 *.zip
 *.pfx
 *Signed*
+*.nupkg
+*.vs
