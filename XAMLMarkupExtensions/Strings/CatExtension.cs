@@ -65,7 +65,7 @@ namespace XAMLMarkupExtensions.Strings
             for (int i = 0; i < items.Count; i++)
             {
                 string tag = "{" + i + "}";
-                
+
                 if (s.Contains(tag))
                 {
                     object t = items[i];

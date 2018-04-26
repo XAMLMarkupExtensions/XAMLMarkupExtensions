@@ -83,7 +83,7 @@ namespace XAMLMarkupExtensions.Base
                     RaisePropertyChanged("TypeName");
                 }
             }
-        } 
+        }
         #endregion
 
         /// <summary>

@@ -166,11 +166,11 @@ namespace XAMLMarkupExtensions.Base
         private List<TargetInfo> GetTargetObjectsAndProperties()
         {
             List<TargetInfo> list = new List<TargetInfo>();
-            
+
             // Select all targets that are still alive.
             foreach (var target in targetObjects)
             {
-	            var targetReference = target.Key.Target;
+                var targetReference = target.Key.Target;
                 if (targetReference == null)
                     continue;
 
@@ -272,7 +272,7 @@ namespace XAMLMarkupExtensions.Base
             // If the cast fails, return this
             if (service == null)
                 return this;
-                        
+
             // Declare a target object and property
             TargetInfo endPoint = null;
             object targetObject = service.TargetObject;
@@ -318,7 +318,7 @@ namespace XAMLMarkupExtensions.Base
             // We will be called again later with the proper target.
             if (targetObject is DictionaryEntry)
                 return null;
-            
+
             // Search for the target in the target object list
             WeakReference wr = (from kvp in targetObjects
                                 where kvp.Key.Target == targetObject
@@ -369,7 +369,7 @@ namespace XAMLMarkupExtensions.Base
                 return result;
             else if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
                 return result;
-            
+
             // Finally, if nothing was there, return null or default
             if (targetPropertyType.IsValueType)
                 return Activator.CreateInstance(targetPropertyType);
@@ -583,7 +583,7 @@ namespace XAMLMarkupExtensions.Base
                 return;
 
             args.EndpointValue = UpdateNewValue(path);
-            
+
             // Removed, because of no use:
             // args.Handled = true;
         }
@@ -621,7 +621,7 @@ namespace XAMLMarkupExtensions.Base
                 {
                     foreach (var wr in listeners.ToList())
                     {
-						var targetReference = wr.Target;
+                        var targetReference = wr.Target;
                         if (targetReference != null)
                             ((NestedMarkupExtension)targetReference).OnEndpointReached(sender, args);
                         else
@@ -644,7 +644,7 @@ namespace XAMLMarkupExtensions.Base
                     // Check, if this listener already was added.
                     foreach (var wr in listeners.ToList())
                     {
-						var targetReference = wr.Target;
+                        var targetReference = wr.Target;
                         if (targetReference == null)
                             listeners.Remove(wr);
                         else if (targetReference == listener)
@@ -683,7 +683,7 @@ namespace XAMLMarkupExtensions.Base
                 {
                     foreach (var wr in listeners.ToList())
                     {
-						var targetReference = wr.Target;
+                        var targetReference = wr.Target;
                         if (targetReference == null)
                             listeners.Remove(wr);
                         else if ((NestedMarkupExtension)targetReference == listener)

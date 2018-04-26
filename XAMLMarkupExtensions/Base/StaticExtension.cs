@@ -88,7 +88,7 @@ namespace XAMLMarkupExtensions.Base
                     RaisePropertyChanged("Result");
                 }
             }
-        } 
+        }
         #endregion
 
         /// <summary>

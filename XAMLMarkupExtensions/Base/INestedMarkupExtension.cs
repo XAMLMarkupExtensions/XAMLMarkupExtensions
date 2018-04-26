@@ -11,7 +11,7 @@ namespace XAMLMarkupExtensions.Base
     #region Uses
     using System;
     using System.Collections.Generic;
-    using System.Windows; 
+    using System.Windows;
     #endregion
 
     #region Helper classes
@@ -145,7 +145,7 @@ namespace XAMLMarkupExtensions.Base
             EndPoint = endPoint;
             Path = new Stack<TargetInfo>();
         }
-    } 
+    }
     #endregion
 
     /// <summary>
