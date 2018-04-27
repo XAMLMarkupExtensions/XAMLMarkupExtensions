@@ -41,6 +41,18 @@
             return true;
         }
 
+        /// <summary>
+        /// This property must return true, if the markup extension wants to update if an endpoint is reached independently of an path to an endpoint.
+        /// </summary>
+        /// <returns>True, if the markup extension wants to update if an endpoint is reached.</returns>
+        protected override bool WillUpdateOnEndpoint
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public AlternatingGridColorExtension()
         {
         }

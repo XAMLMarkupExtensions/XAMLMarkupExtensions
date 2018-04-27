@@ -6,6 +6,9 @@
 // <author>Uwe Mayer</author>
 #endregion
 
+using System.Diagnostics;
+using System.Xaml;
+
 namespace XAMLMarkupExtensions.Base
 {
     #region Uses
@@ -160,6 +163,11 @@ namespace XAMLMarkupExtensions.Base
         private readonly Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>> targetObjects = new Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>>();
 
         /// <summary>
+        /// Holds the markup extensions root object hash code.
+        /// </summary>
+        private int rootObjectHashCode;
+
+        /// <summary>
         /// Get the target objects and properties.
         /// </summary>
         /// <returns>A list of target objects.</returns>
@@ -273,6 +281,22 @@ namespace XAMLMarkupExtensions.Base
             if (service == null)
                 return this;
 
+            // Try to cast the passed serviceProvider to a IRootObjectProvider and if the cast fails return null
+            IRootObjectProvider rootObject = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
+            if (rootObject == null)
+            {
+                rootObjectHashCode = 0;
+            }
+            else
+            {
+                rootObjectHashCode = rootObject.RootObject.GetHashCode();
+
+                if (rootObject.RootObject != null && rootObject.RootObject is Window)
+                {
+                    ((Window)rootObject.RootObject).Closed += delegate (object sender, EventArgs args) { Dispose(); };
+                }
+            }
+
             // Declare a target object and property
             TargetInfo endPoint = null;
             object targetObject = service.TargetObject;
@@ -297,7 +321,7 @@ namespace XAMLMarkupExtensions.Base
                     targetPropertyType = pi.PropertyType;
 
                     // Kick out indexers.
-                    if (pi.GetIndexParameters().Count() > 0)
+                    if (pi.GetIndexParameters().Any())
                         throw new InvalidOperationException("Indexers are not supported!");
                 }
                 else if (targetProperty is DependencyProperty)
@@ -346,8 +370,9 @@ namespace XAMLMarkupExtensions.Base
             if (!targetObjects[wr].ContainsKey(tuple))
                 targetObjects[wr].Add(tuple, targetPropertyType);
 
-            // Sign up to the EndpointReachedEvent.
-            EndpointReachedEvent.AddListener(this);
+            // Sign up to the EndpointReachedEvent only if the markup extension wants to do so.
+            if (WillUpdateOnEndpoint)
+                EndpointReachedEvent.AddListener(rootObjectHashCode, this);
 
             // Create the target info
             TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
@@ -358,7 +383,7 @@ namespace XAMLMarkupExtensions.Base
             if (info.IsEndpoint)
             {
                 var args = new EndpointReachedEventArgs(info);
-                EndpointReachedEvent.Invoke(this, args);
+                EndpointReachedEvent.Invoke(rootObjectHashCode, this, args);
                 result = args.EndpointValue;
             }
             else
@@ -545,6 +570,15 @@ namespace XAMLMarkupExtensions.Base
         protected abstract bool UpdateOnEndpoint(TargetInfo endpoint);
 
         /// <summary>
+        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
+        /// </summary>
+        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
+        protected abstract bool WillUpdateOnEndpoint
+        {
+            get;
+        }
+
+        /// <summary>
         /// Get the path to a specific endpoint.
         /// </summary>
         /// <param name="endpoint">The endpoint info.</param>
@@ -593,7 +627,7 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
-            EndpointReachedEvent.RemoveListener(this);
+            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
             targetObjects.Clear();
         }
 
@@ -605,27 +639,32 @@ namespace XAMLMarkupExtensions.Base
         internal static class EndpointReachedEvent
         {
             /// <summary>
-            /// The list of listeners
+            /// A dicitonary which contains a list of listeners per unique rootObject hash.
             /// </summary>
-            private static List<WeakReference> listeners = new List<WeakReference>();
-            private static object listenersLock = new object();
+            private static readonly Dictionary<int, List<WeakReference>> listeners = new Dictionary<int, List<WeakReference>>();
+            private static readonly object listenersLock = new object();
 
             /// <summary>
             /// Fire the event.
             /// </summary>
-            /// <param name="sender">The markup extension that reached an enpoint.</param>
+            /// <param name="rootObjectHashCode"><paramref name="sender"/>s root object hash code.</param>
+            /// <param name="sender">The markup extension that reached an end point.</param>
             /// <param name="args">The event args containing the endpoint information.</param>
-            internal static void Invoke(NestedMarkupExtension sender, EndpointReachedEventArgs args)
+            internal static void Invoke(int rootObjectHashCode, NestedMarkupExtension sender, EndpointReachedEventArgs args)
             {
                 lock (listenersLock)
                 {
-                    foreach (var wr in listeners.ToList())
+                    // Do nothing if we don't have this root object hash.
+                    if (!listeners.ContainsKey(rootObjectHashCode))
+                        return;
+
+                    foreach (var wr in listeners[rootObjectHashCode].ToList())
                     {
                         var targetReference = wr.Target;
                         if (targetReference != null)
                             ((NestedMarkupExtension)targetReference).OnEndpointReached(sender, args);
                         else
-                            listeners.Remove(wr);
+                            listeners[rootObjectHashCode].Remove(wr);
                     }
                 }
             }
@@ -633,20 +672,27 @@ namespace XAMLMarkupExtensions.Base
             /// <summary>
             /// Adds a listener to the inner list of listeners.
             /// </summary>
+            /// <param name="rootObjectHashCode"><paramref name="listener"/>s root object hash code.</param>
             /// <param name="listener">The listener to add.</param>
-            internal static void AddListener(NestedMarkupExtension listener)
+            internal static void AddListener(int rootObjectHashCode, NestedMarkupExtension listener)
             {
                 if (listener == null)
                     return;
 
                 lock (listenersLock)
                 {
+                    // Do we have a listeners list for this root object yet, if not add it.
+                    if (!listeners.ContainsKey(rootObjectHashCode))
+                    {
+                        listeners[rootObjectHashCode] = new List<WeakReference>();
+                    }
+
                     // Check, if this listener already was added.
-                    foreach (var wr in listeners.ToList())
+                    foreach (var wr in listeners[rootObjectHashCode].ToList())
                     {
                         var targetReference = wr.Target;
                         if (targetReference == null)
-                            listeners.Remove(wr);
+                            listeners[rootObjectHashCode].Remove(wr);
                         else if (targetReference == listener)
                             return;
                         else
@@ -658,7 +704,7 @@ namespace XAMLMarkupExtensions.Base
                             {
                                 if (listener.IsConnected(target))
                                 {
-                                    listeners.Remove(wr);
+                                    listeners[rootObjectHashCode].Remove(wr);
                                     break;
                                 }
                             }
@@ -666,29 +712,36 @@ namespace XAMLMarkupExtensions.Base
                     }
 
                     // Add it now.
-                    listeners.Add(new WeakReference(listener));
+                    listeners[rootObjectHashCode].Add(new WeakReference(listener));
                 }
             }
 
             /// <summary>
             /// Removes a listener from the inner list of listeners.
             /// </summary>
+            /// <param name="rootObjectHashCode"><paramref name="listener"/>s root object hash code.</param>
             /// <param name="listener">The listener to remove.</param>
-            internal static void RemoveListener(NestedMarkupExtension listener)
+            internal static void RemoveListener(int rootObjectHashCode, NestedMarkupExtension listener)
             {
                 if (listener == null)
                     return;
 
                 lock (listenersLock)
                 {
-                    foreach (var wr in listeners.ToList())
+                    if (!listeners.ContainsKey(rootObjectHashCode))
+                        return;
+
+                    foreach (var wr in listeners[rootObjectHashCode].ToList())
                     {
                         var targetReference = wr.Target;
                         if (targetReference == null)
-                            listeners.Remove(wr);
+                            listeners[rootObjectHashCode].Remove(wr);
                         else if ((NestedMarkupExtension)targetReference == listener)
-                            listeners.Remove(wr);
+                            listeners[rootObjectHashCode].Remove(wr);
                     }
+
+                    if (listeners[rootObjectHashCode].Count == 0)
+                        listeners.Remove(rootObjectHashCode);
                 }
             }
 
