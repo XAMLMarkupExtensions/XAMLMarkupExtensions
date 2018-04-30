@@ -6,8 +6,7 @@
 // <author>Uwe Mayer</author>
 #endregion
 
-using System.Diagnostics;
-using System.Xaml;
+using System.Windows.Media;
 
 namespace XAMLMarkupExtensions.Base
 {
@@ -19,6 +18,9 @@ namespace XAMLMarkupExtensions.Base
     using System.Reflection;
     using System.Windows;
     using System.Windows.Markup;
+#if NET40
+    using System.Xaml;
+#endif
     #endregion
 
     /// <summary>
@@ -281,6 +283,9 @@ namespace XAMLMarkupExtensions.Base
             if (service == null)
                 return this;
 
+#if NET35
+            rootObjectHashCode = 0;
+#elif NET40
             // Try to cast the passed serviceProvider to a IRootObjectProvider and if the cast fails return null
             IRootObjectProvider rootObject = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
             if (rootObject == null)
@@ -291,11 +296,13 @@ namespace XAMLMarkupExtensions.Base
             {
                 rootObjectHashCode = rootObject.RootObject.GetHashCode();
 
-                if (rootObject.RootObject != null && rootObject.RootObject is Window)
+                // We only sign up once to the Window Closed event to clear the listeners list of root object.
+                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode) && rootObject.RootObject is Window)
                 {
-                    ((Window)rootObject.RootObject).Closed += delegate (object sender, EventArgs args) { Dispose(); };
+                    ((Window)rootObject.RootObject).Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
                 }
             }
+#endif
 
             // Declare a target object and property
             TargetInfo endPoint = null;
@@ -715,6 +722,34 @@ namespace XAMLMarkupExtensions.Base
                     listeners[rootObjectHashCode].Add(new WeakReference(listener));
                 }
             }
+
+#if NET40
+            /// <summary>
+            /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
+            /// </summary>
+            /// <param name="rootObjectHashCode"></param>
+            internal static void ClearListenersForRootObject(int rootObjectHashCode)
+            {
+                lock (listenersLock)
+                {
+                    if (!listeners.ContainsKey(rootObjectHashCode))
+                        return;
+
+                    listeners[rootObjectHashCode].Clear();
+                    listeners.Remove(rootObjectHashCode);
+                }
+            }
+
+            /// <summary>
+            /// Returns true if the given <paramref name="rootObjectHashCode"/> is already added, false otherwise.
+            /// </summary>
+            /// <param name="rootObjectHashCode">Root object hash code to check.</param>
+            /// <returns>Returns true if the given <paramref name="rootObjectHashCode"/> is already added, false otherwise.</returns>
+            internal static bool ContainsRootObjectHash(int rootObjectHashCode)
+            {
+                return listeners.ContainsKey(rootObjectHashCode);
+            }
+#endif
 
             /// <summary>
             /// Removes a listener from the inner list of listeners.
