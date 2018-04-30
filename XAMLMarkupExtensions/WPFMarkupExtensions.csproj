@@ -9,7 +9,7 @@
     <Authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</Authors>
     <PackageLicenseUrl>https://github.com/MrCircuit/XAMLMarkupExtensions/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/MrCircuit/XAMLMarkupExtensions/</PackageProjectUrl>
-    <Copyright>Bernhard Millauer, Uwe Mayer</Copyright>
+    <Copyright>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</Copyright>
     <Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5 and 4.x.</Description>
     <Company />
     <Product>XAML Markup Extensions</Product>
@@ -27,25 +27,13 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net35|AnyCPU'">
-    <DocumentationFile>bin\Debug\net35\XAMLMarkupExtensions.xml</DocumentationFile>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net35|AnyCPU'">
     <DocumentationFile>bin\Release\net35\XAMLMarkupExtensions.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net40|AnyCPU'">
-    <DocumentationFile>bin\Debug\net40\XAMLMarkupExtensions.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net40|AnyCPU'">
     <DocumentationFile>bin\Release\net40\XAMLMarkupExtensions.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -61,9 +49,4 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
     <Reference Include="System.Xaml" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
-</Project> 
+</Project>
