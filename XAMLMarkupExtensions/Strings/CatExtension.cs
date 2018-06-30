@@ -65,7 +65,7 @@ namespace XAMLMarkupExtensions.Strings
             for (int i = 0; i < items.Count; i++)
             {
                 string tag = "{" + i + "}";
-                
+
                 if (s.Contains(tag))
                 {
                     object t = items[i];
@@ -99,6 +99,18 @@ namespace XAMLMarkupExtensions.Strings
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return false;
+        }
+
+        /// <summary>
+        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
+        /// </summary>
+        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
+        protected override bool WillUpdateOnEndpoint
+        {
+            get
+            {
+                return false;
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ namespace XAMLMarkupExtensions.Base
         /// The target object.
         /// </summary>
         public object TargetObject { get; private set; }
-        
+
         /// <summary>
         /// The target property.
         /// </summary>

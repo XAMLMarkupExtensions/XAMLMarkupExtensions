@@ -86,7 +86,7 @@ namespace XAMLMarkupExtensions.Binding
         {
             get { return converterParameter; }
             set { converterParameter = value; OnNotifyPropertyChanged("ConverterParameter"); }
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -131,12 +131,12 @@ namespace XAMLMarkupExtensions.Binding
 
                 if (src == null)
                     return null;
-                    //throw new ArgumentNullException("Neither a source was specified, nor it could be retrieved from the DataContext!");
+                //throw new ArgumentNullException("Neither a source was specified, nor it could be retrieved from the DataContext!");
             }
 
             if (String.IsNullOrEmpty(path) || String.IsNullOrEmpty(path.Trim()))
                 return null;
-                //throw new ArgumentNullException("No path was specified!");
+            //throw new ArgumentNullException("No path was specified!");
 
             binding.Source = src;
             binding.Path = new PropertyPath(path);
@@ -167,6 +167,18 @@ namespace XAMLMarkupExtensions.Binding
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return true;
+        }
+
+        /// <summary>
+        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
+        /// </summary>
+        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
+        protected override bool WillUpdateOnEndpoint
+        {
+            get
+            {
+                return true;
+            }
         }
     }
 }

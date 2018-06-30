@@ -1,0 +1,21 @@
+root = true
+
+[*.config]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*.cs]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*.xaml]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*.xml]
+indent_style = space
+indent_size = 4
+tab_width = 4

@@ -83,7 +83,7 @@ namespace XAMLMarkupExtensions.Base
                     RaisePropertyChanged("TypeName");
                 }
             }
-        } 
+        }
         #endregion
 
         /// <summary>
@@ -151,6 +151,18 @@ namespace XAMLMarkupExtensions.Base
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return false;
+        }
+
+        /// <summary>
+        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
+        /// </summary>
+        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
+        protected override bool WillUpdateOnEndpoint
+        {
+            get
+            {
+                return false;
+            }
         }
     }
 }
