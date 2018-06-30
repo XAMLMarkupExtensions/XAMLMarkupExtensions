@@ -40,10 +40,7 @@ namespace XAMLMarkupExtensions.Binding
         {
             UpdateNewValue();
 
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
         #endregion
 
@@ -55,7 +52,11 @@ namespace XAMLMarkupExtensions.Binding
         public object Source
         {
             get { return source; }
-            set { source = value; OnNotifyPropertyChanged("Source"); }
+            set
+            {
+                source = value;
+                OnNotifyPropertyChanged(nameof(Source));
+            }
         }
 
         private string path = null;
@@ -65,7 +66,11 @@ namespace XAMLMarkupExtensions.Binding
         public string Path
         {
             get { return path; }
-            set { path = value; OnNotifyPropertyChanged("Path"); }
+            set
+            {
+                path = value;
+                OnNotifyPropertyChanged(nameof(Path));
+            }
         }
 
         private IValueConverter converter = null;
@@ -75,7 +80,11 @@ namespace XAMLMarkupExtensions.Binding
         public IValueConverter Converter
         {
             get { return converter; }
-            set { converter = value; OnNotifyPropertyChanged("Converter"); }
+            set
+            {
+                converter = value;
+                OnNotifyPropertyChanged(nameof(Converter));
+            }
         }
 
         private object converterParameter = null;
@@ -85,7 +94,11 @@ namespace XAMLMarkupExtensions.Binding
         public object ConverterParameter
         {
             get { return converterParameter; }
-            set { converterParameter = value; OnNotifyPropertyChanged("ConverterParameter"); }
+            set
+            {
+                converterParameter = value;
+                OnNotifyPropertyChanged(nameof(ConverterParameter));                
+            }
         }
         #endregion
 
