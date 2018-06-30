@@ -25,7 +25,7 @@
     
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -48,17 +48,17 @@
   </ItemGroup>
 
   <Target Name="WriteVersion" AfterTargets="GetVersion">
-    <WriteLinesToFile File="$(SolutionDir)\obj\version.txt" Lines="$(GitVersion_NuGetVersion)" Overwrite="true" />
+    <WriteLinesToFile File="$(ProjectDir)\obj\version.txt" Lines="$(GitVersion_NuGetVersion)" Overwrite="true" />
   </Target>
   
   <Target Name="SetPackageVersionFromFile" BeforeTargets="GenerateNuspec">
-    <ReadLinesFromFile File="$(SolutionDir)\obj\version.txt">
+    <ReadLinesFromFile File="$(ProjectDir)\obj\version.txt">
       <Output TaskParameter="Lines" PropertyName="PackageVersion" />
     </ReadLinesFromFile>
   </Target>
 
   <!--<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
-    <ReadLinesFromFile File="$(SolutionDir)\..\..\nugetapikey.txt">
+    <ReadLinesFromFile File="$(ProjectDir)\..\..\nugetapikey.txt">
       <Output TaskParameter="Lines" PropertyName="NugetAPIKey" />
     </ReadLinesFromFile>
     <Exec WorkingDirectory="$(BaseDir)" Command="dotnet nuget push $(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg -k $(NugetAPIKey) -s https://api.nuget.org/v3/index.json" />

@@ -45,6 +45,5 @@ namespace XAMLMarkupExtensions.Base
                 return false;
             }
         }
-
     }
 }
