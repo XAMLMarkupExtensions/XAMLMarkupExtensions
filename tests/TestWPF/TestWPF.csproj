@@ -96,9 +96,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XAMLMarkupExtensions\WPFMarkupExtensions.csproj">
+    <ProjectReference Include="..\..\src\XAMLMarkupExtensions.csproj">
       <Project>{d6a34739-e9e5-4e5d-bcf2-e36fac2fce44}</Project>
-      <Name>WPFMarkupExtensions</Name>
+      <Name>XAMLMarkupExtensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

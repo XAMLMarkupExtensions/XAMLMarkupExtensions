@@ -1,62 +1,11 @@
 ﻿namespace TestWPF
-{
-    using XAMLMarkupExtensions.Base;
+{    
     using System.Windows;
     using System.Windows.Media;
     using System.Windows.Controls;
     using System.Windows.Markup;
     using System;
-    using System.Reflection;
-
-    public class AlternatingGridColorExtension : NestedMarkupExtension
-    {
-        public Color ColorEven { get; set; }
-        public Color ColorOdd { get; set; }
-
-        public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
-        {
-            // Check the correct type.
-            if (!typeof(Brush).IsAssignableFrom(info.TargetPropertyType))
-                return null;
-
-            // Create the default (even) brush.
-            SolidColorBrush brush = new SolidColorBrush(ColorEven);
-
-            // Check if we got an endpoint and if it is also a DependencyObject.
-            if (endPoint != null && endPoint.IsDependencyObject)
-            {
-                var depObject = (DependencyObject)endPoint.TargetObject;
-                var row = (int)depObject.GetValue(Grid.RowProperty);
-
-                // Check the odd row case and alter the brush.
-                if (row % 2 != 0)
-                    brush.Color = ColorOdd;
-            }
-
-            return brush;
-        }
-
-        protected override bool UpdateOnEndpoint(TargetInfo endpoint)
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// This property must return true, if the markup extension wants to update if an endpoint is reached independently of an path to an endpoint.
-        /// </summary>
-        /// <returns>True, if the markup extension wants to update if an endpoint is reached.</returns>
-        protected override bool WillUpdateOnEndpoint
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        public AlternatingGridColorExtension()
-        {
-        }
-    }
+    using System.Reflection; 
 
     public class AlternatingGridColorSimpleExtension : MarkupExtension
     {
