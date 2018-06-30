@@ -520,8 +520,8 @@ namespace XAMLMarkupExtensions.Base
             /// <summary>
             /// A dicitonary which contains a list of listeners per unique rootObject hash.
             /// </summary>
-            private static readonly Dictionary<int, List<WeakReference>> listeners = new Dictionary<int, List<WeakReference>>();
-            private static readonly object listenersLock = new object();
+            private static readonly Dictionary<int, List<WeakReference>> listeners;
+            private static readonly object listenersLock;
 
             /// <summary>
             /// Fire the event.
@@ -540,7 +540,7 @@ namespace XAMLMarkupExtensions.Base
                     foreach (var wr in listeners[rootObjectHashCode].ToList())
                     {
                         var targetReference = wr.Target;
-                        if (targetReference != null)
+                        if (targetReference is NestedMarkupExtension)
                             ((NestedMarkupExtension)targetReference).OnEndpointReached(sender, args);
                         else
                             listeners[rootObjectHashCode].Remove(wr);
@@ -657,6 +657,8 @@ namespace XAMLMarkupExtensions.Base
             /// </summary>
             static EndpointReachedEvent()
             {
+                listeners = new Dictionary<int, List<WeakReference>>();
+                listenersLock = new object();
             }
         }
         #endregion
