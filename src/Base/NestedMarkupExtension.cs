@@ -250,8 +250,7 @@ namespace XAMLMarkupExtensions.Base
                 targetObjects[wr].Add(tuple, targetPropertyType);
 
             // Sign up to the EndpointReachedEvent only if the markup extension wants to do so.
-            if (WillUpdateOnEndpoint)
-                EndpointReachedEvent.AddListener(rootObjectHashCode, this);
+            EndpointReachedEvent.AddListener(rootObjectHashCode, this);
 
             // Create the target info
             TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
@@ -447,15 +446,6 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="endpoint">Information on the specific endpoint.</param>
         /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
         protected abstract bool UpdateOnEndpoint(TargetInfo endpoint);
-
-        /// <summary>
-        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
-        /// </summary>
-        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
-        protected abstract bool WillUpdateOnEndpoint
-        {
-            get;
-        }
 
         /// <summary>
         /// Get the path to a specific endpoint.

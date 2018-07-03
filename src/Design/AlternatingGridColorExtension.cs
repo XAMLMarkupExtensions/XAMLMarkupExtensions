@@ -68,18 +68,6 @@ namespace XAMLMarkupExtensions.Design
         }
 
         /// <summary>
-        /// This property must return true, if the markup extension wants to update at all if an endpoint is reached.
-        /// </summary>
-        /// <returns>True, if the markup extension wants to update at all if an endpoint is reached.</returns>
-        protected override bool WillUpdateOnEndpoint
-        {
-            get
-            {
-                return true;
-            }
-        }
-
-        /// <summary>
         /// Creates a new instance.
         /// </summary>
         public AlternatingGridColorExtension()

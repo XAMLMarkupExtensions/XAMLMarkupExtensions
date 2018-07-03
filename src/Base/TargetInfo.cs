@@ -12,6 +12,7 @@ namespace XAMLMarkupExtensions.Base
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using System.Windows;
 
     /// <summary>
     /// This class stores information about a markup extension target.

@@ -23,10 +23,21 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>WPF markup extension nesting</PackageTags>
     
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>        
   </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(Configuration)' == 'Release'">
+      <PropertyGroup>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -47,20 +58,20 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
 
-  <Target Name="WriteVersion" AfterTargets="GetVersion">
-    <WriteLinesToFile File="$(ProjectDir)\obj\version.txt" Lines="$(GitVersion_NuGetVersion)" Overwrite="true" />
+  <Target Name="WriteVersion" AfterTargets="GetVersion" Condition="'$(PackageOutputAbsolutePath)' != ''">
+    <WriteLinesToFile File="$(PackageOutputAbsolutePath)\version.txt" Lines="$(GitVersion_NuGetVersion)" Overwrite="true" />  
   </Target>
   
   <Target Name="SetPackageVersionFromFile" BeforeTargets="GenerateNuspec">
-    <ReadLinesFromFile File="$(ProjectDir)\obj\version.txt">
+    <ReadLinesFromFile File="$(PackageOutputAbsolutePath)\version.txt">
       <Output TaskParameter="Lines" PropertyName="PackageVersion" />
-    </ReadLinesFromFile>
+    </ReadLinesFromFile>  
   </Target>
 
-  <!--<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
-    <ReadLinesFromFile File="$(ProjectDir)\..\..\nugetapikey.txt">
+  <Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec" Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')">
+    <!--<ReadLinesFromFile File="$(SolutionDir)\..\..\nugetapikey.txt">
       <Output TaskParameter="Lines" PropertyName="NugetAPIKey" />
-    </ReadLinesFromFile>
+    </ReadLinesFromFile>-->    
     <Exec WorkingDirectory="$(BaseDir)" Command="dotnet nuget push $(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg -k $(NugetAPIKey) -s https://api.nuget.org/v3/index.json" />
-  </Target>-->
+  </Target>
 </Project>

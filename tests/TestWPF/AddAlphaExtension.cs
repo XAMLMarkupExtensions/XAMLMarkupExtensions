@@ -29,14 +29,6 @@
             return false;
         }
 
-        protected override bool WillUpdateOnEndpoint
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public AddAlphaExtension()
         {
         }
