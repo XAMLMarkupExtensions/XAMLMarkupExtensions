@@ -24,6 +24,7 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
@@ -43,10 +44,27 @@
 
         <Label Grid.Row="5" Grid.Column="1" Content="Static Content" />
         <Label Grid.Row="6" Grid.Column="1" Content="Type Content" />
+        
+        <TabControl Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2">
+            <TabItem Header="Tab with Controls and Extensions">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
+                    <Label Grid.Row="1" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" />
+                    <ext:SleepTestUserControl Grid.Row="2" />
+                </Grid>
+            </TabItem>
+            
+            <TabItem Header="Tab without anything" />
+        </TabControl>
 
-        <Button Name="CreateNewSleepTestControlButton" Content="Create new SleepTestControl" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="7" Height="30" Click="CreateNewSleepTestControlButton_OnClick" />
-        <Button Name="RemoveLastSleepTestControlButton" Content="Remove last added SleepTestControl" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="8" Height="30" Click="RemoveLastSleepTestControlButton_OnClick" />
-        <ScrollViewer Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="9">
+        <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="Create new SleepTestControl" Height="30" Click="CreateNewSleepTestControlButton_OnClick" />
+        <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Content="Remove last added SleepTestControl" Height="30" Click="RemoveLastSleepTestControlButton_OnClick" />
+        <ScrollViewer Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" >
             <StackPanel Name="SleepTestStackPanel" />
         </ScrollViewer>
     </Grid>
