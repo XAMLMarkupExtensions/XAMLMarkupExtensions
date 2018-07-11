@@ -172,13 +172,19 @@ namespace XAMLMarkupExtensions.Base
                 // We only sign up once to the Window Closed event to clear the listeners list of root object.
                 if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
                 {
-                    if (rootObject.RootObject is Window)
+                    if (rootObject.RootObject is Window window)
                     {
-                        ((Window)rootObject.RootObject).Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                        window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
                     }
-                    else if (rootObject.RootObject is UserControl)
+                    else if (rootObject.RootObject is UserControl userControl)
                     {
-                        ((UserControl)rootObject.RootObject).Unloaded += delegate (object sender, RoutedEventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                        void userControlUnloadedHandler (object sender, RoutedEventArgs args)
+                        {
+                            userControl.Unloaded -= userControlUnloadedHandler;
+                            EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
+                        };
+
+                        userControl.Unloaded += userControlUnloadedHandler;
                     }
                 }
             }
