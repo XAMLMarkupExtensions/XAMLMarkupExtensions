@@ -176,15 +176,15 @@ namespace XAMLMarkupExtensions.Base
                     {
                         window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
                     }
-                    else if (rootObject.RootObject is UserControl userControl)
+                    else if (rootObject.RootObject is FrameworkElement frameworkElement)
                     {
-                        void userControlUnloadedHandler (object sender, RoutedEventArgs args)
+                        void frameworkElementUnloadedHandler (object sender, RoutedEventArgs args)
                         {
-                            userControl.Unloaded -= userControlUnloadedHandler;
+                            frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
                             EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
                         };
 
-                        userControl.Unloaded += userControlUnloadedHandler;
+                        frameworkElement.Unloaded += frameworkElementUnloadedHandler;
                     }
                 }
             }
