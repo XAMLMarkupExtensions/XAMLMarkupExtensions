@@ -37,5 +37,11 @@ namespace TestWPF
         {
             TimeTestStackPanel.Children.Clear();
         }
+
+        private void CreateNewMainWindowButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Show();
+        }
     }
 }

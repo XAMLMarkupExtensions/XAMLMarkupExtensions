@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Windows;
 
 namespace TestWPF
 {
@@ -15,11 +16,13 @@ namespace TestWPF
         {
             stopWatch = Stopwatch.StartNew();
             InitializeComponent();
+
+            Loaded += OnLoaded;
         }
 
-        private void SleepTestUserControl_OnLayoutUpdated(object sender, EventArgs e)
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (!loaded && (ActualHeight > 0 || ActualWidth > 0))
+            if (!loaded)
             {
                 loaded = true;
                 stopWatch.Stop();

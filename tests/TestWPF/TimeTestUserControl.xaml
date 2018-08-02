@@ -6,7 +6,7 @@
              xmlns:ext="clr-namespace:TestWPF"
              xmlns:n="http://xamlmarkupextensions.codeplex.com"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" LayoutUpdated="SleepTestUserControl_OnLayoutUpdated">
+             d:DesignHeight="450" d:DesignWidth="800" Loaded="OnLoaded">
     <Grid>
         <Label Name="TimeTest" Content="0 ms" Height="25" />
 
