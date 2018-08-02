@@ -1,29 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TestWPF
 {
     /// <summary>
-    /// Interaction logic for SleepTestUserControl.xaml
+    /// Interaction logic for TimeTestUserControl.xaml
     /// </summary>
-    public partial class SleepTestUserControl : UserControl
+    public partial class TimeTestUserControl
     {
         private bool loaded;
         private Stopwatch stopWatch;
 
-        public SleepTestUserControl()
+        public TimeTestUserControl()
         {
             stopWatch = Stopwatch.StartNew();
             InitializeComponent();

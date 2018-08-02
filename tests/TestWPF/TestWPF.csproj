@@ -54,9 +54,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AddAlphaSleepTestExtension.cs" />
-    <Compile Include="SleepTestUserControl.xaml.cs">
-      <DependentUpon>SleepTestUserControl.xaml</DependentUpon>
+    <Compile Include="TimeTestUserControl.xaml.cs">
+      <DependentUpon>TimeTestUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="TestUserControl.xaml.cs">
       <DependentUpon>TestUserControl.xaml</DependentUpon>
@@ -75,7 +74,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="SleepTestUserControl.xaml">
+    <Page Include="TimeTestUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

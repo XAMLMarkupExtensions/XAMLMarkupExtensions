@@ -1,41 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace TestWPF
 {
     /// <summary>
     /// Interaction logic for TestUserControl.xaml
     /// </summary>
-    public partial class TestUserControl : UserControl
+    public partial class TestUserControl
     {
         public TestUserControl()
         {
             InitializeComponent();
         }
 
-        private void CreateNewSleepTestControlButton_OnClick(object sender, RoutedEventArgs e)
+        private void CreateNewTimeTestUserControlButton_OnClick(object sender, RoutedEventArgs e)
         {
-            SleepTestStackPanel.Children.Add(new SleepTestUserControl());
+            TimeTestStackPanel.Children.Insert(0, new TimeTestUserControl());
         }
 
-        private void RemoveLastSleepTestControlButton_OnClick(object sender, RoutedEventArgs e)
+        private void CreateTenNewTimeTestUserControlsButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (SleepTestStackPanel.Children.Count > 0)
+            for (var i = 0; i < 10; i++)
             {
-                SleepTestStackPanel.Children.RemoveAt(SleepTestStackPanel.Children.Count - 1);
+                TimeTestStackPanel.Children.Insert(0, new TimeTestUserControl());
             }
+        }
+
+        private void RemoveLastAddedTimeTestUserControlButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (TimeTestStackPanel.Children.Count > 0)
+            {
+                TimeTestStackPanel.Children.RemoveAt(0);
+            }
+        }
+
+        private void RemoveAllTimeTestUserControlsButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            TimeTestStackPanel.Children.Clear();
         }
     }
 }

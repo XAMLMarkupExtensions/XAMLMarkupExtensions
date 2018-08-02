@@ -25,6 +25,8 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
@@ -55,17 +57,19 @@
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
                     <Label Grid.Row="1" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" />
-                    <ext:SleepTestUserControl Grid.Row="2" />
+                    <ext:TimeTestUserControl Grid.Row="2" />
                 </Grid>
             </TabItem>
             
             <TabItem Header="Tab without anything" />
         </TabControl>
 
-        <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="Create new SleepTestControl" Height="30" Click="CreateNewSleepTestControlButton_OnClick" />
-        <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Content="Remove last added SleepTestControl" Height="30" Click="RemoveLastSleepTestControlButton_OnClick" />
-        <ScrollViewer Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" >
-            <StackPanel Name="SleepTestStackPanel" />
+        <Button Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Content="Create new TimeTestUserControl" Height="30" Click="CreateNewTimeTestUserControlButton_OnClick" />
+        <Button Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Content="Create 10 new TimeTestUserControls" Height="30" Click="CreateTenNewTimeTestUserControlsButton_OnClick" />
+        <Button Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Content="Remove last added TimeTestUserControl" Height="30" Click="RemoveLastAddedTimeTestUserControlButton_OnClick" />
+        <Button Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Content="Remove all TimeTestUserControls" Height="30" Click="RemoveAllTimeTestUserControlsButton_OnClick" />
+        <ScrollViewer Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2" >
+            <StackPanel Name="TimeTestStackPanel" />
         </ScrollViewer>
     </Grid>
 </UserControl>
