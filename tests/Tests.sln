@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XAMLMarkupExtensions", "..\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWPF", "TestWPF\TestWPF.csproj", "{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWPF35", "TestWPF\TestWPF35.csproj", "{B83F78F4-7FA6-4A7D-8451-B374CAAB9681}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B83F78F4-7FA6-4A7D-8451-B374CAAB9681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B83F78F4-7FA6-4A7D-8451-B374CAAB9681}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B83F78F4-7FA6-4A7D-8451-B374CAAB9681}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B83F78F4-7FA6-4A7D-8451-B374CAAB9681}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

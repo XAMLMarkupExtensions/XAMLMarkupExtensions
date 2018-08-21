@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net452</TargetFrameworks>
+    <TargetFrameworks>net452;net40;net35</TargetFrameworks>
     <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
     <AssemblyName>XAMLMarkupExtensions</AssemblyName>
     <RootNamespace>XAMLMarkupExtensions</RootNamespace>
@@ -22,8 +21,8 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>WPF markup extension nesting</PackageTags>
-    
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>        
+
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <Choose>
@@ -45,23 +44,20 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Condition="'$(TargetFramework)' != 'net35'" Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    
+
     <PackageReference Include="GitVersionTask" Version="4.0.0-beta0008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-    
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net35' ">
-    <Reference Include="System.Xaml" />
   </ItemGroup>
 
   <Target Name="WriteVersion" AfterTargets="GetVersion" Condition="'$(PackageOutputAbsolutePath)' != ''">
     <WriteLinesToFile File="$(PackageOutputAbsolutePath)\version.txt" Lines="$(GitVersion_NuGetVersion)" Overwrite="true" />  
   </Target>
-  
+
   <Target Name="SetPackageVersionFromFile" BeforeTargets="GenerateNuspec">
     <ReadLinesFromFile File="$(PackageOutputAbsolutePath)\version.txt">
       <Output TaskParameter="Lines" PropertyName="PackageVersion" />
