@@ -15,8 +15,9 @@ namespace XAMLMarkupExtensions.Base
     using System.Linq;
     using System.Reflection;
     using System.Windows;
-    using System.Windows.Markup;   
+    using System.Windows.Markup;
 #if !NET35
+    using System.Windows.Controls;
     using System.Xaml;
 #endif
     #endregion
@@ -169,9 +170,22 @@ namespace XAMLMarkupExtensions.Base
                 rootObjectHashCode = rootObject.RootObject.GetHashCode();
 
                 // We only sign up once to the Window Closed event to clear the listeners list of root object.
-                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode) && rootObject.RootObject is Window)
+                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
                 {
-                    ((Window)rootObject.RootObject).Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                    if (rootObject.RootObject is Window window)
+                    {
+                        window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                    }
+                    else if (rootObject.RootObject is FrameworkElement frameworkElement)
+                    {
+                        void frameworkElementUnloadedHandler (object sender, RoutedEventArgs args)
+                        {
+                            frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
+                            EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
+                        };
+
+                        frameworkElement.Unloaded += frameworkElementUnloadedHandler;
+                    }
                 }
             }
 #endif

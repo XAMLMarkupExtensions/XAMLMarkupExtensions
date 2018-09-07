@@ -6,36 +6,6 @@
         xmlns:p="clr-namespace:TestWPF.Properties"
         Title="MainWindow" SizeToContent="WidthAndHeight">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <Label Grid.Row="0" Grid.Column="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-        <Label Grid.Row="1" Grid.Column="0" Content="2nd Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-        <Label Grid.Row="2" Grid.Column="0" Content="3rd Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-        <Label Grid.Row="3" Grid.Column="0" Content="4th Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-        <Label Grid.Row="4" Grid.Column="0" Content="5th Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-
-        <Label Grid.Row="5" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" />
-        <Label Grid.Row="6" Content="{n:Type p:Settings}" />
-        
-        <Label Grid.Row="0" Grid.Column="1" Content="1st Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="1" Grid.Column="1" Content="2nd Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="2" Grid.Column="1" Content="3rd Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="3" Grid.Column="1" Content="4th Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="4" Grid.Column="1" Content="5th Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-
-        <Label Grid.Row="5" Grid.Column="1" Content="Static Content" />
-        <Label Grid.Row="6" Grid.Column="1" Content="Type Content" />
+        <ext:TestUserControl />
     </Grid>
 </Window>
