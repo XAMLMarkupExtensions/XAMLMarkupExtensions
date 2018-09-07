@@ -13,9 +13,9 @@
     <Company />
     <Product>XAML Markup Extensions</Product>    
     <Authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</Authors>
-    <RepositoryUrl>https://github.com/konne/XAMLMarkupExtensions.git</RepositoryUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/konne/XAMLMarkupExtensions/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/konne/XAMLMarkupExtensions</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions.git</RepositoryUrl>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/XAMLMarkupExtensions/XAMLMarkupExtensions/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions</PackageProjectUrl>
     <Copyright>Uwe Mayer, Konrad Mattheis, Bernhard Millauer</Copyright>
     <Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5 and 4.x.</Description>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -69,9 +69,9 @@
   </Target>
 
   <Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec" Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')">
-    <!--<ReadLinesFromFile File="$(SolutionDir)\..\..\nugetapikey.txt">
+    <ReadLinesFromFile File="$(SolutionDir)\..\..\nugetapikey.txt">
       <Output TaskParameter="Lines" PropertyName="NugetAPIKey" />
-    </ReadLinesFromFile>-->    
+    </ReadLinesFromFile>    
     <Exec WorkingDirectory="$(BaseDir)" Command="dotnet nuget push $(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg -k $(NugetAPIKey) -s https://api.nuget.org/v3/index.json" />
   </Target>
 </Project>

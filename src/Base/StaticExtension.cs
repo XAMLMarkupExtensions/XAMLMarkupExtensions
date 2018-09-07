@@ -33,8 +33,7 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="propertyName">The name of the property that changed.</param>
         protected void RaisePropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
 
@@ -51,7 +50,7 @@ namespace XAMLMarkupExtensions.Base
                 if (memberType != value)
                 {
                     memberType = value;
-                    RaisePropertyChanged("MemberType");
+                    RaisePropertyChanged(nameof(MemberType));
                 }
             }
         }
@@ -68,7 +67,7 @@ namespace XAMLMarkupExtensions.Base
                 if (member != value)
                 {
                     member = value;
-                    RaisePropertyChanged("Member");
+                    RaisePropertyChanged(nameof(Member));
                 }
             }
         }
@@ -85,7 +84,7 @@ namespace XAMLMarkupExtensions.Base
                 if (result != value)
                 {
                     result = value;
-                    RaisePropertyChanged("Result");
+                    RaisePropertyChanged(nameof(Result));
                 }
             }
         }
