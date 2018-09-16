@@ -182,7 +182,7 @@ namespace XAMLMarkupExtensions.Base
                         {
                             frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
                             EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
-                        };
+                        }
 
                         frameworkElement.Unloaded += frameworkElementUnloadedHandler;
                     }
