@@ -1,9 +1,7 @@
 # XAML Markup Extensions for WPF
 
 [![Nuget](https://img.shields.io/nuget/v/XAMLMarkupExtensions.svg)](https://www.nuget.org/packages/SerApi)
-[![CodeFactor](https://www.codefactor.io/repository/github/konne/xamlmarkupextensions/badge)](https://www.codefactor.io/repository/github/konne/xamlmarkupextensions)
-DEVEL:
-[![CodeFactor](https://www.codefactor.io/repository/github/konne/xamlmarkupextensions/badge/development)](https://www.codefactor.io/repository/github/konne/xamlmarkupextensions/overview/development)
+[![CodeFactor](https://www.codefactor.io/repository/github/xamlmarkupextensions/xamlmarkupextensions/badge/master)](https://www.codefactor.io/repository/github/xamlmarkupextensions/xamlmarkupextensions/overview/master)
 
 The aim of this project is to improve the capabilities of XAML code while keeping an eye on a good XAML code readability. This covers the developement of useful XAML markup extensions for Silverlight (SL) and the Windows Presentation Framework (WPF) as well as helper classes to extend their scope of operation.
 
