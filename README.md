@@ -1,54 +1,24 @@
-# XAML Markup Extensions for WPF #
+# XAML Markup Extensions for WPF
 
-## Key features ##
+[![Nuget](https://img.shields.io/nuget/v/XAMLMarkupExtensions.svg)](https://www.nuget.org/packages/SerApi)
+[![CodeFactor](https://www.codefactor.io/repository/github/xamlmarkupextensions/xamlmarkupextensions/badge/master)](https://www.codefactor.io/repository/github/xamlmarkupextensions/xamlmarkupextensions/overview/master)
+
+The aim of this project is to improve the capabilities of XAML code while keeping an eye on a good XAML code readability. This covers the developement of useful XAML markup extensions for Silverlight (SL) and the Windows Presentation Framework (WPF) as well as helper classes to extend their scope of operation.
+
+This project is and will be free for everyone to use. This also implies that any contribution to it is welcome. Thus, feel free to create your own fork on GitHub (refer to links section below).
+
+## Key features
 
 * Full support of nested markup extensions
 * A couple of interesting markup extensions
 * Multiple UI threads
 
-## Content ##
+## [Content](docs/content.md)
 
-### XAMLMarkupExtensions.Base ###
-
-* INestedMarkupExtension:
-  Interface that has to be implemented to add the nesting feature to other classes derived from MarkupExtension.
-
-* NestedMarkupExtension:
-  A default implementation of the INestedMarkupExtension interface. We suggest to use this class to design nestable markup extensions.
-
-* ObjectDependencyManager and SimpleProvideValueServiceProvider:
-  Internal used helper classes.
-
-* ParentChangedNotifier:
-  Helper class for changes on the Parent property of FrameworkElement objects.
-  
-* Type, Static & Null extension (known from WPF)
-
-### XAMLMarkupExtensions.Binding ###
-
-* DynBindingExtension:
-  A markup extension that can change the source and/or path of a binding.
-
-* BindingProxy:
-  Internal used helper class.
-
-### XAMLMarkupExtensions.Strings ###
-
-* CatExtension:
-  Concatenate strings coming from various sources.
-
-### XAMLMarkupExtensions.Design ###
-
-* AlternatingGridColorExtension:
-  Return a specific color for odd and even rows in grids.
-
-To Be Continued...
-(contributions are welcome)
-
-## NuGet Package ##
+## NuGet Package
 
 https://www.nuget.org/packages/XAMLMarkupExtensions
 
-## License ##
+## License
 
-[MS-PL](https://github.com/MrCircuit/XAMLMarkupExtensions/blob/master/LICENSE)
+[MS-PL](https://github.com/konne/XAMLMarkupExtensions/blob/master/LICENSE)
