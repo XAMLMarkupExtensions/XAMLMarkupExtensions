@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
 
-    <PackageReference Include="GitVersionTask" Version="4.0.0-beta0014">
+    <PackageReference Include="GitVersionTask" Version="4.0.1-beta1-13">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
