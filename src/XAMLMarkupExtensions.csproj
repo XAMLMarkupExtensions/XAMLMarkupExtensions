@@ -23,6 +23,10 @@
     <PackageTags>WPF markup extension nesting</PackageTags>
 
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <Choose>
@@ -49,9 +53,8 @@
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
 
-    <PackageReference Include="GitVersionTask" Version="4.0.0-beta0014">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="GitVersionTask" Version="4.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
   </ItemGroup>
 
   <Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec" Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')">
