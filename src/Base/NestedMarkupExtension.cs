@@ -326,8 +326,13 @@ namespace XAMLMarkupExtensions.Base
                 // Get the own formatted output.
                 object output = FormatOutput(targetPath.EndPoint, info);
 
-                // Set the property of the target to the new value.
-                SetPropertyValue(output, info, false);
+                var target = targetPath.EndPoint.TargetObject as DependencyObject;
+                if (target == null ||
+                    !target.IsSealed)
+                {
+                    // Set the property of the target to the new value.
+                    SetPropertyValue(output, info, false);
+                }
 
                 // Have we reached the endpoint?
                 // If not, call the UpdateNewValue function of the next ITargetMarkupExtension
@@ -374,7 +379,12 @@ namespace XAMLMarkupExtensions.Base
                     return;
                 }
 
-                pi.SetValue(info.TargetObject, value, null);
+                var target = info.TargetObject as DependencyObject;
+                if (target == null ||
+                    !target.IsSealed)
+                {
+                    pi.SetValue(info.TargetObject, value, null);
+                }
             }
         }
 
