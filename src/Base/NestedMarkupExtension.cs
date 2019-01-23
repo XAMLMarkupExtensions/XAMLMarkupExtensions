@@ -326,7 +326,7 @@ namespace XAMLMarkupExtensions.Base
                 // Get the own formatted output.
                 object output = FormatOutput(targetPath.EndPoint, info);
 
-                var target = targetPath.EndPoint.TargetObject as TriggerBase;
+                var target = targetPath.EndPoint.TargetObject as DependencyObject;
                 if (target == null ||
                     !target.IsSealed)
                 {
@@ -379,7 +379,7 @@ namespace XAMLMarkupExtensions.Base
                     return;
                 }
 
-                var target = info.TargetObject as TriggerBase;
+                var target = info.TargetObject as DependencyObject;
                 if (target == null ||
                     !target.IsSealed)
                 {
