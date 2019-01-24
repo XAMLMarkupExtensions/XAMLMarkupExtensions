@@ -8,11 +8,13 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Windows;
+    #endregion
 
     /// <summary>
     /// This class stores information about a markup extension target.

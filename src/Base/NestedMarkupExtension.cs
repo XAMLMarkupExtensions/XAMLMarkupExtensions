@@ -32,7 +32,7 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// Holds the collection of assigned dependency objects as WeakReferences
         /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
-        /// 
+        ///
         /// The values are lists of tuples, containing the target property and property type.
         /// </summary>
         private readonly Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>> targetObjects = new Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>>();
@@ -178,7 +178,7 @@ namespace XAMLMarkupExtensions.Base
                     }
                     else if (rootObject.RootObject is FrameworkElement frameworkElement)
                     {
-                        void frameworkElementUnloadedHandler (object sender, RoutedEventArgs args)
+                        void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
                         {
                             frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
                             EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);

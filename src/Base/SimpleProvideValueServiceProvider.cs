@@ -8,8 +8,10 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.Windows.Markup;
+    #endregion
 
     /// <summary>
     /// This class implements the interfaces IServiceProvider and IProvideValueTarget for ProvideValue calls on markup extensions.

@@ -8,10 +8,12 @@
 
 namespace XAMLMarkupExtensions.Design
 {
+    #region Usings
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
     using XAMLMarkupExtensions.Base;
+    #endregion
 
     /// <summary>
     /// A design extension with alternating grid colors.

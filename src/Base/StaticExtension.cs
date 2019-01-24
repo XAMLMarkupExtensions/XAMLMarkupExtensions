@@ -8,10 +8,12 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.ComponentModel;
     using System.Reflection;
     using System.Windows.Markup;
+    #endregion
 
     /// <summary>
     /// A static extension.
