@@ -356,6 +356,12 @@ namespace XAMLMarkupExtensions.Base
             if ((value == null) && !forceNull)
                 return;
 
+            if (info.TargetObject is DependencyObject depObject)
+            {
+                if (depObject.IsSealed)
+                    return;
+            }
+
             // Anyway, a value type cannot receive null values...
             if (info.TargetPropertyType.IsValueType && (value == null))
                 value = Activator.CreateInstance(info.TargetPropertyType);
@@ -379,12 +385,7 @@ namespace XAMLMarkupExtensions.Base
                     return;
                 }
 
-                var target = info.TargetObject as DependencyObject;
-                if (target == null ||
-                    !target.IsSealed)
-                {
-                    pi.SetValue(info.TargetObject, value, null);
-                }
+                pi.SetValue(info.TargetObject, value, null);
             }
         }
 
