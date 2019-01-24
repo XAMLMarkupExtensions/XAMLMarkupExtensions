@@ -33,3 +33,5 @@ _ReSharper*/
 *Signed*
 *.nupkg
 *.vs
+
+fullkey.snk
