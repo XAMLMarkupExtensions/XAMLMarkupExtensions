@@ -390,8 +390,13 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The value.</returns>
         public static object GetPropertyValue(TargetInfo info)
         {
-            if (info.TargetProperty is DependencyProperty)
-                return ((DependencyObject)info.TargetObject).GetValueSync<object>((DependencyProperty)info.TargetProperty);
+            if (info.TargetProperty is DependencyProperty tP)
+            {
+                if (info.TargetObject is DependencyObject tO)
+                    return tO.GetValueSync<object>(tP);
+                else
+                    return null;
+            }
             else if (info.TargetProperty is PropertyInfo pi)
             {
                 if (info.TargetPropertyIndex >= 0)
