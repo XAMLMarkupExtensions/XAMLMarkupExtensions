@@ -321,13 +321,8 @@ namespace XAMLMarkupExtensions.Base
                 // Get the own formatted output.
                 object output = FormatOutput(targetPath.EndPoint, info);
 
-                var target = targetPath.EndPoint.TargetObject as DependencyObject;
-                if (target == null ||
-                    !target.IsSealed)
-                {
-                    // Set the property of the target to the new value.
-                    SetPropertyValue(output, info, false);
-                }
+                // Set the property of the target to the new value.
+                SetPropertyValue(output, info, false);
 
                 // Have we reached the endpoint?
                 // If not, call the UpdateNewValue function of the next ITargetMarkupExtension
@@ -350,6 +345,12 @@ namespace XAMLMarkupExtensions.Base
         {
             if ((value == null) && !forceNull)
                 return;
+
+            if (info.TargetObject is DependencyObject depObject)
+            {
+                if (depObject.IsSealed)
+                    return;
+            }
 
             // Anyway, a value type cannot receive null values...
             if (info.TargetPropertyType.IsValueType && (value == null))
@@ -374,12 +375,7 @@ namespace XAMLMarkupExtensions.Base
                     return;
                 }
 
-                var target = info.TargetObject as DependencyObject;
-                if (target == null ||
-                    !target.IsSealed)
-                {
-                    pi.SetValue(info.TargetObject, value, null);
-                }
+                pi.SetValue(info.TargetObject, value, null);
             }
         }
 
