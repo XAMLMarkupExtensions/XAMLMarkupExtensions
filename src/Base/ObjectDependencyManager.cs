@@ -26,8 +26,8 @@ namespace XAMLMarkupExtensions.Base
         private static Dictionary<object, List<WeakReference>> internalList;
 
         /// <summary>
-        /// Initializes static members of the <see cref="ObjectDependencyManager"/> class. 
-        /// Static Constructor. Creates a new instance of 
+        /// Initializes static members of the <see cref="ObjectDependencyManager"/> class.
+        /// Static Constructor. Creates a new instance of
         /// Dictionary(object, <see cref="WeakReference"/>) and set it to the <see cref="internalList"/>.
         /// </summary>
         static ObjectDependencyManager()

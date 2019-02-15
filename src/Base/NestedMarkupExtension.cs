@@ -32,7 +32,7 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// Holds the collection of assigned dependency objects as WeakReferences
         /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
-        /// 
+        ///
         /// The values are lists of tuples, containing the target property and property type.
         /// </summary>
         private readonly Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>> targetObjects = new Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>>();
@@ -150,18 +150,15 @@ namespace XAMLMarkupExtensions.Base
             OnServiceProviderChanged(serviceProvider);
 
             // Try to cast the passed serviceProvider to a IProvideValueTarget
-            IProvideValueTarget service = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
-
             // If the cast fails, return this
-            if (service == null)
+            if (!(serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget service))
                 return this;
 
 #if NET35
             rootObjectHashCode = 0;
 #else
             // Try to cast the passed serviceProvider to a IRootObjectProvider and if the cast fails return null
-            IRootObjectProvider rootObject = serviceProvider.GetService(typeof(IRootObjectProvider)) as IRootObjectProvider;
-            if (rootObject == null)
+            if (!(serviceProvider.GetService(typeof(IRootObjectProvider)) is IRootObjectProvider rootObject))
             {
                 rootObjectHashCode = 0;
             }
@@ -178,7 +175,7 @@ namespace XAMLMarkupExtensions.Base
                     }
                     else if (rootObject.RootObject is FrameworkElement frameworkElement)
                     {
-                        void frameworkElementUnloadedHandler (object sender, RoutedEventArgs args)
+                        void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
                         {
                             frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
                             EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
@@ -208,18 +205,16 @@ namespace XAMLMarkupExtensions.Base
             }
             else
             {
-                if (targetProperty is PropertyInfo)
+                if (targetProperty is PropertyInfo pi)
                 {
-                    PropertyInfo pi = (PropertyInfo)targetProperty;
                     targetPropertyType = pi.PropertyType;
 
                     // Kick out indexers.
                     if (pi.GetIndexParameters().Any())
                         throw new InvalidOperationException("Indexers are not supported!");
                 }
-                else if (targetProperty is DependencyProperty)
+                else if (targetProperty is DependencyProperty dp)
                 {
-                    DependencyProperty dp = (DependencyProperty)targetProperty;
                     targetPropertyType = dp.PropertyType;
                 }
                 else
@@ -351,6 +346,12 @@ namespace XAMLMarkupExtensions.Base
             if ((value == null) && !forceNull)
                 return;
 
+            if (info.TargetObject is DependencyObject depObject)
+            {
+                if (depObject.IsSealed)
+                    return;
+            }
+
             // Anyway, a value type cannot receive null values...
             if (info.TargetPropertyType.IsValueType && (value == null))
                 value = Activator.CreateInstance(info.TargetPropertyType);
@@ -385,12 +386,15 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The value.</returns>
         public static object GetPropertyValue(TargetInfo info)
         {
-            if (info.TargetProperty is DependencyProperty)
-                return ((DependencyObject)info.TargetObject).GetValueSync<object>((DependencyProperty)info.TargetProperty);
-            else if (info.TargetProperty is PropertyInfo)
+            if (info.TargetProperty is DependencyProperty tP)
             {
-                PropertyInfo pi = (PropertyInfo)info.TargetProperty;
-
+                if (info.TargetObject is DependencyObject tO)
+                    return tO.GetValueSync<object>(tP);
+                else
+                    return null;
+            }
+            else if (info.TargetProperty is PropertyInfo pi)
+            {
                 if (info.TargetPropertyIndex >= 0)
                 {
                     if (typeof(IList).IsAssignableFrom(info.TargetPropertyType))
@@ -401,7 +405,7 @@ namespace XAMLMarkupExtensions.Base
                     }
                 }
 
-                return ((PropertyInfo)info.TargetProperty).GetValue(info.TargetObject, null);
+                return pi.GetValue(info.TargetObject, null);
             }
 
             return null;

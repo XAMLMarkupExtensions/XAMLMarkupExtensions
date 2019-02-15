@@ -9,10 +9,12 @@
 namespace XAMLMarkupExtensions.Base
 {
 #if NET35
+    #region Usings
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    #endregion
 
     /// <summary>
     /// A simple Tuple class for .NET3.5

@@ -8,10 +8,12 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    #endregion
 
     /// <summary>
     /// This class helps tracking the path to a specific endpoint.

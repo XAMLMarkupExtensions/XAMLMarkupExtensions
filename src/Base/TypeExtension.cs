@@ -8,9 +8,11 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.ComponentModel;
     using System.Windows.Markup;
+    #endregion
 
     /// <summary>
     /// A type extension.

@@ -8,8 +8,10 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.Windows;
+    #endregion
 
     /// <summary>
     /// Extension methods for dependency objects.

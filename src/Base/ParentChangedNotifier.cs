@@ -6,14 +6,15 @@
 // <author>Uwe Mayer</author>
 #endregion
 
-using System.Linq;
-
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Data;
+    #endregion
 
     /// <summary>
     /// A class that helps listening to changes on the Parent property of FrameworkElement objects.
