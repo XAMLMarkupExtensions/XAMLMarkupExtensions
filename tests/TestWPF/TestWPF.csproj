@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>net452;net40;net35</TargetFrameworks>
+    <TargetFrameworks>net452;net40;net35;netcoreapp3.0</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <StartupObject />
     <Authors />
     <Copyright>Copyright ©  2012</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <UseWpf>True</UseWpf>
   </PropertyGroup>
 
   <!-- This is necessary, otherwise it'll default to x86 at least if OutputType is WinExe -->
@@ -14,31 +15,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Condition="'$(TargetFramework)' != 'net35'" Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-
     <ProjectReference Include="..\..\src\XAMLMarkupExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- App.xaml -->
-    <ApplicationDefinition Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
-
-    <!-- XAML elements -->
-    <Page Include="**\*.xaml" Exclude="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
-    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
-
     <!-- Properties\Resources.resx -->
     <EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
     <Compile Update="Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
 
     <!-- Properties\Settings.settings -->
-    <None Update="Properties\Settings.settings" Generator="SettingsSingleFileGenerator" LastGenOutput="Settings.Designer.cs" />
-    <Compile Update="Properties\Settings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Settings.settings" />
+    <None Update="Properties\Settings.settings" Generator="PublicSettingsSingleFileGenerator" LastGenOutput="Settings.Designer.cs" />
+    <Compile Update="Properties\Settings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Settings.settings">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
 </Project>
