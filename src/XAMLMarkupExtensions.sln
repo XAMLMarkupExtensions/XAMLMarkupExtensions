@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XAMLMarkupExtensions", "XAMLMarkupExtensions.csproj", "{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}"
 EndProject
@@ -25,16 +25,6 @@ Global
 		{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}.Release|x86.ActiveCfg = Release|Any CPU
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|x86.ActiveCfg = Debug|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|x86.Build.0 = Debug|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Any CPU.ActiveCfg = Release|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Mixed Platforms.Build.0 = Release|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|x86.ActiveCfg = Release|x86
-		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
