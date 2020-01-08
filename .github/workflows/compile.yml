@@ -16,7 +16,9 @@ jobs:
 
     - name: MSBuild
       working-directory: src
-      run: msbuild XAMLMarkupExtensions.csproj
+      run:
+        dotnet restore --disable-parallel --configuration Release
+        msbuild XAMLMarkupExtensions.csproj
 #    - name: Build with dotnet
 #      run: |
 #        cd src
