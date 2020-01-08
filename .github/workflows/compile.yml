@@ -9,4 +9,5 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build with dotnet
+      run: cd src
       run: dotnet build --configuration Debug
