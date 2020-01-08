@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net452;net40;net35;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <UseWPF>True</UseWPF>
-    <AutoGenerateBindingRedirects Condition="$(!TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
+    <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
     <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
 		<AssemblyName>XAMLMarkupExtensions</AssemblyName>
 		<RootNamespace>XAMLMarkupExtensions</RootNamespace>
@@ -47,7 +47,7 @@
 	</Choose>
   
   <!--References for .Net Framwork 4 and 35-->
-	<ItemGroup Condition="$(!TargetFramework.StartsWith('netcore')))">
+	<ItemGroup Condition="!$(TargetFramework.StartsWith('netcore'))">
 		<Reference Include="PresentationCore" />
 		<Reference Include="PresentationFramework" />
 		<Reference Include="System" />
