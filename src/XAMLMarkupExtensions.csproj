@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net452;net40;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net452;net40;net35;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <UseWPF>True</UseWPF>
     <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
     <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
