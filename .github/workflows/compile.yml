@@ -8,7 +8,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: Build with dotnet
-      run: |
-        cd src
-        dotnet build --disable-parallel --configuration Release
+
+    - uses: actions/checkout@master
+
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+
+    - name: MSBuild
+      working-directory: src
+      run: msbuild XAMLMarkupExtensions.csproj
+#    - name: Build with dotnet
+#      run: |
+#        cd src
+#        dotnet build --disable-parallel --configuration Release
