@@ -11,4 +11,4 @@ jobs:
     - name: Build with dotnet
       run: |
         cd src
-        dotnet build --configuration Debug
+        dotnet build --disable-parallel --configuration Debug
