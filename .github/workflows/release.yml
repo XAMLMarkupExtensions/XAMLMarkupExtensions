@@ -1,0 +1,25 @@
+name: Build and Publish Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - uses: actions/checkout@master
+
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
+
+    - name: MSBuild
+      working-directory: src
+      run: |
+        dotnet restore --disable-parallel
+        # can't use pure dotnet build because NET35 compile doesn't work
+        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}"
