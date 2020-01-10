@@ -8,6 +8,7 @@ on:
 jobs:
   pre:
     runs-on: windows-latest
+    steps:
     - name: Dump GitHub context
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
