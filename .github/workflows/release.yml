@@ -6,13 +6,6 @@ on:
       - created
 
 jobs:
-  pre:
-    runs-on: windows-latest
-    steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: echo "$GITHUB_CONTEXT"
   build:
     runs-on: windows-latest
     if: github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/tags/') && contains(github.ref,'-alpha'))
