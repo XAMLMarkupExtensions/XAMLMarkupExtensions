@@ -17,6 +17,9 @@ jobs:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
         echo "$GITHUB_CONTEXT"
+
+    - name: Dump GitHub Ref
+      run: 
         echo ${GITHUB_REF##*/}
         echo ${GITHUB_REF}
 
