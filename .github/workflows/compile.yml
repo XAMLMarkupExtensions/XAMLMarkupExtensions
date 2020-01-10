@@ -17,7 +17,7 @@ jobs:
         fetch-depth: 0
     - name: Fetch all history for all tags and branches
       run: |
-        git fetch --prune --unshallow
+        git fetch --prune
 
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
