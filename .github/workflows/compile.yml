@@ -28,7 +28,6 @@ jobs:
         dotnet restore --disable-parallel
         # can't use pure dotnet build because NET35 compile doesn't work
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
-        # /property:NugetAPIKey=${{ secrets.NugetAPIKey }}"
 #    - name: Build with dotnet
 #      run: |
 #        cd src

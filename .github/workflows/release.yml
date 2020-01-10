@@ -6,9 +6,15 @@ on:
       - created
 
 jobs:
+  pre:
+    runs-on: windows-latest
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
   build:
     runs-on: windows-latest
-
+    if: github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/tags/') && contains(github.ref,'-alpha'))
     steps:
     - uses: actions/checkout@v2
       with:
@@ -25,4 +31,5 @@ jobs:
       run: |
         dotnet restore --disable-parallel
         # can't use pure dotnet build because NET35 compile doesn't work
-        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
+        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release 
+        #/property:NugetAPIKey=${{ secrets.NugetAPIKey }}
