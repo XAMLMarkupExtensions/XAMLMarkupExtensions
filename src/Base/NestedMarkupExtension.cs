@@ -49,16 +49,26 @@ namespace XAMLMarkupExtensions.Base
         private List<TargetInfo> GetTargetObjectsAndProperties()
         {
             List<TargetInfo> list = new List<TargetInfo>();
+            List<WeakReference> deadWeakReferences = new List<WeakReference>();
 
             // Select all targets that are still alive.
             foreach (var target in targetObjects)
             {
                 var targetReference = target.Key.Target;
                 if (targetReference == null)
+                {
+                    deadWeakReferences.Add(target.Key);
                     continue;
+                }
 
                 list.AddRange(from kvp in target.Value
-                              select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
+                    select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
+            }
+ 
+            // Remove all dead references.
+            foreach (var deadWeakReference in deadWeakReferences)
+            {
+                targetObjects.Remove(deadWeakReference);
             }
 
             return list;
