@@ -19,7 +19,7 @@ jobs:
         echo "$GITHUB_CONTEXT"
 
     - name: Dump GitHub Ref
-      run: 
+      run:
         echo ${GITHUB_REF##*/}
         echo ${GITHUB_REF}
 
