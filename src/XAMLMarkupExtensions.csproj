@@ -31,6 +31,8 @@
 		<AssemblyOriginatorKeyFile>public.snk</AssemblyOriginatorKeyFile>
     <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
     <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
+
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
   
 	<Choose>

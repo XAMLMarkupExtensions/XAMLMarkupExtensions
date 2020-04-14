@@ -33,10 +33,18 @@ jobs:
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
 
+    - name: Cache Nuget
+    - uses: actions/cache@v1
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+      
     - name: MSBuild
       working-directory: src
       run: |
-        dotnet restore --disable-parallel
+        dotnet restore --disable-parallel --locked-mode
         # can't use pure dotnet build because NET35 compile doesn't work
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
 #    - name: Build with dotnet
