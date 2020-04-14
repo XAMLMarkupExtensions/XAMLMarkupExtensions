@@ -33,7 +33,7 @@ jobs:
         git fetch --prune
 
     - name: Setup MSBuild.exe
-      uses: warrenbuckley/Setup-MSBuild@v1
+      uses: microsoft/setup-msbuild@v1.0.0
 
     - name: Cache Nuget
       uses: actions/cache@v1
