@@ -23,9 +23,11 @@ jobs:
         echo ${GITHUB_REF##*/}
         echo ${GITHUB_REF}
 
-    - uses: actions/checkout@v2
+    - name: checkout
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
+
     - name: Fetch all history for all tags and branches
       run: |
         git fetch --prune
@@ -34,13 +36,13 @@ jobs:
       uses: warrenbuckley/Setup-MSBuild@v1
 
     - name: Cache Nuget
-    - uses: actions/cache@v1
+      uses: actions/cache@v1
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
-      
+
     - name: MSBuild
       working-directory: src
       run: |
