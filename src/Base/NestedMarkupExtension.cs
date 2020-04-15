@@ -33,7 +33,7 @@ namespace XAMLMarkupExtensions.Base
         ///
         /// The values are lists of tuples, containing the target property and property type.
         /// </summary>
-        private readonly Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>> targetObjects = new Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>>();
+        private readonly TargetObjectsDictionary targetObjects = new TargetObjectsDictionary();
 
         /// <summary>
         /// Holds the markup extensions root object hash code.
@@ -46,30 +46,10 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>A list of target objects.</returns>
         private List<TargetInfo> GetTargetObjectsAndProperties()
         {
-            List<TargetInfo> list = new List<TargetInfo>();
-            List<WeakReference> deadWeakReferences = new List<WeakReference>();
+            var result = targetObjects.GetTargetInfos().ToList();
+            targetObjects.ClearDeadReferences();
 
-            // Select all targets that are still alive.
-            foreach (var target in targetObjects)
-            {
-                var targetReference = target.Key.Target;
-                if (targetReference == null)
-                {
-                    deadWeakReferences.Add(target.Key);
-                    continue;
-                }
-
-                list.AddRange(from kvp in target.Value
-                    select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
-            }
- 
-            // Remove all dead references.
-            foreach (var deadWeakReference in deadWeakReferences)
-            {
-                targetObjects.Remove(deadWeakReference);
-            }
-
-            return list;
+            return result;
         }
 
         /// <summary>
@@ -123,16 +103,7 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>True, if a connection exits.</returns>
         public bool IsConnected(TargetInfo info)
         {
-            WeakReference wr = (from kvp in targetObjects
-                                where kvp.Key.Target == info.TargetObject
-                                select kvp.Key).FirstOrDefault();
-
-            if (wr == null)
-                return false;
-
-            Tuple<object, int> tuple = new Tuple<object, int>(info.TargetProperty, info.TargetPropertyIndex);
-
-            return targetObjects[wr].ContainsKey(tuple);
+            return targetObjects.IsConnected(info);
         }
 
         /// <summary>
@@ -236,10 +207,7 @@ namespace XAMLMarkupExtensions.Base
                 return null;
 
             // Search for the target in the target object list
-            WeakReference wr = (from kvp in targetObjects
-                                where kvp.Key.Target == targetObject
-                                select kvp.Key).FirstOrDefault();
-
+            WeakReference wr = targetObjects.TryFindKey(targetObject);
             if (wr == null)
             {
                 // If it's the first object, call the appropriate action
@@ -248,18 +216,15 @@ namespace XAMLMarkupExtensions.Base
                     OnFirstTarget?.Invoke();
                 }
 
-                // Add the target as a WeakReference to the target object list
-                wr = new WeakReference(targetObject);
-                targetObjects.Add(wr, new Dictionary<Tuple<object, int>, Type>());
+                // Add to the target object list
+                wr = targetObjects.AddTargetObject(targetObject);
 
                 // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
                 ObjectDependencyManager.AddObjectDependency(wr, this);
             }
 
             // Finally, add the target prop and info to the list of this WeakReference
-            Tuple<object, int> tuple = new Tuple<object, int>(targetProperty, targetPropertyIndex);
-            if (!targetObjects[wr].ContainsKey(tuple))
-                targetObjects[wr].Add(tuple, targetPropertyType);
+            targetObjects.AddTargetObjectProperty(wr, targetProperty, targetPropertyType, targetPropertyIndex);
 
             // Sign up to the EndpointReachedEvent only if the markup extension wants to do so.
             EndpointReachedEvent.AddListener(rootObjectHashCode, this);
@@ -475,7 +440,23 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The path to the endpoint.</returns>
         protected TargetPath GetPathToEndpoint(TargetInfo endpoint)
         {
-            return (from p in GetTargetPropertyPaths() where p.EndPoint.Equals(endpoint) select p).FirstOrDefault();
+            if (IsConnected(endpoint))
+                return new TargetPath(endpoint);
+
+            foreach (var nestedTargetInfo in targetObjects.GetNestedTargetInfos())
+            {
+                var interfaceInheritor = (INestedMarkupExtension) nestedTargetInfo.TargetObject;
+                var path = nestedTargetInfo.TargetObject is NestedMarkupExtension classInheritor
+                    ? classInheritor.GetPathToEndpoint(endpoint)
+                    : interfaceInheritor.GetTargetPropertyPaths().FirstOrDefault(pp => pp.EndPoint.TargetObject == endpoint.TargetObject);
+                if (path != null)
+                {
+                    path.AddStep(nestedTargetInfo);
+                    return path;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -485,7 +466,20 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>True, if the extension nesting tree reaches the given object.</returns>
         protected bool IsEndpointObject(object obj)
         {
-            return (from p in GetTargetPropertyPaths() where p.EndPoint.TargetObject == obj select p).Count() > 0;
+            if (targetObjects.TryFindKey(obj) != null)
+                return true;
+
+            foreach (var nestedTargetInfo in targetObjects.GetNestedTargetInfos())
+            {
+                var interfaceInheritor = (INestedMarkupExtension) nestedTargetInfo.TargetObject;
+                var isEndpoint = nestedTargetInfo.TargetObject is NestedMarkupExtension classInheritor
+                    ? classInheritor.IsEndpointObject(obj)
+                    : interfaceInheritor.GetTargetPropertyPaths().Any(tpp => tpp.EndPoint.TargetObject == obj);
+                if (isEndpoint)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -498,12 +492,11 @@ namespace XAMLMarkupExtensions.Base
             if (args.Handled)
                 return;
 
-            var path = GetPathToEndpoint(args.Endpoint);
-
-            if (path == null)
+            if ((this != sender) && !UpdateOnEndpoint(args.Endpoint))
                 return;
 
-            if ((this != sender) && !UpdateOnEndpoint(path.EndPoint))
+            var path = GetPathToEndpoint(args.Endpoint);
+            if (path == null)
                 return;
 
             args.EndpointValue = UpdateNewValue(path);
@@ -518,7 +511,7 @@ namespace XAMLMarkupExtensions.Base
         public void Dispose()
         {
             EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            targetObjects.Clear();
+            targetObjects.Dispose();
         }
 
         #region EndpointReachedEvent
