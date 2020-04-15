@@ -1,6 +1,6 @@
 name: .NET
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -27,13 +27,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
 
-    - name: MSBuild
+    - name: Build
       working-directory: src
       run: |
         dotnet restore --disable-parallel --locked-mode
-        # can't use pure dotnet build because NET35 compile doesn't work
+        # dotnet build --disable-parallel --configuration Release
+        # can't use pure dotnet build because gitversion issues
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
-#    - name: Build with dotnet
-#      run: |
-#        cd src
-#        dotnet build --disable-parallel --configuration Release

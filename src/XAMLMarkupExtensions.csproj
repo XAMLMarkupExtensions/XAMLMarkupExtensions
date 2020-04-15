@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net452;net40;net35;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <UseWPF>True</UseWPF>
     <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
     <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
@@ -11,7 +11,7 @@
 		<Product>XAML Markup Extensions</Product>
 		<Authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</Authors>
 		<RepositoryUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions.git</RepositoryUrl>
-		<PackageLicenseUrl>https://raw.githubusercontent.com/XAMLMarkupExtensions/XAMLMarkupExtensions/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions</PackageProjectUrl>
 		<Copyright>Uwe Mayer, Konrad Mattheis, Bernhard Millauer</Copyright>
 		<Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.x. and NetCore 3.x</Description>
@@ -19,7 +19,8 @@
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>WPF markup extension nesting</PackageTags>
-
+    <NoWarn>NU5105</NoWarn>
+    
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -34,6 +35,12 @@
 
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+    <None Remove="packages.lock.json" />
+    <None Remove="public.snk" />
+  </ItemGroup>
   
 	<Choose>
 		<When Condition="'$(Configuration)' == 'Release'">
@@ -48,14 +55,14 @@
 		</Otherwise>
 	</Choose>
   
-  <!--References for .Net Framwork 4 and 35-->
+  <!--References for .Net Framwork 4-->
 	<ItemGroup Condition="!$(TargetFramework.StartsWith('netcore'))">
 		<Reference Include="PresentationCore" />
 		<Reference Include="PresentationFramework" />
 		<Reference Include="System" />
 		<Reference Include="System.Core" />
 		<Reference Include="System.Drawing" />
-		<Reference Condition="'$(TargetFramework)' != 'net35'" Include="System.Xaml" />
+		<Reference Include="System.Xaml" />
 		<Reference Include="System.Xml.Linq" />
 		<Reference Include="System.Xml" />
 		<Reference Include="WindowsBase" />
