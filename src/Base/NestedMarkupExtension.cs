@@ -35,7 +35,8 @@ namespace XAMLMarkupExtensions.Base
         ///
         /// The values are lists of tuples, containing the target property and property type.
         /// </summary>
-        private readonly Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>> targetObjects = new Dictionary<WeakReference, Dictionary<Tuple<object, int>, Type>>();
+        private readonly Dictionary<WeakReferenceKey, Dictionary<Tuple<object, int>, Type>> targetObjects
+            = new Dictionary<WeakReferenceKey, Dictionary<Tuple<object, int>, Type>>();
 
         /// <summary>
         /// Holds the markup extensions root object hash code.
@@ -49,7 +50,7 @@ namespace XAMLMarkupExtensions.Base
         private List<TargetInfo> GetTargetObjectsAndProperties()
         {
             List<TargetInfo> list = new List<TargetInfo>();
-            List<WeakReference> deadWeakReferences = new List<WeakReference>();
+            List<WeakReferenceKey> deadWeakReferences = new List<WeakReferenceKey>();
 
             // Select all targets that are still alive.
             foreach (var target in targetObjects)
@@ -125,10 +126,7 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>True, if a connection exits.</returns>
         public bool IsConnected(TargetInfo info)
         {
-            WeakReference wr = (from kvp in targetObjects
-                                where kvp.Key.Target == info.TargetObject
-                                select kvp.Key).FirstOrDefault();
-
+            WeakReferenceKey wr = GetTargetObjectsKey(info.TargetObject);
             if (wr == null)
                 return false;
 
@@ -242,10 +240,7 @@ namespace XAMLMarkupExtensions.Base
                 return null;
 
             // Search for the target in the target object list
-            WeakReference wr = (from kvp in targetObjects
-                                where kvp.Key.Target == targetObject
-                                select kvp.Key).FirstOrDefault();
-
+            WeakReferenceKey wr = GetTargetObjectsKey(targetObject);
             if (wr == null)
             {
                 // If it's the first object, call the appropriate action
@@ -254,8 +249,8 @@ namespace XAMLMarkupExtensions.Base
                     OnFirstTarget?.Invoke();
                 }
 
-                // Add the target as a WeakReference to the target object list
-                wr = new WeakReference(targetObject);
+                // Add the target as a WeakReferenceKey to the target object list
+                wr = new WeakReferenceKey(targetObject);
                 targetObjects.Add(wr, new Dictionary<Tuple<object, int>, Type>());
 
                 // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
@@ -296,6 +291,23 @@ namespace XAMLMarkupExtensions.Base
                 return Activator.CreateInstance(targetPropertyType);
             else
                 return null;
+        }
+
+        /// <summary>
+        /// Get target key if it contains in <see cref="targetObjects" />.
+        /// </summary>
+        /// <param name="target">Searching target.</param>
+        /// <returns>
+        /// <see cref="WeakReferenceKey" />, if <paramref name="target" /> contains in <see cref="targetObjects" />.
+        /// <see langwrod="null" /> otherwise.
+        /// </returns>
+        private WeakReferenceKey GetTargetObjectsKey(object target)
+        {
+            var wrk = new WeakReferenceKey(target);
+            if (targetObjects.ContainsKey(wrk))
+                return wrk;
+
+            return null;
         }
 
         /// <summary>
