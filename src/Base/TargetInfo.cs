@@ -58,10 +58,8 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>True, if both are equal.</returns>
         public override bool Equals(object obj)
         {
-            if (obj is TargetInfo)
+            if (obj is TargetInfo ti)
             {
-                var ti = (TargetInfo)obj;
-
                 if (ti.TargetObject != this.TargetObject)
                     return false;
                 if (ti.TargetProperty != this.TargetProperty)

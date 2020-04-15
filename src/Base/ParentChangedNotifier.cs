@@ -56,18 +56,17 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="args">The argument.</param>
         private static void ParentChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
         {
-            var notifier = obj as FrameworkElement;
-            if (notifier == null)
-                return;
-
-            var weakNotifier = OnParentChangedList.Keys.SingleOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
-
-            if (weakNotifier != null)
+            if (obj is FrameworkElement notifier)
             {
-                var list = new List<Action>(OnParentChangedList[weakNotifier]);
-                foreach (var OnParentChanged in list)
-                    OnParentChanged();
-                list.Clear();
+                var weakNotifier = OnParentChangedList.Keys.SingleOrDefault(x => x.IsAlive && ReferenceEquals(x.Target, notifier));
+
+                if (weakNotifier != null)
+                {
+                    var list = new List<Action>(OnParentChangedList[weakNotifier]);
+                    foreach (var OnParentChanged in list)
+                        OnParentChanged();
+                    list.Clear();
+                }
             }
         }
         #endregion
@@ -128,9 +127,11 @@ namespace XAMLMarkupExtensions.Base
             var binding = new Binding("Parent")
             {
                 RelativeSource = new RelativeSource()
+                { 
+                    Mode = RelativeSourceMode.FindAncestor,
+                    AncestorType = typeof(FrameworkElement)
+                }
             };
-            binding.RelativeSource.Mode = RelativeSourceMode.FindAncestor;
-            binding.RelativeSource.AncestorType = typeof(FrameworkElement);
             BindingOperations.SetBinding((FrameworkElement)element.Target, ParentProperty, binding);
         }
 

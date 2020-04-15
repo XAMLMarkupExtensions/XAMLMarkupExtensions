@@ -49,16 +49,26 @@ namespace XAMLMarkupExtensions.Base
         private List<TargetInfo> GetTargetObjectsAndProperties()
         {
             List<TargetInfo> list = new List<TargetInfo>();
+            List<WeakReference> deadWeakReferences = new List<WeakReference>();
 
             // Select all targets that are still alive.
             foreach (var target in targetObjects)
             {
                 var targetReference = target.Key.Target;
                 if (targetReference == null)
+                {
+                    deadWeakReferences.Add(target.Key);
                     continue;
+                }
 
                 list.AddRange(from kvp in target.Value
-                              select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
+                    select new TargetInfo(targetReference, kvp.Key.Item1, kvp.Value, kvp.Key.Item2));
+            }
+ 
+            // Remove all dead references.
+            foreach (var deadWeakReference in deadWeakReferences)
+            {
+                targetObjects.Remove(deadWeakReference);
             }
 
             return list;
@@ -197,11 +207,11 @@ namespace XAMLMarkupExtensions.Base
             // First, check if the service provider is of type SimpleProvideValueServiceProvider
             //      -> If yes, get the target property type and index.
             // Check if the service.TargetProperty is a DependencyProperty or a PropertyInfo and set the type info
-            if (serviceProvider is SimpleProvideValueServiceProvider)
+            if (serviceProvider is SimpleProvideValueServiceProvider spvServiceProvider)
             {
-                targetPropertyType = ((SimpleProvideValueServiceProvider)serviceProvider).TargetPropertyType;
-                targetPropertyIndex = ((SimpleProvideValueServiceProvider)serviceProvider).TargetPropertyIndex;
-                endPoint = ((SimpleProvideValueServiceProvider)serviceProvider).EndPoint;
+                targetPropertyType = spvServiceProvider.TargetPropertyType;
+                targetPropertyIndex = spvServiceProvider.TargetPropertyIndex;
+                endPoint = spvServiceProvider.EndPoint;
             }
             else
             {
@@ -241,8 +251,7 @@ namespace XAMLMarkupExtensions.Base
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
                 {
-                    if (OnFirstTarget != null)
-                        OnFirstTarget();
+                    OnFirstTarget?.Invoke();
                 }
 
                 // Add the target as a WeakReference to the target object list
@@ -441,7 +450,7 @@ namespace XAMLMarkupExtensions.Base
 
             // No property supplied
             if (property == null)
-                return default(T);
+                return default;
 
             // Is value of type MarkupExtension?
             if (value is MarkupExtension)
@@ -450,11 +459,11 @@ namespace XAMLMarkupExtensions.Base
                 if (result != null)
                     return (T)result;
                 else
-                    return default(T);
+                    return default;
             }
 
             // Default return path.
-            return default(T);
+            return default;
         }
 
         /// <summary>

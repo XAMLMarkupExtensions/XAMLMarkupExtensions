@@ -1,7 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net452;net40;net35</TargetFrameworks>
-		<AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
+		<TargetFrameworks>net452;net40;net35;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+    <UseWPF>True</UseWPF>
+    <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
+    <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
 		<AssemblyName>XAMLMarkupExtensions</AssemblyName>
 		<RootNamespace>XAMLMarkupExtensions</RootNamespace>
 		<Version>$(GitVersion_NuGetVersion)</Version>
@@ -12,7 +14,7 @@
 		<PackageLicenseUrl>https://raw.githubusercontent.com/XAMLMarkupExtensions/XAMLMarkupExtensions/master/LICENSE</PackageLicenseUrl>
 		<PackageProjectUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions</PackageProjectUrl>
 		<Copyright>Uwe Mayer, Konrad Mattheis, Bernhard Millauer</Copyright>
-		<Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5 and 4.x.</Description>
+		<Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.x. and NetCore 3.x</Description>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<NeutralLanguage>en-US</NeutralLanguage>
@@ -27,8 +29,12 @@
 		<DelaySign>false</DelaySign>
 		<PublicSign>true</PublicSign>
 		<AssemblyOriginatorKeyFile>public.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
+    <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
+    <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
 
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	</PropertyGroup>
+  
 	<Choose>
 		<When Condition="'$(Configuration)' == 'Release'">
 			<PropertyGroup>
@@ -41,8 +47,9 @@
 			</PropertyGroup>
 		</Otherwise>
 	</Choose>
-
-	<ItemGroup>
+  
+  <!--References for .Net Framwork 4 and 35-->
+	<ItemGroup Condition="!$(TargetFramework.StartsWith('netcore'))">
 		<Reference Include="PresentationCore" />
 		<Reference Include="PresentationFramework" />
 		<Reference Include="System" />
@@ -52,16 +59,24 @@
 		<Reference Include="System.Xml.Linq" />
 		<Reference Include="System.Xml" />
 		<Reference Include="WindowsBase" />
-
-		<PackageReference Include="GitVersionTask" Version="4.0.0" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
+	</ItemGroup>
+  
+  <!--References for .Net Core 3.x -->
+	<ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))">
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0" />
 	</ItemGroup>
 
-	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec" Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')">
-		<ReadLinesFromFile File="$(SolutionDir)\..\..\nugetapikey.txt">
+  <!--PackageReference for all framworks-->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+		<PackageReference Include="GitVersionTask" Version="5.2.4" PrivateAssets="All" />
+	</ItemGroup>
+
+	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
+		<ReadLinesFromFile Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')" File="$(SolutionDir)\..\..\nugetapikey.txt">
 			<Output TaskParameter="Lines" PropertyName="NugetAPIKey" />
 		</ReadLinesFromFile>
-		<Exec WorkingDirectory="$(BaseDir)" Command="dotnet nuget push $(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg -k $(NugetAPIKey) -s https://api.nuget.org/v3/index.json" />
+		<Exec Condition="('$(NugetAPIKey)' != '')" WorkingDirectory="$(BaseDir)" Command="dotnet nuget push $(PackageOutputAbsolutePath)$(PackageId).$(PackageVersion).nupkg -k $(NugetAPIKey) -s https://api.nuget.org/v3/index.json" />
 	</Target>
 
 	<Target Name="FixOnGitVersionTaskError" BeforeTargets="GetAssemblyVersion">

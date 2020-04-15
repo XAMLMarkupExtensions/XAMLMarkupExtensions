@@ -23,7 +23,7 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// This member holds the list of all <see cref="WeakReference"/>s and their appropriate objects.
         /// </summary>
-        private static Dictionary<object, List<WeakReference>> internalList;
+        private static readonly Dictionary<object, List<WeakReference>> internalList;
 
         /// <summary>
         /// Initializes static members of the <see cref="ObjectDependencyManager"/> class.

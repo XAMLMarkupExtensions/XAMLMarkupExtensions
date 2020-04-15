@@ -1,11 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>net452;net40;net35</TargetFrameworks>
+    <TargetFrameworks>net452;net40;net35;netcoreapp3.1</TargetFrameworks>
     <OutputType>WinExe</OutputType>
-    <StartupObject />
+    <UseWPF>True</UseWPF>
+    <AutoGenerateBindingRedirects Condition="$(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('net3'))">true</AutoGenerateBindingRedirects>
+    <DefineConstants Condition="$(TargetFramework.StartsWith('netcore'))">NETCORE</DefineConstants>
+
+    <StartupObject>TestWPF.App</StartupObject>
     <Authors />
     <Copyright>Copyright ©  2012</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
+    <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
   </PropertyGroup>
 
   <!-- This is necessary, otherwise it'll default to x86 at least if OutputType is WinExe -->
@@ -13,7 +19,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!--References for .Net Framwork 4 and 35-->
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('net3'))">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -21,24 +28,34 @@
     <Reference Include="System.Core" />
     <Reference Condition="'$(TargetFramework)' != 'net35'" Include="System.Xaml" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
 
+  <!--References for .Net Core 3.1-->
+  <ItemGroup Condition="$(TargetFramework.StartsWith('netcore'))">
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0" />
+  </ItemGroup>
+
+  <!--PackageReference for all framworks-->
+  <ItemGroup>
     <ProjectReference Include="..\..\src\XAMLMarkupExtensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- App.xaml -->
-    <ApplicationDefinition Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+     <!--App.xaml--> 
+    <!--<ApplicationDefinition Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />-->
 
-    <!-- XAML elements -->
-    <Page Include="**\*.xaml" Exclude="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
-    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />
+     <!--XAML elements--> 
+    <!--<Page Include="**\*.xaml" Exclude="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
+    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />-->
 
-    <!-- Properties\Resources.resx -->
-    <EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
-    <Compile Update="Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />
+     <!--Properties\Resources.resx--> 
+    <!--<EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
+    <Compile Update="Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />-->
 
-    <!-- Properties\Settings.settings -->
+     <!--Properties\Settings.settings--> 
     <None Update="Properties\Settings.settings" Generator="SettingsSingleFileGenerator" LastGenOutput="Settings.Designer.cs" />
-    <Compile Update="Properties\Settings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Settings.settings" />
+    <Compile Update="Properties\Settings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Settings.settings">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
   </ItemGroup>
 </Project>
