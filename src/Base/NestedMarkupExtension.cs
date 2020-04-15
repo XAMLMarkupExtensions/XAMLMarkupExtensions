@@ -16,10 +16,8 @@ namespace XAMLMarkupExtensions.Base
     using System.Reflection;
     using System.Windows;
     using System.Windows.Markup;
-#if !NET35
     using System.Windows.Controls;
     using System.Xaml;
-#endif
     #endregion
 
     /// <summary>
@@ -164,9 +162,6 @@ namespace XAMLMarkupExtensions.Base
             if (!(serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget service))
                 return this;
 
-#if NET35
-            rootObjectHashCode = 0;
-#else
             // Try to cast the passed serviceProvider to a IRootObjectProvider and if the cast fails return null
             if (!(serviceProvider.GetService(typeof(IRootObjectProvider)) is IRootObjectProvider rootObject))
             {
@@ -195,7 +190,6 @@ namespace XAMLMarkupExtensions.Base
                     }
                 }
             }
-#endif
 
             // Declare a target object and property
             TargetInfo endPoint = null;
@@ -612,7 +606,6 @@ namespace XAMLMarkupExtensions.Base
                 }
             }
 
-#if !NET35
             /// <summary>
             /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
             /// </summary>
@@ -638,7 +631,6 @@ namespace XAMLMarkupExtensions.Base
             {
                 return listeners.ContainsKey(rootObjectHashCode);
             }
-#endif
 
             /// <summary>
             /// Removes a listener from the inner list of listeners.
