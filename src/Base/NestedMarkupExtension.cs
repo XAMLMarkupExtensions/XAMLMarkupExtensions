@@ -451,11 +451,14 @@ namespace XAMLMarkupExtensions.Base
                     : interfaceInheritor.GetTargetPropertyPaths().FirstOrDefault(pp => pp.EndPoint.TargetObject == endpoint.TargetObject);
                 if (path != null)
                 {
+                    targetObjects.ClearDeadReferences();
+
                     path.AddStep(nestedTargetInfo);
                     return path;
                 }
             }
 
+            targetObjects.ClearDeadReferences();
             return null;
         }
 
@@ -476,9 +479,13 @@ namespace XAMLMarkupExtensions.Base
                     ? classInheritor.IsEndpointObject(obj)
                     : interfaceInheritor.GetTargetPropertyPaths().Any(tpp => tpp.EndPoint.TargetObject == obj);
                 if (isEndpoint)
+                {
+                    targetObjects.ClearDeadReferences();
                     return true;
+                }
             }
 
+            targetObjects.ClearDeadReferences();
             return false;
         }
 

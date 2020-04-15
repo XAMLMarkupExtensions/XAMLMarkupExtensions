@@ -112,11 +112,15 @@ namespace XAMLMarkupExtensions.Base
 
             foreach (var deadWeakReference in deadTargets)
             {
-                var targetValue = targetObjects[deadWeakReference];
+                if (!targetObjects.TryGetValue(deadWeakReference, out var targetValue))
+                    continue;
+
                 hashCodeTargetObjects.Remove(targetValue.TargetObjectHashCode);
                 targetObjects.Remove(deadWeakReference);
                 nestedTargetObjects.Remove(deadWeakReference);
             }
+
+            deadTargets.Clear();
         }
 
         /// <inheritdoc />
@@ -125,6 +129,7 @@ namespace XAMLMarkupExtensions.Base
             targetObjects.Clear();
             hashCodeTargetObjects.Clear();
             nestedTargetObjects.Clear();
+            deadTargets.Clear();
         }
 
         private class TargetObjectValue
