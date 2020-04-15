@@ -2,27 +2,11 @@ name: .NET
 
 on: [push]
 
-# for release triggers
-#release:
-#    types: # This configuration does not affect the page_build event above
-#      - created
-
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - name: Dump GitHub context
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |
-        echo "$GITHUB_CONTEXT"
-
-    - name: Dump GitHub Ref
-      run:
-        echo ${GITHUB_REF##*/}
-        echo ${GITHUB_REF}
-
     - name: checkout
       uses: actions/checkout@v2
       with:
