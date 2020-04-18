@@ -28,12 +28,10 @@ namespace XAMLMarkupExtensions.Base
     public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
     {
         /// <summary>
-        /// Holds the collection of assigned dependency objects as WeakReferences
+        /// Holds the collection of assigned dependency objects
         /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
-        ///
-        /// The values are lists of tuples, containing the target property and property type.
         /// </summary>
-        private readonly TargetObjectsDictionary targetObjects = new TargetObjectsDictionary();
+        private readonly TargetObjectsList targetObjects = new TargetObjectsList();
 
         /// <summary>
         /// Holds the markup extensions root object hash code.
@@ -440,11 +438,15 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>The path to the endpoint.</returns>
         protected TargetPath GetPathToEndpoint(TargetInfo endpoint)
         {
+            // If endpoint is connected - return empty path.
             if (IsConnected(endpoint))
                 return new TargetPath(endpoint);
 
+            // Else try find endpoint in nested targets.
             foreach (var nestedTargetInfo in targetObjects.GetNestedTargetInfos())
             {
+                // If nested target inherit NestedMarkupExtension - we can fast get path of endpoint using current method.
+                // Otherwise use slow search by getting all paths.
                 var interfaceInheritor = (INestedMarkupExtension) nestedTargetInfo.TargetObject;
                 var path = nestedTargetInfo.TargetObject is NestedMarkupExtension classInheritor
                     ? classInheritor.GetPathToEndpoint(endpoint)
@@ -469,11 +471,15 @@ namespace XAMLMarkupExtensions.Base
         /// <returns>True, if the extension nesting tree reaches the given object.</returns>
         protected bool IsEndpointObject(object obj)
         {
+            // Check if object contains in current targets.
             if (targetObjects.TryFindKey(obj) != null)
                 return true;
 
+            // Else try find object in nested targets.
             foreach (var nestedTargetInfo in targetObjects.GetNestedTargetInfos())
             {
+                // If nested target inherit NestedMarkupExtension - we can fast get path of endpoint using current method.
+                // Otherwise use slow search by getting all paths.
                 var interfaceInheritor = (INestedMarkupExtension) nestedTargetInfo.TargetObject;
                 var isEndpoint = nestedTargetInfo.TargetObject is NestedMarkupExtension classInheritor
                     ? classInheritor.IsEndpointObject(obj)

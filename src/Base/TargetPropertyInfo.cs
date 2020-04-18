@@ -2,6 +2,9 @@
 
 namespace XAMLMarkupExtensions.Base
 {
+    /// <summary>
+    /// Defines information about target object property.
+    /// </summary>
     internal class TargetPropertyInfo
     {
         /// <summary>
@@ -19,6 +22,12 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public int TargetPropertyIndex { get; }
 
+        /// <summary>
+        /// Create new <see cref="TargetPropertyInfo" /> instance.
+        /// </summary>
+        /// <param name="targetProperty">The target property.</param>
+        /// <param name="targetPropertyType">The type of property.</param>
+        /// <param name="targetPropertyIndex">The target property index</param>
         public TargetPropertyInfo(object targetProperty, Type targetPropertyType, int targetPropertyIndex)
         {
             TargetProperty = targetProperty;
