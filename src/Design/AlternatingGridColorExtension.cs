@@ -30,11 +30,7 @@ namespace XAMLMarkupExtensions.Design
         /// </summary>
         public Color ColorOdd { get; set; }
 
-        /// <summary>
-        /// This function returns the properly prepared output of the markup extension.
-        /// </summary>
-        /// <param name="info">Information about the target.</param>
-        /// <param name="endPoint">Information about the endpoint.</param>
+        /// <inheritdoc/>
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
             // Check the correct type.
@@ -58,12 +54,7 @@ namespace XAMLMarkupExtensions.Design
             return brush;
         }
 
-        /// <summary>
-        /// This method must return true, if an update shall be executed when the given endpoint is reached.
-        /// This method is called each time an endpoint is reached.
-        /// </summary>
-        /// <param name="endpoint">Information on the specific endpoint.</param>
-        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
+        /// <inheritdoc/>
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return true;

@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <TargetFrameworks>net452;net40;net35;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net452;net40;netcoreapp3.1</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <UseWPF>True</UseWPF>
-    <AutoGenerateBindingRedirects Condition="$(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('net3'))">true</AutoGenerateBindingRedirects>
-    <DefineConstants Condition="$(TargetFramework.StartsWith('netcore'))">NETCORE</DefineConstants>
+    <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
 
     <StartupObject>TestWPF.App</StartupObject>
     <Authors />
@@ -19,14 +18,14 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
 
-  <!--References for .Net Framwork 4 and 35-->
-  <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('net3'))">
+  <!--References for .Net Framwork 4.x-->
+  <ItemGroup Condition="!$(TargetFramework.StartsWith('netcore'))">
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Condition="'$(TargetFramework)' != 'net35'" Include="System.Xaml" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
 
@@ -41,17 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-     <!--App.xaml--> 
-    <!--<ApplicationDefinition Include="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />-->
-
-     <!--XAML elements--> 
-    <!--<Page Include="**\*.xaml" Exclude="App.xaml" SubType="Designer" Generator="MSBuild:Compile" />
-    <Compile Update="**\*.xaml.cs" SubType="Code" DependentUpon="%(Filename)" />-->
-
-     <!--Properties\Resources.resx--> 
-    <!--<EmbeddedResource Update="Properties\Resources.resx" Generator="ResXFileCodeGenerator" LastGenOutput="Resources.Designer.cs" />
-    <Compile Update="Properties\Resources.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Resources.resx" />-->
-
      <!--Properties\Settings.settings--> 
     <None Update="Properties\Settings.settings" Generator="SettingsSingleFileGenerator" LastGenOutput="Settings.Designer.cs" />
     <Compile Update="Properties\Settings.Designer.cs" DesignTime="True" AutoGen="True" DependentUpon="Settings.settings">

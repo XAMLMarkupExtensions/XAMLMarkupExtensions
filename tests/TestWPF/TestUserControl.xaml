@@ -1,10 +1,10 @@
 ﻿<UserControl x:Class="TestWPF.TestUserControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:n="https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions"
              xmlns:ext="clr-namespace:TestWPF"
-             xmlns:n="http://xamlmarkupextensions.codeplex.com"
              xmlns:p="clr-namespace:TestWPF.Properties"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -39,10 +39,19 @@
         <Label Grid.Row="5" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" />
         <Label Grid.Row="6" Content="{n:Type p:Settings}" />
 
-        <Label Grid.Row="0" Grid.Column="1" Content="1st Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="1" Grid.Column="1" Content="2nd Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="2" Grid.Column="1" Content="3rd Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
-        <Label Grid.Row="3" Grid.Column="1" Content="4th Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
+        <Label Grid.Row="0" Grid.Column="1" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding TestEnum, Source={n:Static p:Settings.Default}}" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
+      
+        <Label Grid.Row="2" Grid.Column="1" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}">
+            <Label.Content>
+                <n:Cat Format="{}{0} - {1} - {2}">
+                    <n:Static>ext:TestEnum.One</n:Static>
+                    <n:Static>ext:TestEnum.Two</n:Static>
+                    Test
+                </n:Cat>
+            </Label.Content>
+        </Label>
+        <Label Grid.Row="3" Grid.Column="1" Content="{n:Static ext:TestEnum.Three}" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
         <Label Grid.Row="4" Grid.Column="1" Content="5th Row" Background="{ext:AlternatingGridColorSimple ColorEven=Red, ColorOdd=Green}" />
 
         <Label Grid.Row="5" Grid.Column="1" Content="Static Content" />
@@ -57,7 +66,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Label Grid.Row="0" Content="1st Row" Background="{ext:AddAlpha Alpha=125, Brush={n:AlternatingGridColor ColorEven=Red, ColorOdd=Green}}" />
-                    <Label Grid.Row="1" Content="{Binding TestString, Source={n:Static p:Settings.Default}}" />
+                    <Label Grid.Row="1" Content="{Binding One, Source={n:Static ext:TestEnum}}" />
                     <ext:TimeTestUserControl Grid.Row="2" />
                 </Grid>
             </TabItem>
