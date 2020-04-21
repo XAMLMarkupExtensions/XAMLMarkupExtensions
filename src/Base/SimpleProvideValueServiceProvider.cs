@@ -18,6 +18,7 @@ namespace XAMLMarkupExtensions.Base
     /// </summary>
     public class SimpleProvideValueServiceProvider : IServiceProvider, IProvideValueTarget
     {
+        #region IServiceProvider
         /// <summary>
         /// Return the requested service.
         /// </summary>
@@ -28,10 +29,14 @@ namespace XAMLMarkupExtensions.Base
             // This class only implements the IProvideValueTarget service.
             if (service == typeof(IProvideValueTarget))
                 return this;
-            else
-                return null;
-        }
 
+            return ServiceProvider?.GetService(service);
+        }
+        #endregion
+
+        #region Properties
+
+        #region IProvideValueTarget
         /// <summary>
         /// The target object.
         /// </summary>
@@ -40,7 +45,8 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// The target property.
         /// </summary>
-        public object TargetProperty { get; private set; }
+        public object TargetProperty { get; private set; } 
+        #endregion
 
         /// <summary>
         /// The target property type.
@@ -58,20 +64,12 @@ namespace XAMLMarkupExtensions.Base
         public TargetInfo EndPoint { get; private set; }
 
         /// <summary>
-        /// Create a new instance of a SimpleProvideValueServiceProvider.
+        /// An optional IServiceProvider information.
         /// </summary>
-        /// <param name="targetObject">The target object.</param>
-        /// <param name="targetProperty">The target property.</param>
-        /// <param name="targetPropertyType">The target property type.</param>
-        /// <param name="targetPropertyIndex">The target property index.</param>
-        public SimpleProvideValueServiceProvider(object targetObject, object targetProperty, Type targetPropertyType, int targetPropertyIndex)
-        {
-            TargetObject = targetObject;
-            TargetProperty = targetProperty;
-            TargetPropertyType = targetPropertyType;
-            TargetPropertyIndex = targetPropertyIndex;
-        }
+        public IServiceProvider ServiceProvider { get; private set; }
+        #endregion
 
+        #region Construtors
         /// <summary>
         /// Create a new instance of a SimpleProvideValueServiceProvider.
         /// </summary>
@@ -80,25 +78,15 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="targetPropertyType">The target property type.</param>
         /// <param name="targetPropertyIndex">The target property index.</param>
         /// <param name="endPoint">An optional endpoint information.</param>
-        public SimpleProvideValueServiceProvider(object targetObject, object targetProperty, Type targetPropertyType, int targetPropertyIndex, TargetInfo endPoint)
+        /// <param name="serviceProvider">An optional endpoint information.</param>
+        public SimpleProvideValueServiceProvider(object targetObject, object targetProperty, Type targetPropertyType, int targetPropertyIndex, TargetInfo endPoint = null, IServiceProvider serviceProvider = null)
         {
             TargetObject = targetObject;
             TargetProperty = targetProperty;
             TargetPropertyType = targetPropertyType;
             TargetPropertyIndex = targetPropertyIndex;
             EndPoint = endPoint;
-        }
-
-        /// <summary>
-        /// Create a new instance of a SimpleProvideValueServiceProvider.
-        /// </summary>
-        /// <param name="info">Information about the target.</param>
-        public SimpleProvideValueServiceProvider(TargetInfo info)
-        {
-            TargetObject = info.TargetObject;
-            TargetProperty = info.TargetProperty;
-            TargetPropertyType = info.TargetPropertyType;
-            TargetPropertyIndex = info.TargetPropertyIndex;
+            ServiceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -106,13 +94,11 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         /// <param name="info">Information about the target.</param>
         /// <param name="endPoint">An optional endpoint information.</param>
-        public SimpleProvideValueServiceProvider(TargetInfo info, TargetInfo endPoint)
+        /// <param name="serviceProvider">An optional endpoint information.</param>
+        public SimpleProvideValueServiceProvider(TargetInfo info, TargetInfo endPoint = null, IServiceProvider serviceProvider = null) :
+            this(info.TargetObject, info.TargetProperty, info.TargetPropertyType, info.TargetPropertyIndex, endPoint, serviceProvider)
         {
-            TargetObject = info.TargetObject;
-            TargetProperty = info.TargetProperty;
-            TargetPropertyType = info.TargetPropertyType;
-            TargetPropertyIndex = info.TargetPropertyIndex;
-            EndPoint = endPoint;
-        }
+        } 
+        #endregion
     }
 }
