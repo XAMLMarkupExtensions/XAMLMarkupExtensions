@@ -128,7 +128,6 @@ namespace XAMLMarkupExtensions.Base
         /// <inheritdoc/>
         protected override void OnServiceProviderChanged(IServiceProvider serviceProvider)
         {
-            
             if (member == null || member.Trim() == "")
                 throw new InvalidOperationException("The member property must be set!");
 
@@ -179,7 +178,6 @@ namespace XAMLMarkupExtensions.Base
 
                 return pi.GetValue(null, null);
             }
-
 
             if (getMemberType.GetField(member, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) is FieldInfo fi)
             {
