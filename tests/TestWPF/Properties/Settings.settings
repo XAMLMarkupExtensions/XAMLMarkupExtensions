@@ -6,5 +6,8 @@
       <Value Profile="(Default)">This is a test...
 The static extension works!</Value>
     </Setting>
+    <Setting Name="TestEnum" Type="System.IO.Packaging.VerifyResult" Scope="User">
+      <Value Profile="(Default)">InvalidSignature</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

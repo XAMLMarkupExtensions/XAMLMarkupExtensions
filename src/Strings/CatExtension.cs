@@ -24,7 +24,7 @@ namespace XAMLMarkupExtensions.Strings
     [ContentProperty("Items"), DefaultProperty("Items")]
     public class CatExtension : NestedMarkupExtension
     {
-        private List<object> items = new List<object>();
+        private readonly List<object> items = new List<object>();
         /// <summary>
         /// Gets the list of items.
         /// </summary>
@@ -50,11 +50,24 @@ namespace XAMLMarkupExtensions.Strings
             }
         }
 
-        /// <summary>
-        /// This function returns the properly prepared output of the markup extension.
-        /// </summary>
-        /// <param name="info">Information about the target.</param>
-        /// <param name="endPoint">Information about the endpoint.</param>
+        private readonly PropertyInfo pi;
+
+        private IServiceProvider serviceProvider;
+
+        /// <inheritdoc/>
+        public CatExtension()
+        {
+            pi = this.GetType().GetProperty("Items");
+        }
+
+        /// <inheritdoc/>
+        protected override void OnServiceProviderChanged(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+            base.OnServiceProviderChanged(serviceProvider);
+        }
+
+        /// <inheritdoc/>
         public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
         {
             string s = Format;
@@ -70,16 +83,14 @@ namespace XAMLMarkupExtensions.Strings
                 {
                     object t = items[i];
 
-                    if (t is INestedMarkupExtension)
+                    if (t is INestedMarkupExtension nme)
                     {
-                        PropertyInfo pi = this.GetType().GetProperty("Items");
                         TargetInfo ti = new TargetInfo(this, pi, pi.PropertyType, i);
-                        INestedMarkupExtension nme = (INestedMarkupExtension)t;
 
                         if (nme.IsConnected(ti))
                             t = nme.FormatOutput(endPoint, ti);
                         else
-                            t = GetValue<string>(t, pi, i, endPoint);
+                            t  = GetValue<object>(t, pi, i, endPoint, serviceProvider);
                     }
 
                     if (t != null)
@@ -90,12 +101,7 @@ namespace XAMLMarkupExtensions.Strings
             return s;
         }
 
-        /// <summary>
-        /// This method must return true, if an update shall be executed when the given endpoint is reached.
-        /// This method is called each time an endpoint is reached.
-        /// </summary>
-        /// <param name="endpoint">Information on the specific endpoint.</param>
-        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
+        /// <inheritdoc/>
         protected override bool UpdateOnEndpoint(TargetInfo endpoint)
         {
             return false;

@@ -92,6 +92,7 @@ namespace XAMLMarkupExtensions.Base
         }
         #endregion
 
+        #region Constructors
         /// <summary>
         /// Creates a new instance.
         /// </summary>
@@ -109,35 +110,37 @@ namespace XAMLMarkupExtensions.Base
         {
             this.Member = member;
         }
+        #endregion
 
-        /// <summary>
-        /// Override this function, if (and only if) additional information is needed from the <see cref="IServiceProvider"/> instance that is passed to <see cref="NestedMarkupExtension.ProvideValue"/>.
-        /// </summary>
-        /// <param name="serviceProvider">A service provider.</param>
+        #region Overrides
+        /// <inheritdoc/>
+        public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
+        {
+            return this.Result;
+        }
+
+        /// <inheritdoc/>
+        protected override bool UpdateOnEndpoint(TargetInfo endpoint)
+        {
+            return false;
+        }
+
+        /// <inheritdoc/>
         protected override void OnServiceProviderChanged(IServiceProvider serviceProvider)
         {
             if (member == null || member.Trim() == "")
                 throw new InvalidOperationException("The member property must be set!");
 
-            var memberCopy = member;
-            var memberTypeEndsAt = memberCopy.LastIndexOf('.');
+            var memberName = member;
+            var memberTypeEndsAt = memberName.LastIndexOf('.');
+            if (memberTypeEndsAt != -1)
+            {
+                var typeName = memberName.Substring(0, memberTypeEndsAt);
 
-            if (memberTypeEndsAt == -1)
-            {
-                // No member type included.
-                if (memberType == null)
-                {
-                    this.Result = null;
-                    return;
-                }
-            }
-            else
-            {
                 // Member type included - overwrite the existing one.
-                var service = serviceProvider.GetService(typeof(IXamlTypeResolver)) as IXamlTypeResolver;
-                var typeName = memberCopy.Substring(0, memberTypeEndsAt);
-
-                if (service == null)
+                if (serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver service)
+                    memberType = service.Resolve(typeName);
+                else
                 {
                     try
                     {
@@ -149,60 +152,40 @@ namespace XAMLMarkupExtensions.Base
                         return;
                     }
                 }
-                else
-                    memberType = service.Resolve(typeName);
 
-                memberCopy = memberCopy.Substring(memberTypeEndsAt + 1);
+                memberName = memberName.Substring(memberTypeEndsAt + 1);
             }
 
-            // Again, check all parameters up to now.
-            if (memberType == null || memberCopy.Trim() == "")
+            this.Result = GetValueFromMember(memberType, memberName);
+        }
+        #endregion
+
+        #region GetValueFromMember
+        private object GetValueFromMember(Type getMemberType, string getMemberName)
+        {
+            if (getMemberType == null || getMemberName.Trim() == "")
             {
-                this.Result = null;
-                return;
+                return null;
             }
 
-            // Try to get a property info.
-            var pi = memberType.GetProperty(memberCopy, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            if (getMemberType.IsEnum)
+                return Enum.Parse(getMemberType, getMemberName, true);
 
-            if (pi != null)
+            if (getMemberType.GetProperty(getMemberName, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) is PropertyInfo pi)
             {
                 if (!pi.CanRead)
-                    throw new InvalidOperationException("No static get accessor for property " + memberCopy + ".");
+                    throw new InvalidOperationException("No static get accessor for property " + getMemberName + ".");
 
-                this.Result = pi.GetValue(null, null);
+                return pi.GetValue(null, null);
             }
-            else
+
+            if (getMemberType.GetField(member, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) is FieldInfo fi)
             {
-                // Now, try to get a field info.
-                var fi = memberType.GetField(member, BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
-
-                if (fi == null)
-                    throw new InvalidOperationException("No static property or field " + memberCopy + " available in " + memberType.FullName);
-
-                this.Result = fi.GetValue(null);
+                return fi.GetValue(null);
             }
-        }
 
-        /// <summary>
-        /// This function returns the properly prepared output of the markup extension.
-        /// </summary>
-        /// <param name="info">Information about the target.</param>
-        /// <param name="endPoint">Information about the endpoint.</param>
-        public override object FormatOutput(TargetInfo endPoint, TargetInfo info)
-        {
-            return this.Result;
-        }
-
-        /// <summary>
-        /// This method must return true, if an update shall be executed when the given endpoint is reached.
-        /// This method is called each time an endpoint is reached.
-        /// </summary>
-        /// <param name="endpoint">Information on the specific endpoint.</param>
-        /// <returns>True, if an update of the path to this endpoint shall be performed.</returns>
-        protected override bool UpdateOnEndpoint(TargetInfo endpoint)
-        {
-            return false;
-        }
+            throw new InvalidOperationException("No static enum, property or field " + getMemberName + " available in " + getMemberType.FullName);
+        } 
+        #endregion
     }
 }

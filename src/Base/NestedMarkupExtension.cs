@@ -384,25 +384,13 @@ namespace XAMLMarkupExtensions.Base
         /// <param name="value">The value supplied by the set accessor of the property.</param>
         /// <param name="property">The property information.</param>
         /// <param name="index">The index of the indexed property, if applicable.</param>
-        /// <returns>The value or default.</returns>
-        protected T GetValue<T>(object value, PropertyInfo property, int index)
-        {
-            return GetValue<T>(value, property, index, null);
-        }
-
-        /// <summary>
-        /// Safely get the value of a property that might be set by a further MarkupExtension.
-        /// </summary>
-        /// <typeparam name="T">The return type.</typeparam>
-        /// <param name="value">The value supplied by the set accessor of the property.</param>
-        /// <param name="property">The property information.</param>
-        /// <param name="index">The index of the indexed property, if applicable.</param>
         /// <param name="endPoint">An optional endpoint information.</param>
+        /// <param name="service">An optional serviceProvider information.</param>
         /// <returns>The value or default.</returns>
-        protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint)
+        protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint = null, IServiceProvider service= null)
         {
             // Simple case: value is of same type
-            if (value is T)
+            if (value is T && !(value is MarkupExtension))
                 return (T)value;
 
             // No property supplied
@@ -410,9 +398,9 @@ namespace XAMLMarkupExtensions.Base
                 return default;
 
             // Is value of type MarkupExtension?
-            if (value is MarkupExtension)
+            if (value is MarkupExtension me)
             {
-                object result = ((MarkupExtension)value).ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint));
+                object result = me.ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint, service));
                 if (result != null)
                     return (T)result;
                 else

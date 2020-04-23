@@ -10,7 +10,7 @@ namespace TestWPF
     public partial class TimeTestUserControl
     {
         private bool loaded;
-        private Stopwatch stopWatch;
+        private readonly Stopwatch stopWatch;
 
         public TimeTestUserControl()
         {
