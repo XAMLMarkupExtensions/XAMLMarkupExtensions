@@ -1,9 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Copyright information
+// <copyright file="TargeObjectList.cs">
+//     Licensed under Microsoft Public License (Ms-PL)
+//     https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions/blob/master/LICENSE
+// </copyright>
+// <author>Vsevolod Pilipenko, Konrad Mattheis</author>
+#endregion
 
 namespace XAMLMarkupExtensions.Base
 {
+    #region Usings
+    using System;
+    using System.Collections.Generic;
+    using System.Linq; 
+    #endregion
+
     /// <summary>
     /// Defines a collection of assigned dependency objects.
     /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
