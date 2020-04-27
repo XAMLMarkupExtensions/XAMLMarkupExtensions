@@ -8,6 +8,11 @@
 
 * If you're unable to find an open issue addressing the problem. Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 
+### Please sign CLA
+
+To be shure that you contributed code can be used in this project under the given license please sign the cla:
+[sign CLA](https://cla-assistant.io/XAMLMarkupExtensions/XAMLMarkupExtensions)
+
 #### **Did you write a patch that fixes a bug?**
 
 * Open a new GitHub pull request with the patch.
