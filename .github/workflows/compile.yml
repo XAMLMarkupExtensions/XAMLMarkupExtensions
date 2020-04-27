@@ -34,7 +34,7 @@ jobs:
         # dotnet build --disable-parallel --configuration Release
         # can't use pure dotnet build because gitversion issues
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
-        
+
         # add check for PR against master from development -> build preRelease to nuget
         # if merged into master -> build Release -> nuget
         # if: github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/tags/') && contains(github.ref,'-alpha'))
