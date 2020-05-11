@@ -1,7 +1,7 @@
 ﻿#region Copyright information
 // <copyright file="BindingProxy.cs">
 //     Licensed under Microsoft Public License (Ms-PL)
-//     http://xamlmarkupextensions.codeplex.com/license
+//     https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions/blob/master/LICENSE
 // </copyright>
 // <author>Uwe Mayer</author>
 #endregion

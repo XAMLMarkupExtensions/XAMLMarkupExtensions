@@ -5,7 +5,7 @@
 [![CLA assistant](https://cla-assistant.io/readme/badge/XAMLMarkupExtensions/XAMLMarkupExtensions)](https://cla-assistant.io/XAMLMarkupExtensions/XAMLMarkupExtensions)
 ![.NET](https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions/workflows/.NET/badge.svg)
 
-The aim of this project is to improve the capabilities of XAML code while keeping an eye on a good XAML code readability. This covers the developement of useful XAML markup extensions for Silverlight (SL) and the Windows Presentation Framework (WPF) as well as helper classes to extend their scope of operation.
+The aim of this project is to improve the capabilities of XAML code while keeping an eye on a good XAML code readability. This covers the developement of useful XAML markup extensions for the Windows Presentation Framework (WPF) as well as helper classes to extend their scope of operation.
 
 This project is and will be free for everyone to use. This also implies that any contribution to it is welcome. Thus, feel free to create your own fork on GitHub (refer to links section below).
 
@@ -15,7 +15,13 @@ This project is and will be free for everyone to use. This also implies that any
 * A couple of interesting markup extensions
 * Multiple UI threads
 
-## [Content](docs/content.md)
+## Documentation
+
+More is here [information](docs/content.md) and here about the [classes](docs/classes.md).
+
+## Sample
+
+Can be found in the tests folder. Just checkout open the .sln and run.
 
 ## NuGet Package
 
