@@ -8,7 +8,7 @@ namespace XAMLMarkupExtensions.Base
     /// Some properties are sealing (Setter.Value and Binding.Source) and cannot change, so
     /// if we use such provider, it stay same but it's value free to change.
     /// </summary>
-    public class BindingValueProvider : INotifyPropertyChanged
+    internal class BindingValueProvider : INotifyPropertyChanged
     {
         /// <summary>
         /// Property info of <see cref="Value" /> property.
