@@ -511,8 +511,24 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// <see langword="true" /> if calls from Dispose() method.
+        /// <see langword="false" /> if calls from finalizer.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
             EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            targetObjects.Dispose();
+            ObjectDependencyManager.CleanUp(this);
+
+            if (isDisposing)
+                targetObjects.Dispose();
         }
 
         #region EndpointReachedEvent
@@ -611,8 +627,19 @@ namespace XAMLMarkupExtensions.Base
                     if (!listeners.ContainsKey(rootObjectHashCode))
                         return;
 
-                    listeners[rootObjectHashCode].Clear();
+                    // Save ref to listeners and remove it from dictionary.
+                    // When dispose listener it can call RemoveListener and we can remove it twice.
+                    var rootListeners = listeners[rootObjectHashCode];
                     listeners.Remove(rootObjectHashCode);
+
+                    // Dispose all live listeners.
+                    foreach (var weakReference in rootListeners)
+                    {
+                        var target = weakReference.Target as IDisposable;
+                        target?.Dispose();
+                    }
+
+                    rootListeners.Clear();
                 }
             }
 
