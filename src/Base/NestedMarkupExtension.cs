@@ -25,7 +25,7 @@ namespace XAMLMarkupExtensions.Base
     /// Based on <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
     [MarkupExtensionReturnType(typeof(object))]
-    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable, IObjectDependency
     {
         /// <summary>
         /// Holds the collection of assigned dependency objects
@@ -84,7 +84,24 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// An action that is called when the first target is bound.
         /// </summary>
+        [Obsolete("Override 'OnFirstTargetAdded' method instead")]
         protected Action OnFirstTarget;
+
+        /// <summary>
+        /// An action that is called when the first target is bound.
+        /// </summary>
+        protected virtual void OnFirstTargetAdded()
+        {
+            OnFirstTarget?.Invoke();
+        }
+
+        /// <summary>
+        /// An action that is called when the last target is unbound.
+        /// </summary>
+        protected virtual void OnLastTargetRemoved()
+        {
+            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
+        }
 
         /// <summary>
         /// This function must be implemented by all child classes.
@@ -210,9 +227,7 @@ namespace XAMLMarkupExtensions.Base
             {
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
-                {
-                    OnFirstTarget?.Invoke();
-                }
+                    OnFirstTargetAdded();
 
                 // Add to the target object list
                 wr = targetObjects.AddTargetObject(targetObject);
@@ -524,12 +539,30 @@ namespace XAMLMarkupExtensions.Base
         /// </param>
         protected virtual void Dispose(bool isDisposing)
         {
-            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            ObjectDependencyManager.CleanUp(this);
-
             if (isDisposing)
-                targetObjects.Dispose();
+            {
+                ObjectDependencyManager.CleanUp(this);
+                targetObjects.Clear();
+                OnLastTargetRemoved();
+            }
         }
+
+        #region IObjectDependency
+
+        /// <inheritdoc />
+        void IObjectDependency.OnReferencesRemoved(IEnumerable<WeakReference> deadReferences)
+        {
+            targetObjects.ClearReferences(deadReferences);
+        }
+
+        /// <inheritdoc />
+        void IObjectDependency.OnAllReferencesRemoved()
+        {
+            targetObjects.Clear();
+            OnLastTargetRemoved();
+        }
+
+        #endregion
 
         #region EndpointReachedEvent
         /// <summary>
@@ -619,7 +652,6 @@ namespace XAMLMarkupExtensions.Base
             /// <summary>
             /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
             /// </summary>
-            /// <param name="rootObjectHashCode"></param>
             internal static void ClearListenersForRootObject(int rootObjectHashCode)
             {
                 lock (listenersLock)
@@ -627,19 +659,7 @@ namespace XAMLMarkupExtensions.Base
                     if (!listeners.ContainsKey(rootObjectHashCode))
                         return;
 
-                    // Save ref to listeners and remove it from dictionary.
-                    // When dispose listener it can call RemoveListener and we can remove it twice.
-                    var rootListeners = listeners[rootObjectHashCode];
                     listeners.Remove(rootObjectHashCode);
-
-                    // Dispose all live listeners.
-                    foreach (var weakReference in rootListeners)
-                    {
-                        var target = weakReference.Target as IDisposable;
-                        target?.Dispose();
-                    }
-
-                    rootListeners.Clear();
                 }
             }
 
