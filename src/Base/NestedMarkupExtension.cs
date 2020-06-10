@@ -541,9 +541,16 @@ namespace XAMLMarkupExtensions.Base
         {
             if (isDisposing)
             {
+                // Remove strong reference from ObjectDependencyManager.
                 ObjectDependencyManager.CleanUp(this);
+
+                // Clean all targets.
+                var targetObjectsCount = targetObjects.Count;
                 targetObjects.Clear();
-                OnLastTargetRemoved();
+
+                // Notify if any targets was not empty.
+                if (targetObjectsCount > 0)
+                    OnLastTargetRemoved();
             }
         }
 

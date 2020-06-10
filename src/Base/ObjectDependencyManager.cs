@@ -123,16 +123,10 @@ namespace XAMLMarkupExtensions.Base
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void CleanUp(object objToRemove)
         {
-            // if a particular object is passed, remove it.
+            // if a particular object is passed, remove only it.
             if (objToRemove != null)
             {
-                // if the key wasnt found, throw an exception.
-                if (!internalList.Remove(objToRemove))
-                {
-                    throw new Exception("Key was not found!");
-                }
-
-                // stop here
+                internalList.Remove(objToRemove);
                 return;
             }
 
@@ -141,12 +135,13 @@ namespace XAMLMarkupExtensions.Base
             // this list will hold all keys they has to be removed
             List<object> keysToRemove = new List<object>();
 
+            // This list will hold all references which should be removed.
+            // It's one for all keys for reduce memory allocations.
+            List<WeakReference> deadReferences = new List<WeakReference>();
+
             // step through all object dependenies
             foreach (KeyValuePair<object, HashSet<WeakReference>> kvp in internalList)
             {
-                // This list will hold all references which should be removed.
-                List<WeakReference> deadReferences = new List<WeakReference>();
-
                 foreach (var target in kvp.Value)
                 {
                     var targetReference = target.Target;
@@ -156,7 +151,7 @@ namespace XAMLMarkupExtensions.Base
 
                 if (deadReferences.Count > 0)
                 {
-                    var objectDependency = kvp.Value as IObjectDependency;
+                    var objectDependency = kvp.Key as IObjectDependency;
 
                     // if the all of weak references is empty, remove the whole entry
                     if (deadReferences.Count == kvp.Value.Count)
@@ -166,12 +161,14 @@ namespace XAMLMarkupExtensions.Base
 
                         keysToRemove.Add(kvp.Key);
                     }
-                    else if (deadReferences.Count > 0)
+                    else
                     {
                         // notify some references are dead.
                         objectDependency?.OnReferencesRemoved(deadReferences);
                     }
                 }
+
+                deadReferences.Clear();
             }
 
             // remove the key from the internalList
