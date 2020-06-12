@@ -17,8 +17,6 @@
         private readonly Dictionary<int, List<WeakReference>> listenersHashCodes;
         private readonly List<WeakReference> deadListeners;
 
-        private readonly object _lock;
-
         /// <summary>
         /// Create new empty <see cref="ListenersList" /> instance.
         /// </summary>
@@ -27,8 +25,6 @@
             listeners = new Dictionary<WeakReference, int>();
             listenersHashCodes = new Dictionary<int, List<WeakReference>>();
             deadListeners = new List<WeakReference>();
-
-            _lock = new object();
         }
 
         /// <summary>
@@ -41,21 +37,18 @@
         /// </summary>
         public void AddListener(NestedMarkupExtension listener)
         {
-            lock (_lock)
+            // Add listener if it not registered yet.
+            var weakReference = new WeakReference(listener);
+            var hashCode = listener.GetHashCode();
+            if (!listenersHashCodes.TryGetValue(hashCode, out var sameHashCodeListeners))
             {
-                // Add listener if it not registered yet.
-                var weakReference = new WeakReference(listener);
-                var hashCode = listener.GetHashCode();
-                if (!listenersHashCodes.TryGetValue(hashCode, out var sameHashCodeListeners))
-                {
-                    listeners.Add(weakReference, hashCode);
-                    listenersHashCodes.Add(hashCode, new List<WeakReference> { weakReference });
-                }
-                else if (sameHashCodeListeners.All(wr => wr.Target != listener))
-                {
-                    listeners.Add(weakReference, hashCode);
-                    sameHashCodeListeners.Add(weakReference);
-                }
+                listeners.Add(weakReference, hashCode);
+                listenersHashCodes.Add(hashCode, new List<WeakReference> { weakReference });
+            }
+            else if (sameHashCodeListeners.All(wr => wr.Target != listener))
+            {
+                listeners.Add(weakReference, hashCode);
+                sameHashCodeListeners.Add(weakReference);
             }
         }
 
