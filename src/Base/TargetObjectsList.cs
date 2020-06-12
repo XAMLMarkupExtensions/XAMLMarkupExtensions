@@ -102,6 +102,29 @@ namespace XAMLMarkupExtensions.Base
         }
 
         /// <summary>
+        /// Remove target object's property info.
+        /// </summary>
+        /// <param name="info">The information about the target.</param>
+        /// <returns>
+        /// <see langwrod="true" /> if info was removed.
+        /// <see langwrod="false" /> if info didn't contains at list.
+        /// </returns>
+        public bool RemoveTargetInfo(TargetInfo info)
+        {
+            WeakReference wr = TryFindKey(info.TargetObject);
+            if (wr == null)
+                return false;
+
+            var targetProperties = targetObjects[wr].TargetProperties;
+            var targetPropertyInfo = new TargetPropertyInfo(info.TargetProperty, info.TargetPropertyType, info.TargetPropertyIndex);
+            bool isRemoved = targetProperties.Remove(targetPropertyInfo);
+            if (isRemoved && targetProperties.Count == 0)
+                RemoveTargetObject(wr);
+
+            return isRemoved;
+        }
+
+        /// <summary>
         /// Try find weak reference key of target object in list.
         /// </summary>
         /// <param name="targetObject">The searching target object.</param>
@@ -169,17 +192,7 @@ namespace XAMLMarkupExtensions.Base
                 return;
 
             foreach (var deadWeakReference in deadTargets)
-            {
-                if (!targetObjects.TryGetValue(deadWeakReference, out var targetValue))
-                    continue;
-
-                hashCodeTargetObjects[targetValue.TargetObjectHashCode].Remove(deadWeakReference);
-                if (!hashCodeTargetObjects[targetValue.TargetObjectHashCode].Any())
-                    hashCodeTargetObjects.Remove(targetValue.TargetObjectHashCode);
-
-                targetObjects.Remove(deadWeakReference);
-                nestedTargetObjects.Remove(deadWeakReference);
-            }
+                RemoveTargetObject(deadWeakReference);
 
             deadTargets.Clear();
         }
@@ -191,6 +204,23 @@ namespace XAMLMarkupExtensions.Base
             hashCodeTargetObjects.Clear();
             nestedTargetObjects.Clear();
             deadTargets.Clear();
+        }
+
+        /// <summary>
+        /// Remove target object from internal list.
+        /// </summary>
+        /// <param name="targetObjectWeakReference">Weak reference key of target object.</param>
+        private void RemoveTargetObject(WeakReference targetObjectWeakReference)
+        {
+            if (!targetObjects.TryGetValue(targetObjectWeakReference, out var targetValue))
+                return;
+
+            hashCodeTargetObjects[targetValue.TargetObjectHashCode].Remove(targetObjectWeakReference);
+            if (!hashCodeTargetObjects[targetValue.TargetObjectHashCode].Any())
+                hashCodeTargetObjects.Remove(targetValue.TargetObjectHashCode);
+
+            targetObjects.Remove(targetObjectWeakReference);
+            nestedTargetObjects.Remove(targetObjectWeakReference);
         }
 
         /// <summary>

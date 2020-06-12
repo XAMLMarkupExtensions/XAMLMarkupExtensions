@@ -221,14 +221,11 @@ namespace XAMLMarkupExtensions.Base
                 ObjectDependencyManager.AddObjectDependency(wr, this);
             }
 
-            // Finally, add the target prop and info to the list of this WeakReference
-            targetObjects.AddTargetObjectProperty(wr, targetProperty, targetPropertyType, targetPropertyIndex);
-
-            // Sign up to the EndpointReachedEvent only if the markup extension wants to do so.
-            EndpointReachedEvent.AddListener(rootObjectHashCode, this);
-
             // Create the target info
             TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
+
+            // Sign up to the EndpointReachedEvent and connect info inside.
+            EndpointReachedEvent.AddListener(rootObjectHashCode, this, wr, info);
 
             // Return the result of FormatOutput
             object result = null;
@@ -515,6 +512,41 @@ namespace XAMLMarkupExtensions.Base
             targetObjects.Dispose();
         }
 
+        /// <summary>
+        /// Add property info of target object.
+        /// </summary>
+        /// <param name="targetKey">The weak reference of target object.</param>
+        /// <param name="targetInfo">The info of property.</param>
+        internal void AddTargetInfo(WeakReference targetKey, TargetInfo targetInfo)
+        {
+            targetObjects.AddTargetObjectProperty(targetKey, targetInfo.TargetProperty, targetInfo.TargetPropertyType, targetInfo.TargetPropertyIndex);
+        }
+
+        /// <summary>
+        /// Remove target object's property info.
+        /// </summary>
+        /// <param name="targetInfo">The information about the target.</param>
+        /// <returns>
+        /// <see langwrod="true" /> if info was removed.
+        /// <see langwrod="false" /> if info didn't contains at list.
+        /// </returns>
+        internal bool RemoveTargetInfo(TargetInfo targetInfo)
+        {
+            if (!targetObjects.RemoveTargetInfo(targetInfo))
+                return false;
+
+            // TODO Check if last target removed.
+            //if (targetObjects.Count == 0)
+            //{
+            //    OnLastTargetRemoved();
+
+            //    var targetKey = targetObjects.TryFindKey(targetInfo.TargetObject);
+            //    ObjectDependencyManager.CleanUp(this, targetKey);
+            //}
+
+            return true;
+        }
+
         #region EndpointReachedEvent
         /// <summary>
         /// A static proxy class that handles endpoint reached events for a list of weak references of <see cref="NestedMarkupExtension"/>.
@@ -523,9 +555,9 @@ namespace XAMLMarkupExtensions.Base
         internal static class EndpointReachedEvent
         {
             /// <summary>
-            /// A dicitonary which contains a list of listeners per unique rootObject hash.
+            /// A dictionary which contains a list of listeners per unique rootObject hash.
             /// </summary>
-            private static readonly Dictionary<int, List<WeakReference>> listeners;
+            private static readonly Dictionary<int, ListenersList> listeners;
             private static readonly object listenersLock;
 
             /// <summary>
@@ -538,18 +570,15 @@ namespace XAMLMarkupExtensions.Base
             {
                 lock (listenersLock)
                 {
-                    // Do nothing if we don't have this root object hash.
-                    if (!listeners.ContainsKey(rootObjectHashCode))
+                    if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
                         return;
 
-                    foreach (var wr in listeners[rootObjectHashCode].ToList())
+                    foreach (var targetListener in listenersList.GetListeners())
                     {
-                        var targetReference = wr.Target;
-                        if (targetReference is NestedMarkupExtension)
-                            ((NestedMarkupExtension)targetReference).OnEndpointReached(sender, args);
-                        else
-                            listeners[rootObjectHashCode].Remove(wr);
+                        targetListener.OnEndpointReached(sender, args);
                     }
+
+                    listenersList.ClearDeadReferences();
                 }
             }
 
@@ -558,7 +587,9 @@ namespace XAMLMarkupExtensions.Base
             /// </summary>
             /// <param name="rootObjectHashCode"><paramref name="listener"/>s root object hash code.</param>
             /// <param name="listener">The listener to add.</param>
-            internal static void AddListener(int rootObjectHashCode, NestedMarkupExtension listener)
+            /// <param name="targetKey">The key of last added/updated target object.</param>
+            /// <param name="targetInfo">The last added/updated property.</param>
+            internal static void AddListener(int rootObjectHashCode, NestedMarkupExtension listener, WeakReference targetKey, TargetInfo targetInfo)
             {
                 if (listener == null)
                     return;
@@ -566,52 +597,35 @@ namespace XAMLMarkupExtensions.Base
                 lock (listenersLock)
                 {
                     // Do we have a listeners list for this root object yet, if not add it.
-                    if (!listeners.ContainsKey(rootObjectHashCode))
+                    if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
                     {
-                        listeners[rootObjectHashCode] = new List<WeakReference>();
+                        listenersList = new ListenersList();
+                        listeners[rootObjectHashCode] = listenersList;
                     }
 
-                    // Check, if this listener already was added.
-                    foreach (var wr in listeners[rootObjectHashCode].ToList())
-                    {
-                        var targetReference = wr.Target;
-                        if (targetReference == null)
-                            listeners[rootObjectHashCode].Remove(wr);
-                        else if (targetReference == listener)
-                            return;
-                        else
-                        {
-                            var existing = (NestedMarkupExtension)targetReference;
-                            var targets = existing.GetTargetObjectsAndProperties();
+                    // Add target property here undead lock.
+                    listener.AddTargetInfo(targetKey, targetInfo);
 
-                            foreach (var target in targets)
-                            {
-                                if (listener.IsConnected(target))
-                                {
-                                    listeners[rootObjectHashCode].Remove(wr);
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    // Add listener to internal list.
+                    listenersList.AddListener(listener);
 
-                    // Add it now.
-                    listeners[rootObjectHashCode].Add(new WeakReference(listener));
+                    // One target info may have only one listener.
+                    // If this target info already contains, remove it from old listener.
+                    listenersList.SynchronizeTargetInfo(listener, targetInfo);
+
+                    // Clear dead listeners.
+                    listenersList.ClearDeadReferences();
                 }
             }
 
             /// <summary>
             /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
             /// </summary>
-            /// <param name="rootObjectHashCode"></param>
+            /// <param name="rootObjectHashCode">Root object hash code to check.</param>
             internal static void ClearListenersForRootObject(int rootObjectHashCode)
             {
                 lock (listenersLock)
                 {
-                    if (!listeners.ContainsKey(rootObjectHashCode))
-                        return;
-
-                    listeners[rootObjectHashCode].Clear();
                     listeners.Remove(rootObjectHashCode);
                 }
             }
@@ -638,19 +652,11 @@ namespace XAMLMarkupExtensions.Base
 
                 lock (listenersLock)
                 {
-                    if (!listeners.ContainsKey(rootObjectHashCode))
+                    if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
                         return;
 
-                    foreach (var wr in listeners[rootObjectHashCode].ToList())
-                    {
-                        var targetReference = wr.Target;
-                        if (targetReference == null)
-                            listeners[rootObjectHashCode].Remove(wr);
-                        else if ((NestedMarkupExtension)targetReference == listener)
-                            listeners[rootObjectHashCode].Remove(wr);
-                    }
-
-                    if (listeners[rootObjectHashCode].Count == 0)
+                    listenersList.RemoveListener(listener);
+                    if (listenersList.Count == 0)
                         listeners.Remove(rootObjectHashCode);
                 }
             }
@@ -660,10 +666,11 @@ namespace XAMLMarkupExtensions.Base
             /// </summary>
             static EndpointReachedEvent()
             {
-                listeners = new Dictionary<int, List<WeakReference>>();
+                listeners = new Dictionary<int, ListenersList>();
                 listenersLock = new object();
             }
         }
+
         #endregion
     }
 }
