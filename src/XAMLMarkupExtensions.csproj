@@ -76,7 +76,7 @@
   <!--PackageReference for all framworks-->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="GitVersionTask" Version="5.3.5" PrivateAssets="All" />
+		<PackageReference Include="GitVersionTask" Version="5.3.6" PrivateAssets="All" />
 	</ItemGroup>
 
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
