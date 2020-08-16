@@ -354,8 +354,8 @@ namespace XAMLMarkupExtensions.Base
                 value = Activator.CreateInstance(info.TargetPropertyType);
 
             // Set the value.
-            if (info.TargetProperty is DependencyProperty)
-                ((DependencyObject)info.TargetObject).SetValueSync((DependencyProperty)info.TargetProperty, value);
+            if (info.TargetProperty is DependencyProperty dp)
+                ((DependencyObject)info.TargetObject).SetValueSync(dp, value);
             else
             {
                 PropertyInfo pi = (PropertyInfo)info.TargetProperty;
@@ -421,8 +421,8 @@ namespace XAMLMarkupExtensions.Base
         protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint = null, IServiceProvider service= null)
         {
             // Simple case: value is of same type
-            if (value is T && !(value is MarkupExtension))
-                return (T)value;
+            if (value is T t && !(value is MarkupExtension))
+                return t;
 
             // No property supplied
             if (property == null)
@@ -434,8 +434,6 @@ namespace XAMLMarkupExtensions.Base
                 object result = me.ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint, service));
                 if (result != null)
                     return (T)result;
-                else
-                    return default;
             }
 
             // Default return path.
