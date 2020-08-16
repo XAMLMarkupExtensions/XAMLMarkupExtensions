@@ -21,14 +21,6 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.0
 
-    - name: Cache Nuget
-      uses: actions/cache@v1
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
     - name: Restore
       working-directory: src
       run: |
@@ -47,9 +39,10 @@ jobs:
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
 
     - name: Get Name of Nuget
+      working-directory: src/bin/Release/
       shell: powershell
       run: |
-        Get-ChildItem -Path *.nupkg  | ForEach-Object {$env:NUPKG=$_.Name}
+        Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env name=NUPKG::$($_.Name)"}
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
