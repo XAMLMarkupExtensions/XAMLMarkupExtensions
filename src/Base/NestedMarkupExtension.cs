@@ -15,6 +15,7 @@ namespace XAMLMarkupExtensions.Base
     using System.Linq;
     using System.Reflection;
     using System.Windows;
+    using System.Windows.Data;
     using System.Windows.Markup;
     using System.Windows.Controls;
     using System.Xaml;
@@ -166,6 +167,33 @@ namespace XAMLMarkupExtensions.Base
             object targetProperty = service.TargetProperty;
             int targetPropertyIndex = -1;
             Type targetPropertyType = null;
+            object overriddenResult = null;
+
+            // If target object is a Binding, extension set at Value.
+            // Return Binding which work with BindingValueProvider.
+            if (targetObject is Setter setter)
+            {
+                targetObject = new BindingValueProvider();
+                targetProperty = BindingValueProvider.ValueProperty;
+                targetPropertyType = setter.Property.PropertyType;
+
+                overriddenResult = new Binding(nameof(BindingValueProvider.Value))
+                {
+                    Source = targetObject,
+                    Mode = BindingMode.TwoWay
+                };
+            }
+            // If target object is a Binding, extension set at Source.
+            // Reconfigure existing binding and return BindingValueProvider.
+            else if (targetObject is Binding binding)
+            {
+                binding.Path = new PropertyPath(nameof(BindingValueProvider.Value));
+                binding.Mode = BindingMode.TwoWay;
+
+                targetObject = new BindingValueProvider();
+                targetProperty = BindingValueProvider.ValueProperty;
+                overriddenResult = targetObject;
+            }
 
             // First, check if the service provider is of type SimpleProvideValueServiceProvider
             //      -> If yes, get the target property type and index.
@@ -176,7 +204,7 @@ namespace XAMLMarkupExtensions.Base
                 targetPropertyIndex = spvServiceProvider.TargetPropertyIndex;
                 endPoint = spvServiceProvider.EndPoint;
             }
-            else
+            else if (targetPropertyType == null)
             {
                 if (targetProperty is PropertyInfo pi)
                 {
@@ -242,10 +270,13 @@ namespace XAMLMarkupExtensions.Base
             else
                 result = FormatOutput(endPoint, info);
 
+            if (overriddenResult != null)
+                return overriddenResult;
+
             // Check type
             if (typeof(IList).IsAssignableFrom(targetPropertyType))
                 return result;
-            else if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
+            else if (result != null && targetPropertyType.IsInstanceOfType(result))
                 return result;
 
             // Finally, if nothing was there, return null or default
@@ -323,8 +354,8 @@ namespace XAMLMarkupExtensions.Base
                 value = Activator.CreateInstance(info.TargetPropertyType);
 
             // Set the value.
-            if (info.TargetProperty is DependencyProperty)
-                ((DependencyObject)info.TargetObject).SetValueSync((DependencyProperty)info.TargetProperty, value);
+            if (info.TargetProperty is DependencyProperty dp)
+                ((DependencyObject)info.TargetObject).SetValueSync(dp, value);
             else
             {
                 PropertyInfo pi = (PropertyInfo)info.TargetProperty;
@@ -390,8 +421,8 @@ namespace XAMLMarkupExtensions.Base
         protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint = null, IServiceProvider service= null)
         {
             // Simple case: value is of same type
-            if (value is T && !(value is MarkupExtension))
-                return (T)value;
+            if (value is T t && !(value is MarkupExtension))
+                return t;
 
             // No property supplied
             if (property == null)
@@ -403,8 +434,6 @@ namespace XAMLMarkupExtensions.Base
                 object result = me.ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint, service));
                 if (result != null)
                     return (T)result;
-                else
-                    return default;
             }
 
             // Default return path.
