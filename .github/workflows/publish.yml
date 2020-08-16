@@ -42,7 +42,7 @@ jobs:
       working-directory: src/bin/Release/
       shell: powershell
       run: |
-        Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env NUPKG=$($_.Name)"}
+        Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env name=NUPKG::$($_.Name)"}
 
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
