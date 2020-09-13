@@ -540,8 +540,24 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
-            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            targetObjects.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// <see langword="true" /> if calls from Dispose() method.
+        /// <see langword="false" /> if calls from finalizer.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
+                targetObjects.Dispose();
+            }
         }
 
         #region EndpointReachedEvent
