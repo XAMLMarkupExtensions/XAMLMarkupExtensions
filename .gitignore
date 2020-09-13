@@ -35,3 +35,6 @@ _ReSharper*/
 *.vs
 
 fullkey.snk
+
+# Jetbrain Rider Cache
+.idea/
