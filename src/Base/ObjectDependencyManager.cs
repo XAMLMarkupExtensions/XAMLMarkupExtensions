@@ -145,10 +145,11 @@ namespace XAMLMarkupExtensions.Base
             // It's one for all keys for reduce memory allocations.
             List<WeakReference> deadReferences = new List<WeakReference>();
 
-            // step through all object dependenies
+            // step through all object dependencies
             foreach (KeyValuePair<object, HashSet<WeakReference>> kvp in internalList)
             {
-                foreach (var target in kvp.Value)
+                var dependencies = kvp.Value;
+                foreach (var target in dependencies)
                 {
                     var targetReference = target.Target;
                     if (targetReference == null)
@@ -158,7 +159,7 @@ namespace XAMLMarkupExtensions.Base
                 if (deadReferences.Count > 0)
                 {
                     // if the all of weak references is empty, remove the whole entry
-                    if (deadReferences.Count == kvp.Value.Count)
+                    if (deadReferences.Count == dependencies.Count)
                     {
                         keysToRemove.Add(kvp.Key);
                     }
@@ -166,12 +167,12 @@ namespace XAMLMarkupExtensions.Base
                     {
                         foreach (var deadReference in deadReferences)
                         {
-                            kvp.Value.Remove(deadReference);
+                            dependencies.Remove(deadReference);
                         }
                     }
+                    
+                    deadReferences.Clear();
                 }
-
-                deadReferences.Clear();
             }
 
             // remove the key from the internalList
