@@ -133,10 +133,10 @@ namespace XAMLMarkupExtensions.Binding
 
             if ((src == null) || ((src is string) && (".".CompareTo(src) == 0)))
             {
-                if (obj is FrameworkElement)
-                    src = ((FrameworkElement)obj).DataContext;
-                else if (obj is FrameworkContentElement)
-                    src = ((FrameworkContentElement)obj).DataContext;
+                if (obj is FrameworkElement fe)
+                    src = fe.DataContext;
+                else if (obj is FrameworkContentElement fce)
+                    src = fce.DataContext;
 
                 if (src == null)
                     return null;
@@ -152,7 +152,7 @@ namespace XAMLMarkupExtensions.Binding
             binding.Converter = converter;
             binding.ConverterParameter = converterParameter;
 
-            object ret = null;
+            object ret;
 
             if (info.IsDependencyObject)
                 ret = binding.ProvideValue(new SimpleProvideValueServiceProvider(endPoint.TargetObject, endPoint.TargetProperty, endPoint.TargetPropertyType, endPoint.TargetPropertyIndex));

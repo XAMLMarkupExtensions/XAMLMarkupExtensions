@@ -69,7 +69,13 @@ namespace XAMLMarkupExtensions.Base
             {
                 throw new ArgumentException("objToHold cannot be type of WeakReference", nameof(objToHold));
             }
-
+            
+            // if the weakRefDp is null, we cannot handle this afterwards.
+            if (weakRefDp == null)
+            {
+                throw new ArgumentNullException(nameof(weakRefDp), "The weakRefDp cannot be null");
+            }
+            
             // if the target of the weakreference is the objToHold, this would be a cycling play.
             if (weakRefDp.Target == objToHold)
             {
@@ -142,7 +148,8 @@ namespace XAMLMarkupExtensions.Base
             // step through all object dependenies
             foreach (KeyValuePair<object, HashSet<WeakReference>> kvp in internalList)
             {
-                foreach (var target in kvp.Value)
+                var dependencies = kvp.Value;
+                foreach (var target in dependencies)
                 {
                     var targetReference = target.Target;
                     if (targetReference == null)
@@ -154,21 +161,25 @@ namespace XAMLMarkupExtensions.Base
                     var objectDependency = kvp.Key as IObjectDependency;
 
                     // if the all of weak references is empty, remove the whole entry
-                    if (deadReferences.Count == kvp.Value.Count)
+                    if (deadReferences.Count == dependencies.Count)
                     {
                         // notify all references are dead.
                         objectDependency?.OnAllReferencesRemoved();
-
                         keysToRemove.Add(kvp.Key);
                     }
                     else
                     {
                         // notify some references are dead.
                         objectDependency?.OnReferencesRemoved(deadReferences);
+                        
+                        foreach (var deadReference in deadReferences)
+                        {
+                            dependencies.Remove(deadReference);
+                        }
                     }
+                    
+                    deadReferences.Clear();
                 }
-
-                deadReferences.Clear();
             }
 
             // remove the key from the internalList

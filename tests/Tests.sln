@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XAMLMarkupExtensions", "..\src\XAMLMarkupExtensions.csproj", "{D6A34739-E9E5-4E5D-BCF2-E36FAC2FCE44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWPF", "TestWPF\TestWPF.csproj", "{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWPF", "TestWPF\TestWPF.csproj", "{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAMLMarkupExtensions.PerformanceTests", "XAMLMarkupExtensions.PerformanceTests\XAMLMarkupExtensions.PerformanceTests.csproj", "{7C9D4957-BDF0-4222-8265-BF9AECFCA447}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAMLMarkupExtensions.UnitTests", "XAMLMarkupExtensions.UnitTests\XAMLMarkupExtensions.UnitTests.csproj", "{D23BBEB9-2DA9-4642-AE44-B6F5CD0C6BC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XAMLMarkupExtensions.PerformanceTests", "XAMLMarkupExtensions.PerformanceTests\XAMLMarkupExtensions.PerformanceTests.csproj", "{51BA4700-7209-4999-B5E4-4DB3C4415A1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,14 @@ Global
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1413BA2C-6CAF-4F1D-8A05-8AC06A1DB39F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C9D4957-BDF0-4222-8265-BF9AECFCA447}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C9D4957-BDF0-4222-8265-BF9AECFCA447}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C9D4957-BDF0-4222-8265-BF9AECFCA447}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C9D4957-BDF0-4222-8265-BF9AECFCA447}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D23BBEB9-2DA9-4642-AE44-B6F5CD0C6BC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D23BBEB9-2DA9-4642-AE44-B6F5CD0C6BC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D23BBEB9-2DA9-4642-AE44-B6F5CD0C6BC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D23BBEB9-2DA9-4642-AE44-B6F5CD0C6BC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51BA4700-7209-4999-B5E4-4DB3C4415A1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51BA4700-7209-4999-B5E4-4DB3C4415A1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51BA4700-7209-4999-B5E4-4DB3C4415A1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51BA4700-7209-4999-B5E4-4DB3C4415A1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
