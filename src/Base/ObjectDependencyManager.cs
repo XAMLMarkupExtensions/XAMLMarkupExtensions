@@ -69,7 +69,13 @@ namespace XAMLMarkupExtensions.Base
             {
                 throw new ArgumentException("objToHold cannot be type of WeakReference", nameof(objToHold));
             }
-
+            
+            // if the weakRefDp is null, we cannot handle this afterwards.
+            if (weakRefDp == null)
+            {
+                throw new ArgumentNullException(nameof(weakRefDp), "The weakRefDp cannot be null");
+            }
+            
             // if the target of the weakreference is the objToHold, this would be a cycling play.
             if (weakRefDp.Target == objToHold)
             {
