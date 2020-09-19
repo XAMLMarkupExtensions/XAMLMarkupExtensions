@@ -2,8 +2,11 @@ namespace XAMLMarkupExtensions.UnitTests
 {
     #region Uses
     using System;
-    using XAMLMarkupExtensions.Base;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Moq;
     using Xunit;
+    using XAMLMarkupExtensions.Base;
     #endregion
     
     /// <summary>
@@ -354,6 +357,94 @@ namespace XAMLMarkupExtensions.UnitTests
             Assert.False(secondDependencyWeakReference.IsAlive);
         }
         
+        /// <summary>
+        /// Check that ObjectDependencyManager calls <see cref="IObjectDependency.OnAllDependenciesRemoved" /> method if all dependencies are dead.
+        /// </summary>
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void CleanUp_AllDependenciesDead_CalledOnAllDependenciesRemoved(int dependenciesCount)
+        {
+            // ARRANGE.
+            var objectDependencyMock = new Mock<IObjectDependency>();
+            var objectDependency = objectDependencyMock.Object;
+            var isRegistered = true;
+            CreateWeakReferences(dependenciesCount, out var dependencies, out var dependencyWeakReferences);
+
+            // ACT.
+            // Register target and its dependencies.
+            foreach (var dependencyWeakReference in dependencyWeakReferences)
+            {
+                isRegistered &= ObjectDependencyManager.AddObjectDependency(dependencyWeakReference, objectDependency);
+            }
+
+            // Remove direct references to dependencies.
+            dependencies.Clear();
+            dependencies = null;
+            
+            // Force collect dependencies.
+            GC.Collect();
+
+            // Check all dependencies are dead.
+            Assert.All(dependencyWeakReferences, wr => Assert.False(wr.IsAlive));
+            
+            // Remove dead references.
+            ObjectDependencyManager.CleanUp();
+
+            // ASSERT.
+            Assert.True(isRegistered);
+            
+            // Check call notify method.
+            objectDependencyMock.Verify(od => od.OnAllDependenciesRemoved(), Times.Once);
+            objectDependencyMock.VerifyNoOtherCalls();
+        }
+        
+        /// <summary>
+        /// Check that ObjectDependencyManager calls <see cref="IObjectDependency.OnDependenciesRemoved" /> method if some of dependencies (not all) are dead.
+        /// </summary>
+        [Fact]
+        public void CleanUp_TwoDependenciesOneIsDead_CalledOnDependenciesRemoved()
+        {
+            // ARRANGE.
+            var objectDependencyMock = new Mock<IObjectDependency>();
+            var target = objectDependencyMock.Object;
+            CreateWeakReference(out var firstDependency, out var firstDependencyWeakReference);
+            CreateWeakReference(out var secondDependency, out var secondDependencyWeakReference);
+            objectDependencyMock
+                .Setup(od => od.OnDependenciesRemoved(It.Is<IEnumerable<WeakReference>>(
+                    dp => dp.Single() == firstDependencyWeakReference)))
+                .Verifiable();
+
+            // ACT.
+            // Register target and its dependencies.
+            var isFirstRegistered = ObjectDependencyManager.AddObjectDependency(firstDependencyWeakReference, target);
+            var isSecondRegistered = ObjectDependencyManager.AddObjectDependency(secondDependencyWeakReference, target);
+
+            // Remove direct references to the first dependency.
+            firstDependency = null;
+
+            // Force collect dependency.
+            GC.Collect();
+            
+            // Dependency is collected.
+            Assert.False(firstDependencyWeakReference.IsAlive);
+            
+            // Remove information about the first dependency.
+            ObjectDependencyManager.CleanUp();
+
+            // ASSERT.
+            Assert.True(isFirstRegistered);
+            Assert.True(isSecondRegistered);
+            Assert.True(secondDependencyWeakReference.IsAlive);
+            
+            // Check call notify method.
+            objectDependencyMock.Verify();
+            objectDependencyMock.VerifyNoOtherCalls();
+            
+            // Prevent references optimization. 
+            Assert.NotNull(secondDependency);
+        }
+        
         #endregion
     
         #region Tests of 'CleanUp(target)' method
@@ -470,6 +561,30 @@ namespace XAMLMarkupExtensions.UnitTests
         {
             obj = new object();
             weakReference = new WeakReference(obj);
+        }
+
+        /// <summary>
+        /// Create list of objects and weak references which hold this objects.
+        /// </summary>
+        /// <param name="count">The count of objects.</param>
+        /// <param name="objects">The list of created objects.</param>
+        /// <param name="weakReferences">The list of weak references of created objects.</param>
+        /// <remarks>
+        /// This method allows fix problem with GC.
+        /// If list created and cleared inside one method, GC often don't collect items inside its.
+        /// But if list created in one method and cleared in another (in test method), then this not problem to collect its items.
+        /// </remarks>
+        private static void CreateWeakReferences(int count, out List<object> objects, out List<WeakReference> weakReferences)
+        {
+            objects = new List<object>(count);
+            weakReferences = new List<WeakReference>(count);
+            
+            for (int i = 0; i < count; ++i)
+            {
+                CreateWeakReference(out var obj, out var weakReference);
+                objects.Add(obj);
+                weakReferences.Add(weakReference);
+            }
         }
         
         #endregion

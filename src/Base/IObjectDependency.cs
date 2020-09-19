@@ -11,13 +11,13 @@
     public interface IObjectDependency
     {
         /// <summary>
-        /// Notify that some of references are dead.
+        /// Notify that some of dependencies are dead.
         /// </summary>
-        void OnReferencesRemoved(IEnumerable<WeakReference> deadReferences);
+        void OnDependenciesRemoved(IEnumerable<WeakReference> deadDependencies);
 
         /// <summary>
-        /// Notify that all of related references are dead.
+        /// Notify that all dependencies are dead.
         /// </summary>
-        void OnAllReferencesRemoved();
+        void OnAllDependenciesRemoved();
     }
 }

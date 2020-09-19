@@ -46,6 +46,9 @@ namespace XAMLMarkupExtensions.Base
         /// <exception cref="System.ArgumentNullException">
         /// The <paramref name="objToHold"/> cannot be null
         /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The <paramref name="weakRefDp"/> cannot be null
+        /// </exception>
         /// <exception cref="System.ArgumentException">
         /// <paramref name="objToHold"/> cannot be type of <see cref="WeakReference"/>
         /// </exception>
@@ -164,13 +167,13 @@ namespace XAMLMarkupExtensions.Base
                     if (deadReferences.Count == dependencies.Count)
                     {
                         // notify all references are dead.
-                        objectDependency?.OnAllReferencesRemoved();
+                        objectDependency?.OnAllDependenciesRemoved();
                         keysToRemove.Add(kvp.Key);
                     }
                     else
                     {
                         // notify some references are dead.
-                        objectDependency?.OnReferencesRemoved(deadReferences);
+                        objectDependency?.OnDependenciesRemoved(deadReferences);
                         
                         foreach (var deadReference in deadReferences)
                         {

@@ -577,7 +577,7 @@ namespace XAMLMarkupExtensions.Base
                 var targetObjectsCount = targetObjects.Count;
                 targetObjects.Clear();
 
-                // Notify if any targets was not empty.
+                // Notify if targets was not empty.
                 if (targetObjectsCount > 0)
                     OnLastTargetRemoved();
             }
@@ -586,13 +586,16 @@ namespace XAMLMarkupExtensions.Base
         #region IObjectDependency
 
         /// <inheritdoc />
-        void IObjectDependency.OnReferencesRemoved(IEnumerable<WeakReference> deadReferences)
+        void IObjectDependency.OnDependenciesRemoved(IEnumerable<WeakReference> deadDependencies)
         {
-            targetObjects.ClearReferences(deadReferences);
+            targetObjects.ClearReferences(deadDependencies);
+            
+            if (targetObjects.Count == 0)
+                OnLastTargetRemoved();
         }
 
         /// <inheritdoc />
-        void IObjectDependency.OnAllReferencesRemoved()
+        void IObjectDependency.OnAllDependenciesRemoved()
         {
             targetObjects.Clear();
             OnLastTargetRemoved();
