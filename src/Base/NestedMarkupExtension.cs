@@ -26,7 +26,7 @@ namespace XAMLMarkupExtensions.Base
     /// Based on <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
     [MarkupExtensionReturnType(typeof(object))]
-    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable, IObjectDependency
     {
         /// <summary>
         /// Holds the collection of assigned dependency objects
@@ -85,7 +85,24 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// An action that is called when the first target is bound.
         /// </summary>
+        [Obsolete("Override 'OnFirstTargetAdded' method instead")]
         protected Action OnFirstTarget;
+
+        /// <summary>
+        /// An action that is called when the first target is bound.
+        /// </summary>
+        protected virtual void OnFirstTargetAdded()
+        {
+            OnFirstTarget?.Invoke();
+        }
+
+        /// <summary>
+        /// An action that is called when the last target is unbound.
+        /// </summary>
+        protected virtual void OnLastTargetRemoved()
+        {
+            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
+        }
 
         /// <summary>
         /// This function must be implemented by all child classes.
@@ -238,9 +255,7 @@ namespace XAMLMarkupExtensions.Base
             {
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
-                {
-                    OnFirstTarget?.Invoke();
-                }
+                    OnFirstTargetAdded();
 
                 // Add to the target object list
                 wr = targetObjects.AddTargetObject(targetObject);
@@ -555,10 +570,38 @@ namespace XAMLMarkupExtensions.Base
         {
             if (isDisposing)
             {
-                EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-                targetObjects.Dispose();
+                // Remove strong reference from ObjectDependencyManager.
+                ObjectDependencyManager.CleanUp(this);
+
+                // Clean all targets.
+                var targetObjectsCount = targetObjects.Count;
+                targetObjects.Clear();
+
+                // Notify if targets was not empty.
+                if (targetObjectsCount > 0)
+                    OnLastTargetRemoved();
             }
         }
+
+        #region IObjectDependency
+
+        /// <inheritdoc />
+        void IObjectDependency.OnDependenciesRemoved(IEnumerable<WeakReference> deadDependencies)
+        {
+            targetObjects.ClearReferences(deadDependencies);
+            
+            if (targetObjects.Count == 0)
+                OnLastTargetRemoved();
+        }
+
+        /// <inheritdoc />
+        void IObjectDependency.OnAllDependenciesRemoved()
+        {
+            targetObjects.Clear();
+            OnLastTargetRemoved();
+        }
+
+        #endregion
 
         #region EndpointReachedEvent
         /// <summary>
@@ -648,7 +691,6 @@ namespace XAMLMarkupExtensions.Base
             /// <summary>
             /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
             /// </summary>
-            /// <param name="rootObjectHashCode"></param>
             internal static void ClearListenersForRootObject(int rootObjectHashCode)
             {
                 lock (listenersLock)
@@ -656,7 +698,6 @@ namespace XAMLMarkupExtensions.Base
                     if (!listeners.ContainsKey(rootObjectHashCode))
                         return;
 
-                    listeners[rootObjectHashCode].Clear();
                     listeners.Remove(rootObjectHashCode);
                 }
             }

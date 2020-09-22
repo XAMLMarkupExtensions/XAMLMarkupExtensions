@@ -58,9 +58,6 @@
             foreach (var extension in _extensions)
             {
                 extension.Dispose();
-                
-                // TODO Remove after correct dispose realization.
-                ObjectDependencyManager.CleanUp(extension);
             }
 
             _extensions.Clear();

@@ -46,6 +46,9 @@ namespace XAMLMarkupExtensions.Base
         /// <exception cref="System.ArgumentNullException">
         /// The <paramref name="objToHold"/> cannot be null
         /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The <paramref name="weakRefDp"/> cannot be null
+        /// </exception>
         /// <exception cref="System.ArgumentException">
         /// <paramref name="objToHold"/> cannot be type of <see cref="WeakReference"/>
         /// </exception>
@@ -129,16 +132,10 @@ namespace XAMLMarkupExtensions.Base
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void CleanUp(object objToRemove)
         {
-            // if a particular object is passed, remove it.
+            // if a particular object is passed, remove only it.
             if (objToRemove != null)
             {
-                // if the key wasnt found, throw an exception.
-                if (!internalList.Remove(objToRemove))
-                {
-                    throw new Exception("Key was not found!");
-                }
-
-                // stop here
+                internalList.Remove(objToRemove);
                 return;
             }
 
@@ -151,7 +148,7 @@ namespace XAMLMarkupExtensions.Base
             // It's one for all keys for reduce memory allocations.
             List<WeakReference> deadReferences = new List<WeakReference>();
 
-            // step through all object dependencies
+            // step through all object dependenies
             foreach (KeyValuePair<object, HashSet<WeakReference>> kvp in internalList)
             {
                 var dependencies = kvp.Value;
@@ -164,13 +161,20 @@ namespace XAMLMarkupExtensions.Base
 
                 if (deadReferences.Count > 0)
                 {
+                    var objectDependency = kvp.Key as IObjectDependency;
+
                     // if the all of weak references is empty, remove the whole entry
                     if (deadReferences.Count == dependencies.Count)
                     {
+                        // notify all references are dead.
+                        objectDependency?.OnAllDependenciesRemoved();
                         keysToRemove.Add(kvp.Key);
                     }
                     else
                     {
+                        // notify some references are dead.
+                        objectDependency?.OnDependenciesRemoved(deadReferences);
+                        
                         foreach (var deadReference in deadReferences)
                         {
                             dependencies.Remove(deadReference);

@@ -1,6 +1,4 @@
-﻿using XAMLMarkupExtensions.Base;
-
-namespace XAMLMarkupExtensions.PerformanceTests.Tests
+﻿namespace XAMLMarkupExtensions.PerformanceTests.Tests
 {
     #region Uses
     using System;
@@ -75,12 +73,9 @@ namespace XAMLMarkupExtensions.PerformanceTests.Tests
         [IterationCleanup]
         public void Cleanup()
         {
-            foreach (var (extension, _) in _extensions)
+            foreach (var extension in _extensions)
             {
-                extension.Dispose();
-                
-                // TODO Remove after correct dispose realization.
-                ObjectDependencyManager.CleanUp(extension);
+                extension.Key.Dispose();
             }
 
             _extensions.Clear();
