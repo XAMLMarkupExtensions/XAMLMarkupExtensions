@@ -15,6 +15,7 @@ namespace XAMLMarkupExtensions.Base
     using System.Linq;
     using System.Reflection;
     using System.Windows;
+    using System.Windows.Data;
     using System.Windows.Markup;
     using System.Windows.Controls;
     using System.Xaml;
@@ -25,7 +26,7 @@ namespace XAMLMarkupExtensions.Base
     /// Based on <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
     [MarkupExtensionReturnType(typeof(object))]
-    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable, IObjectDependency
     {
         /// <summary>
         /// Holds the collection of assigned dependency objects
@@ -84,7 +85,24 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// An action that is called when the first target is bound.
         /// </summary>
+        [Obsolete("Override 'OnFirstTargetAdded' method instead")]
         protected Action OnFirstTarget;
+
+        /// <summary>
+        /// An action that is called when the first target is bound.
+        /// </summary>
+        protected virtual void OnFirstTargetAdded()
+        {
+            OnFirstTarget?.Invoke();
+        }
+
+        /// <summary>
+        /// An action that is called when the last target is unbound.
+        /// </summary>
+        protected virtual void OnLastTargetRemoved()
+        {
+            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
+        }
 
         /// <summary>
         /// This function must be implemented by all child classes.
@@ -166,6 +184,33 @@ namespace XAMLMarkupExtensions.Base
             object targetProperty = service.TargetProperty;
             int targetPropertyIndex = -1;
             Type targetPropertyType = null;
+            object overriddenResult = null;
+
+            // If target object is a Binding, extension set at Value.
+            // Return Binding which work with BindingValueProvider.
+            if (targetObject is Setter setter)
+            {
+                targetObject = new BindingValueProvider();
+                targetProperty = BindingValueProvider.ValueProperty;
+                targetPropertyType = setter.Property.PropertyType;
+
+                overriddenResult = new Binding(nameof(BindingValueProvider.Value))
+                {
+                    Source = targetObject,
+                    Mode = BindingMode.TwoWay
+                };
+            }
+            // If target object is a Binding, extension set at Source.
+            // Reconfigure existing binding and return BindingValueProvider.
+            else if (targetObject is Binding binding)
+            {
+                binding.Path = new PropertyPath(nameof(BindingValueProvider.Value));
+                binding.Mode = BindingMode.TwoWay;
+
+                targetObject = new BindingValueProvider();
+                targetProperty = BindingValueProvider.ValueProperty;
+                overriddenResult = targetObject;
+            }
 
             // First, check if the service provider is of type SimpleProvideValueServiceProvider
             //      -> If yes, get the target property type and index.
@@ -176,7 +221,7 @@ namespace XAMLMarkupExtensions.Base
                 targetPropertyIndex = spvServiceProvider.TargetPropertyIndex;
                 endPoint = spvServiceProvider.EndPoint;
             }
-            else
+            else if (targetPropertyType == null)
             {
                 if (targetProperty is PropertyInfo pi)
                 {
@@ -210,9 +255,7 @@ namespace XAMLMarkupExtensions.Base
             {
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
-                {
-                    OnFirstTarget?.Invoke();
-                }
+                    OnFirstTargetAdded();
 
                 // Add to the target object list
                 wr = targetObjects.AddTargetObject(targetObject);
@@ -239,10 +282,13 @@ namespace XAMLMarkupExtensions.Base
             else
                 result = FormatOutput(endPoint, info);
 
+            if (overriddenResult != null)
+                return overriddenResult;
+
             // Check type
             if (typeof(IList).IsAssignableFrom(targetPropertyType))
                 return result;
-            else if ((result != null) && targetPropertyType.IsAssignableFrom(result.GetType()))
+            else if (result != null && targetPropertyType.IsInstanceOfType(result))
                 return result;
 
             // Finally, if nothing was there, return null or default
@@ -320,8 +366,8 @@ namespace XAMLMarkupExtensions.Base
                 value = Activator.CreateInstance(info.TargetPropertyType);
 
             // Set the value.
-            if (info.TargetProperty is DependencyProperty)
-                ((DependencyObject)info.TargetObject).SetValueSync((DependencyProperty)info.TargetProperty, value);
+            if (info.TargetProperty is DependencyProperty dp)
+                ((DependencyObject)info.TargetObject).SetValueSync(dp, value);
             else
             {
                 PropertyInfo pi = (PropertyInfo)info.TargetProperty;
@@ -387,8 +433,8 @@ namespace XAMLMarkupExtensions.Base
         protected T GetValue<T>(object value, PropertyInfo property, int index, TargetInfo endPoint = null, IServiceProvider service= null)
         {
             // Simple case: value is of same type
-            if (value is T && !(value is MarkupExtension))
-                return (T)value;
+            if (value is T t && !(value is MarkupExtension))
+                return t;
 
             // No property supplied
             if (property == null)
@@ -400,8 +446,6 @@ namespace XAMLMarkupExtensions.Base
                 object result = me.ProvideValue(new SimpleProvideValueServiceProvider(this, property, property.PropertyType, index, endPoint, service));
                 if (result != null)
                     return (T)result;
-                else
-                    return default;
             }
 
             // Default return path.
@@ -508,9 +552,53 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
-            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            targetObjects.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// <see langword="true" /> if calls from Dispose() method.
+        /// <see langword="false" /> if calls from finalizer.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                // Remove strong reference from ObjectDependencyManager.
+                ObjectDependencyManager.CleanUp(this);
+
+                // Clean all targets.
+                var targetObjectsCount = targetObjects.Count;
+                targetObjects.Clear();
+
+                // Notify if targets was not empty.
+                if (targetObjectsCount > 0)
+                    OnLastTargetRemoved();
+            }
+        }
+
+        #region IObjectDependency
+
+        /// <inheritdoc />
+        void IObjectDependency.OnDependenciesRemoved(IEnumerable<WeakReference> deadDependencies)
+        {
+            targetObjects.ClearReferences(deadDependencies);
+            
+            if (targetObjects.Count == 0)
+                OnLastTargetRemoved();
+        }
+
+        /// <inheritdoc />
+        void IObjectDependency.OnAllDependenciesRemoved()
+        {
+            targetObjects.Clear();
+            OnLastTargetRemoved();
+        }
+
+        #endregion
 
         /// <summary>
         /// Add property info of target object.
@@ -532,17 +620,20 @@ namespace XAMLMarkupExtensions.Base
         /// </returns>
         internal bool RemoveTargetInfo(TargetInfo targetInfo)
         {
+            // First of all we should find target key, because after removing it will not exists.
+            var targetKey = targetObjects.TryFindKey(targetInfo.TargetObject);
+            if (targetKey == null)
+                return false;
+            
             if (!targetObjects.RemoveTargetInfo(targetInfo))
                 return false;
 
-            // TODO Check if last target removed.
-            //if (targetObjects.Count == 0)
-            //{
-            //    OnLastTargetRemoved();
-
-            //    var targetKey = targetObjects.TryFindKey(targetInfo.TargetObject);
-            //    ObjectDependencyManager.CleanUp(this, targetKey);
-            //}
+            ObjectDependencyManager.RemoveObjectDependency(targetKey, this);
+            
+            if (targetObjects.Count == 0)
+            {
+                OnLastTargetRemoved();
+            }
 
             return true;
         }

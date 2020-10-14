@@ -1,5 +1,5 @@
 ﻿#region Copyright information
-// <copyright file="TargeObjectList.cs">
+// <copyright file="TargetObjectList.cs">
 //     Licensed under Microsoft Public License (Ms-PL)
 //     https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions/blob/master/LICENSE
 // </copyright>
@@ -18,7 +18,7 @@ namespace XAMLMarkupExtensions.Base
     /// Defines a collection of assigned dependency objects.
     /// Instead of a single reference, a list is used, if this extension is applied to multiple instances.
     /// </summary>
-    internal class TargetObjectsList : IDisposable
+    internal class TargetObjectsList
     {
         /// <summary>
         /// Holds the collection of assigned dependency objects as WeakReferences and its property metadata.
@@ -197,8 +197,19 @@ namespace XAMLMarkupExtensions.Base
             deadTargets.Clear();
         }
 
-        /// <inheritdoc />
-        public void Dispose()
+        /// <summary>
+        /// Clear specified references.
+        /// </summary>
+        public void ClearReferences(IEnumerable<WeakReference> references)
+        {
+            deadTargets.AddRange(references);
+            ClearDeadReferences();
+        }
+
+        /// <summary>
+        /// Clear all targets.
+        /// </summary>
+        public void Clear()
         {
             targetObjects.Clear();
             hashCodeTargetObjects.Clear();

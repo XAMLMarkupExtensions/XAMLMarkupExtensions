@@ -23,7 +23,7 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// This member holds the list of all <see cref="WeakReference"/>s and their appropriate objects.
         /// </summary>
-        private static readonly Dictionary<object, List<WeakReference>> internalList;
+        private static readonly Dictionary<object, HashSet<WeakReference>> internalList;
 
         /// <summary>
         /// Initializes static members of the <see cref="ObjectDependencyManager"/> class.
@@ -32,7 +32,7 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         static ObjectDependencyManager()
         {
-            internalList = new Dictionary<object, List<WeakReference>>();
+            internalList = new Dictionary<object, HashSet<WeakReference>>();
         }
 
         /// <summary>
@@ -45,6 +45,9 @@ namespace XAMLMarkupExtensions.Base
         /// </returns>
         /// <exception cref="System.ArgumentNullException">
         /// The <paramref name="objToHold"/> cannot be null
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The <paramref name="weakRefDp"/> cannot be null
         /// </exception>
         /// <exception cref="System.ArgumentException">
         /// <paramref name="objToHold"/> cannot be type of <see cref="WeakReference"/>
@@ -61,15 +64,21 @@ namespace XAMLMarkupExtensions.Base
             // if the objToHold is null, we cannot handle this afterwards.
             if (objToHold == null)
             {
-                throw new ArgumentNullException("objToHold", "The objToHold cannot be null");
+                throw new ArgumentNullException(nameof(objToHold), "The objToHold cannot be null");
             }
 
             // if the objToHold is a weakreference, we cannot handle this type afterwards.
             if (objToHold.GetType() == typeof(WeakReference))
             {
-                throw new ArgumentException("objToHold cannot be type of WeakReference", "objToHold");
+                throw new ArgumentException("objToHold cannot be type of WeakReference", nameof(objToHold));
             }
-
+            
+            // if the weakRefDp is null, we cannot handle this afterwards.
+            if (weakRefDp == null)
+            {
+                throw new ArgumentNullException(nameof(weakRefDp), "The weakRefDp cannot be null");
+            }
+            
             // if the target of the weakreference is the objToHold, this would be a cycling play.
             if (weakRefDp.Target == objToHold)
             {
@@ -83,7 +92,7 @@ namespace XAMLMarkupExtensions.Base
             if (!internalList.ContainsKey(objToHold))
             {
                 // add the objToHold to the internal list.
-                List<WeakReference> lst = new List<WeakReference> { weakRefDp };
+                HashSet<WeakReference> lst = new HashSet<WeakReference> { weakRefDp };
 
                 internalList.Add(objToHold, lst);
 
@@ -92,10 +101,10 @@ namespace XAMLMarkupExtensions.Base
             else
             {
                 // otherweise, check if the weakRefDp exists and add it if necessary
-                List<WeakReference> lst = internalList[objToHold];
-                if (!lst.Contains(weakRefDp))
+                HashSet<WeakReference> references = internalList[objToHold];
+                if (!references.Contains(weakRefDp))
                 {
-                    lst.Add(weakRefDp);
+                    references.Add(weakRefDp);
 
                     itemRegistered = true;
                 }
@@ -105,6 +114,37 @@ namespace XAMLMarkupExtensions.Base
             return itemRegistered;
         }
 
+        /// <summary>
+        /// Remove previously registered object dependency. 
+        /// </summary>
+        /// <exception cref="System.ArgumentNullException">
+        /// The <paramref name="objToHold"/> cannot be null
+        /// </exception>
+        /// <exception cref="System.ArgumentNullException">
+        /// The <paramref name="weakRefDp"/> cannot be null
+        /// </exception>
+        public static void RemoveObjectDependency(WeakReference weakRefDp, object objToHold)
+        {
+            if (objToHold == null)
+            {
+                throw new ArgumentNullException(nameof(objToHold), "The objToHold cannot be null");
+            }
+
+            if (weakRefDp == null)
+            {
+                throw new ArgumentNullException(nameof(weakRefDp), "The weakRefDp cannot be null");
+            }
+            
+            if (!internalList.TryGetValue(objToHold, out var dependencies))
+                return;
+
+            dependencies.Remove(weakRefDp);
+
+            // If there is not other dependencies - remove object.
+            if (dependencies.Count == 0)
+                internalList.Remove(objToHold);
+        }
+        
         /// <summary>
         /// This method cleans up all independent (!<see cref="WeakReference"/>.IsAlive) objects.
         /// </summary>
@@ -123,16 +163,10 @@ namespace XAMLMarkupExtensions.Base
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static void CleanUp(object objToRemove)
         {
-            // if a particular object is passed, remove it.
+            // if a particular object is passed, remove only it.
             if (objToRemove != null)
             {
-                // if the key wasnt found, throw an exception.
-                if (!internalList.Remove(objToRemove))
-                {
-                    throw new Exception("Key was not found!");
-                }
-
-                // stop here
+                internalList.Remove(objToRemove);
                 return;
             }
 
@@ -141,36 +175,52 @@ namespace XAMLMarkupExtensions.Base
             // this list will hold all keys they has to be removed
             List<object> keysToRemove = new List<object>();
 
+            // This list will hold all references which should be removed.
+            // It's one for all keys for reduce memory allocations.
+            List<WeakReference> deadReferences = new List<WeakReference>();
+
             // step through all object dependenies
-            foreach (KeyValuePair<object, List<WeakReference>> kvp in internalList)
+            foreach (KeyValuePair<object, HashSet<WeakReference>> kvp in internalList)
             {
-                // step recursive through all weak references
-                for (int i = kvp.Value.Count - 1; i >= 0; i--)
+                var dependencies = kvp.Value;
+                foreach (var target in dependencies)
                 {
-                    // if this weak reference is no more alive, remove it
-                    var targetReference = kvp.Value[i].Target;
+                    var targetReference = target.Target;
                     if (targetReference == null)
-                    {
-                        kvp.Value.RemoveAt(i);
-                    }
+                        deadReferences.Add(target);
                 }
 
-                // if the list of weak references is empty, temove the whole entry
-                if (kvp.Value.Count == 0)
+                if (deadReferences.Count > 0)
                 {
-                    keysToRemove.Add(kvp.Key);
+                    var objectDependency = kvp.Key as IObjectDependency;
+
+                    // if the all of weak references is empty, remove the whole entry
+                    if (deadReferences.Count == dependencies.Count)
+                    {
+                        // notify all references are dead.
+                        objectDependency?.OnAllDependenciesRemoved();
+                        keysToRemove.Add(kvp.Key);
+                    }
+                    else
+                    {
+                        // notify some references are dead.
+                        objectDependency?.OnDependenciesRemoved(deadReferences);
+                        
+                        foreach (var deadReference in deadReferences)
+                        {
+                            dependencies.Remove(deadReference);
+                        }
+                    }
+                    
+                    deadReferences.Clear();
                 }
             }
 
-            // step recursive through all keys that have to be remove
-            for (int i = keysToRemove.Count - 1; i >= 0; i--)
+            // remove the key from the internalList
+            foreach (var keyToRemove in keysToRemove)
             {
-                // remove the key from the internalList
-                internalList.Remove(keysToRemove[i]);
+                internalList.Remove(keyToRemove);
             }
-
-            // clear up the keysToRemove
-            keysToRemove.Clear();
         }
     }
 }
