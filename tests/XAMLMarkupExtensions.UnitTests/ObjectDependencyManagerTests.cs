@@ -224,6 +224,112 @@ namespace XAMLMarkupExtensions.UnitTests
         
         #endregion
 
+        #region Tests of 'RemoveObjectDependency' method
+
+        /// <summary>
+        /// Check that it's not possible to pass null as target.
+        /// </summary>
+        [Fact]
+        public void RemoveObjectDependency_TargetIsNull_ArgumentNullExceptionThrown()
+        {
+            // ARRANGE.
+            CreateWeakReference(out var dependency, out var dependencyWeakReference);
+
+            // ACT + ASSERT.
+            var exception = Assert.Throws<ArgumentNullException>("objToHold",
+                () => ObjectDependencyManager.RemoveObjectDependency(dependencyWeakReference, null));
+            Assert.Equal("The objToHold cannot be null (Parameter 'objToHold')", exception.Message);
+            
+            // Prevent references optimization. 
+            Assert.NotNull(dependency);
+        }
+        
+        /// <summary>
+        /// Check that it's not possible to pass null as dependency.
+        /// </summary>
+        [Fact]
+        public void RemoveObjectDependency_DependencyIsNull_ArgumentNullExceptionThrown()
+        {
+            // ARRANGE.
+            CreateWeakReference(out var target, out var targetWeakReference);
+
+            // ACT + ASSERT.
+            var exception = Assert.Throws<ArgumentNullException>("weakRefDp",
+                () => ObjectDependencyManager.RemoveObjectDependency(null, target));
+            Assert.Equal("The weakRefDp cannot be null (Parameter 'weakRefDp')", exception.Message);
+            
+            // Prevent references optimization. 
+            Assert.NotNull(target);
+        }
+
+        /// <summary>
+        /// Check that ObjectDependencyManager allows GC collect target, if there is one dependency and it was removed.
+        /// </summary>
+        [Fact]
+        public void RemoveObjectDependency_OneDependency_TargetDead()
+        {
+            // ARRANGE.
+            CreateWeakReference(out var target, out var targetWeakReference);
+            CreateWeakReference(out var dependency, out var dependencyWeakReference);
+
+            // ACT.
+            // Register target and its dependency.
+            var isRegistered = ObjectDependencyManager.AddObjectDependency(dependencyWeakReference, target);
+            
+            // Remove dependency.
+            ObjectDependencyManager.RemoveObjectDependency(dependencyWeakReference, target);
+            
+            // Remove direct references to target.
+            target = null;
+
+            // Force collect dependency.
+            GC.Collect();
+
+            // ASSERT.
+            Assert.True(isRegistered);
+            Assert.False(targetWeakReference.IsAlive);
+            
+            // Prevent references optimization. 
+            Assert.NotNull(dependency);
+        }
+        
+        /// <summary>
+        /// Check that ObjectDependencyManager allows GC collect target, if there is one dependency and it was removed.
+        /// </summary>
+        [Fact]
+        public void RemoveObjectDependency_TwoDependenciesOneRemoved_TargetNotDead()
+        {
+            // ARRANGE.
+            CreateWeakReference(out var target, out var targetWeakReference);
+            CreateWeakReference(out var firstDependency, out var firstDependencyWeakReference);
+            CreateWeakReference(out var secondDependency, out var secondDependencyWeakReference);
+
+            // ACT.
+            // Register target and its dependencies.
+            var isFirstRegistered = ObjectDependencyManager.AddObjectDependency(firstDependencyWeakReference, target);
+            var isSecondRegistered = ObjectDependencyManager.AddObjectDependency(secondDependencyWeakReference, target);
+            
+            // Remove first dependency.
+            ObjectDependencyManager.RemoveObjectDependency(firstDependencyWeakReference, target);
+            
+            // Remove direct references to target.
+            target = null;
+
+            // Force collect dependency.
+            GC.Collect();
+
+            // ASSERT.
+            Assert.True(isFirstRegistered);
+            Assert.True(isSecondRegistered);
+            Assert.True(targetWeakReference.IsAlive);
+            
+            // Prevent references optimization. 
+            Assert.NotNull(firstDependency);
+            Assert.NotNull(secondDependency);
+        }
+        
+        #endregion
+        
         #region Tests of 'CleanUp' method
        
         /// <summary>

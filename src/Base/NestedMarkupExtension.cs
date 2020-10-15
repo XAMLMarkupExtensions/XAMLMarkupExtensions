@@ -93,7 +93,10 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         protected virtual void OnFirstTargetAdded()
         {
+#pragma warning disable 618
+            // TODO This will be removed in future. Nowadays this is used to prevent breaking changes.
             OnFirstTarget?.Invoke();
+#pragma warning restore 618
         }
 
         /// <summary>
@@ -249,53 +252,60 @@ namespace XAMLMarkupExtensions.Base
             if (targetObject is DictionaryEntry)
                 return null;
 
-            // Search for the target in the target object list
-            WeakReference wr = targetObjects.TryFindKey(targetObject);
-            if (wr == null)
+            // Using lock here to prevent race condition when target is changing its extensions in parallel.
+            lock (EndpointReachedEvent.ListenersLock)
             {
-                // If it's the first object, call the appropriate action
-                if (targetObjects.Count == 0)
-                    OnFirstTargetAdded();
+                // Search for the target in the target object list
+                WeakReference wr = targetObjects.TryFindKey(targetObject);
+                if (wr == null)
+                {
+                    // If it's the first object, call the appropriate action
+                    if (targetObjects.Count == 0)
+                        OnFirstTargetAdded();
 
-                // Add to the target object list
-                wr = targetObjects.AddTargetObject(targetObject);
+                    // Add to the target object list
+                    wr = targetObjects.AddTargetObject(targetObject);
 
-                // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
-                ObjectDependencyManager.AddObjectDependency(wr, this);
+                    // Add this extension to the ObjectDependencyManager to ensure the lifetime along with the target object
+                    ObjectDependencyManager.AddObjectDependency(wr, this);
+                }
+
+                // Finally, add the target prop and info to the list of this WeakReference.
+                targetObjects.AddTargetObjectProperty(wr, targetProperty, targetPropertyType, targetPropertyIndex);
+                
+                // Create the target info.
+                TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
+
+                // Sign up to the EndpointReachedEvent.
+                EndpointReachedEvent.AddListener(rootObjectHashCode, this, info);
+
+                // Return the result of FormatOutput
+                object result = null;
+
+                if (info.IsEndpoint)
+                {
+                    var args = new EndpointReachedEventArgs(info);
+                    EndpointReachedEvent.Invoke(rootObjectHashCode, this, args);
+                    result = args.EndpointValue;
+                }
+                else
+                    result = FormatOutput(endPoint, info);
+
+                if (overriddenResult != null)
+                    return overriddenResult;
+
+                // Check type
+                if (typeof(IList).IsAssignableFrom(targetPropertyType))
+                    return result;
+                else if (result != null && targetPropertyType.IsInstanceOfType(result))
+                    return result;
+
+                // Finally, if nothing was there, return null or default
+                if (targetPropertyType.IsValueType)
+                    return Activator.CreateInstance(targetPropertyType);
+                else
+                    return null;
             }
-
-            // Create the target info
-            TargetInfo info = new TargetInfo(targetObject, targetProperty, targetPropertyType, targetPropertyIndex);
-
-            // Sign up to the EndpointReachedEvent and connect info inside.
-            EndpointReachedEvent.AddListener(rootObjectHashCode, this, wr, info);
-
-            // Return the result of FormatOutput
-            object result = null;
-
-            if (info.IsEndpoint)
-            {
-                var args = new EndpointReachedEventArgs(info);
-                EndpointReachedEvent.Invoke(rootObjectHashCode, this, args);
-                result = args.EndpointValue;
-            }
-            else
-                result = FormatOutput(endPoint, info);
-
-            if (overriddenResult != null)
-                return overriddenResult;
-
-            // Check type
-            if (typeof(IList).IsAssignableFrom(targetPropertyType))
-                return result;
-            else if (result != null && targetPropertyType.IsInstanceOfType(result))
-                return result;
-
-            // Finally, if nothing was there, return null or default
-            if (targetPropertyType.IsValueType)
-                return Activator.CreateInstance(targetPropertyType);
-            else
-                return null;
         }
 
         /// <summary>
@@ -601,16 +611,6 @@ namespace XAMLMarkupExtensions.Base
         #endregion
 
         /// <summary>
-        /// Add property info of target object.
-        /// </summary>
-        /// <param name="targetKey">The weak reference of target object.</param>
-        /// <param name="targetInfo">The info of property.</param>
-        internal void AddTargetInfo(WeakReference targetKey, TargetInfo targetInfo)
-        {
-            targetObjects.AddTargetObjectProperty(targetKey, targetInfo.TargetProperty, targetInfo.TargetPropertyType, targetInfo.TargetPropertyIndex);
-        }
-
-        /// <summary>
         /// Remove target object's property info.
         /// </summary>
         /// <param name="targetInfo">The information about the target.</param>
@@ -649,7 +649,11 @@ namespace XAMLMarkupExtensions.Base
             /// A dictionary which contains a list of listeners per unique rootObject hash.
             /// </summary>
             private static readonly Dictionary<int, ListenersList> listeners;
-            private static readonly object listenersLock;
+            
+            /// <summary>
+            /// Lock object for adding/removing listeners.
+            /// </summary>
+            internal static readonly object ListenersLock;
 
             /// <summary>
             /// Fire the event.
@@ -659,7 +663,7 @@ namespace XAMLMarkupExtensions.Base
             /// <param name="args">The event args containing the endpoint information.</param>
             internal static void Invoke(int rootObjectHashCode, NestedMarkupExtension sender, EndpointReachedEventArgs args)
             {
-                lock (listenersLock)
+                lock (ListenersLock)
                 {
                     if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
                         return;
@@ -678,14 +682,13 @@ namespace XAMLMarkupExtensions.Base
             /// </summary>
             /// <param name="rootObjectHashCode"><paramref name="listener"/>s root object hash code.</param>
             /// <param name="listener">The listener to add.</param>
-            /// <param name="targetKey">The key of last added/updated target object.</param>
             /// <param name="targetInfo">The last added/updated property.</param>
-            internal static void AddListener(int rootObjectHashCode, NestedMarkupExtension listener, WeakReference targetKey, TargetInfo targetInfo)
+            internal static void AddListener(int rootObjectHashCode, NestedMarkupExtension listener, TargetInfo targetInfo)
             {
                 if (listener == null)
                     return;
 
-                lock (listenersLock)
+                lock (ListenersLock)
                 {
                     // Do we have a listeners list for this root object yet, if not add it.
                     if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
@@ -694,13 +697,10 @@ namespace XAMLMarkupExtensions.Base
                         listeners[rootObjectHashCode] = listenersList;
                     }
 
-                    // Add target property here undead lock.
-                    listener.AddTargetInfo(targetKey, targetInfo);
-
                     // Add listener to internal list.
                     listenersList.AddListener(listener);
 
-                    // One target info may have only one listener.
+                    // One target info may has only one listener.
                     // If this target info already contains, remove it from old listener.
                     listenersList.SynchronizeTargetInfo(listener, targetInfo);
 
@@ -715,7 +715,7 @@ namespace XAMLMarkupExtensions.Base
             /// <param name="rootObjectHashCode">Root object hash code to check.</param>
             internal static void ClearListenersForRootObject(int rootObjectHashCode)
             {
-                lock (listenersLock)
+                lock (ListenersLock)
                 {
                     listeners.Remove(rootObjectHashCode);
                 }
@@ -741,7 +741,7 @@ namespace XAMLMarkupExtensions.Base
                 if (listener == null)
                     return;
 
-                lock (listenersLock)
+                lock (ListenersLock)
                 {
                     if (!listeners.TryGetValue(rootObjectHashCode, out var listenersList))
                         return;
@@ -758,7 +758,7 @@ namespace XAMLMarkupExtensions.Base
             static EndpointReachedEvent()
             {
                 listeners = new Dictionary<int, ListenersList>();
-                listenersLock = new object();
+                ListenersLock = new object();
             }
         }
 
