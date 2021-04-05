@@ -156,25 +156,32 @@ namespace XAMLMarkupExtensions.Base
             }
             else
             {
-                rootObjectHashCode = rootObject.RootObject.GetHashCode();
-
-                // We only sign up once to the Window Closed event to clear the listeners list of root object.
-                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
+                if (rootObject.RootObject != null)
                 {
-                    if (rootObject.RootObject is Window window)
-                    {
-                        window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
-                    }
-                    else if (rootObject.RootObject is FrameworkElement frameworkElement)
-                    {
-                        void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
-                        {
-                            frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
-                            EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
-                        }
+                    rootObjectHashCode = rootObject.RootObject.GetHashCode();
 
-                        frameworkElement.Unloaded += frameworkElementUnloadedHandler;
+                    // We only sign up once to the Window Closed event to clear the listeners list of root object.
+                    if (!EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
+                    {
+                        if (rootObject.RootObject is Window window)
+                        {
+                            window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                        }
+                        else if (rootObject.RootObject is FrameworkElement frameworkElement)
+                        {
+                            void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
+                            {
+                                frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
+                                EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
+                            }
+
+                            frameworkElement.Unloaded += frameworkElementUnloadedHandler;
+                        }
                     }
+                }
+                else
+                {
+                    rootObjectHashCode = 0;
                 }
             }
 
