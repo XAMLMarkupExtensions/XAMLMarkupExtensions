@@ -39,9 +39,9 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        key: ${{ runner.os }}-nugetv1-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-nuget-
+          ${{ runner.os }}-nugetv1-
 
     - name: Build
       working-directory: src
