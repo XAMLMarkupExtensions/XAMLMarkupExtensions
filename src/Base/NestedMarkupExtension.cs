@@ -156,7 +156,11 @@ namespace XAMLMarkupExtensions.Base
             }
             else
             {
-                if (rootObject.RootObject != null)
+                if (rootObject.RootObject == null)
+                {
+                    rootObjectHashCode = 0;
+                }
+                else
                 {
                     rootObjectHashCode = rootObject.RootObject.GetHashCode();
 
@@ -178,10 +182,6 @@ namespace XAMLMarkupExtensions.Base
                             frameworkElement.Unloaded += frameworkElementUnloadedHandler;
                         }
                     }
-                }
-                else
-                {
-                    rootObjectHashCode = 0;
                 }
             }
 
