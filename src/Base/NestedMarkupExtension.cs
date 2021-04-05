@@ -93,7 +93,9 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         protected virtual void OnFirstTargetAdded()
         {
+#pragma warning disable CS0618
             OnFirstTarget?.Invoke();
+#pragma warning restore CS0618
         }
 
         /// <summary>
