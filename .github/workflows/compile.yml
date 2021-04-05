@@ -46,7 +46,7 @@ jobs:
     - name: Build
       working-directory: src
       run: |
-        dotnet restore --disable-parallel --locked-mode
+        dotnet restore --disable-parallel
         # dotnet build --disable-parallel --configuration Release
         # can't use pure dotnet build because gitversion issues
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
