@@ -33,6 +33,8 @@
     <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
     <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
 
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
@@ -41,18 +43,22 @@
     <None Remove="packages.lock.json" />
     <None Remove="public.snk" />
   </ItemGroup>
-  
-	<Choose>
+
+  <Choose>
+    <When Condition="Exists('$(SolutionDir)\fullkey.snk')">
+      <PropertyGroup>
+        <PublicSign>false</PublicSign>
+        <AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <Choose>
 		<When Condition="'$(Configuration)' == 'Release'">
 			<PropertyGroup>
 				<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 			</PropertyGroup>
 		</When>
-		<Otherwise>
-			<PropertyGroup>
-				<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-			</PropertyGroup>
-		</Otherwise>
 	</Choose>
 
   <!--PackageReference for all framworks-->

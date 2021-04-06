@@ -12,6 +12,7 @@ on:
     paths-ignore:
       - '*.md'
       - 'docs/**'
+
   workflow_dispatch:
     branches: [ master, development ]
     paths-ignore:

@@ -1,6 +1,5 @@
 {
   "version": 1,
-  
   "dependencies": {
     ".NETCoreApp,Version=v3.0": {
       "GitVersionTask": {
