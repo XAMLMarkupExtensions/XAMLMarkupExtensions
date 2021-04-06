@@ -47,6 +47,8 @@ jobs:
 
     - name: Get Name of Nuget
       working-directory: src/bin/Release/
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       shell: powershell
       run: |
         Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env name=NUPKG::$($_.Name)"}
