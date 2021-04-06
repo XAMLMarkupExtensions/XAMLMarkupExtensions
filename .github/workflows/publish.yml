@@ -22,10 +22,9 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Write Fullkey.snk
-      id: write_fullkey
-      uses: timheuer/base64-to-file@v1
+      uses: RollyPeres/base64-to-path@v1
       with:
-        fileName: 'src/fullkey.snk'
+        filePath: ${{ github.workspace }}/src/fullkey.snk
         encodedString: ${{ secrets.SIGNKEY }}
 
     - name: Restore
