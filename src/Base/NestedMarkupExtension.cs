@@ -133,22 +133,22 @@ namespace XAMLMarkupExtensions.Base
                 return this;
 
             // Try to cast the passed serviceProvider to a IRootObjectProvider and if the cast fails return null
-            if (!(serviceProvider.GetService(typeof(IRootObjectProvider)) is IRootObjectProvider rootObject))
+            if (!(serviceProvider.GetService(typeof(IRootObjectProvider)) is IRootObjectProvider rootObjectProvider) || rootObjectProvider.RootObject == null)
             {
                 rootObjectHashCode = 0;
             }
             else
             {
-                rootObjectHashCode = rootObject.RootObject.GetHashCode();
+                rootObjectHashCode = rootObjectProvider.RootObject.GetHashCode();
 
                 // We only sign up once to the Window Closed event to clear the listeners list of root object.
-                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
+                if (!EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
                 {
-                    if (rootObject.RootObject is Window window)
+                    if (rootObjectProvider.RootObject is Window window)
                     {
                         window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
                     }
-                    else if (rootObject.RootObject is FrameworkElement frameworkElement)
+                    else if (rootObjectProvider.RootObject is FrameworkElement frameworkElement)
                     {
                         void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
                         {
