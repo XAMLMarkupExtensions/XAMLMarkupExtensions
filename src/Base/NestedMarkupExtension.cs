@@ -195,9 +195,9 @@ namespace XAMLMarkupExtensions.Base
             Type targetPropertyType = null;
             object overriddenResult = null;
 
-            // If target object is a Binding, extension set at Value.
+            // If target object is a Binding and extension set at Value.
             // Return Binding which work with BindingValueProvider.
-            if (targetObject is Setter setter)
+            if (targetObject is Setter setter && targetProperty is PropertyInfo spi && spi.Name == nameof(Setter.Value))
             {
                 targetObject = new BindingValueProvider();
                 targetProperty = BindingValueProvider.ValueProperty;
@@ -209,9 +209,9 @@ namespace XAMLMarkupExtensions.Base
                     Mode = BindingMode.TwoWay
                 };
             }
-            // If target object is a Binding, extension set at Source.
+            // If target object is a Binding and extension set at Source.
             // Reconfigure existing binding and return BindingValueProvider.
-            else if (targetObject is Binding binding)
+            else if (targetObject is Binding binding && targetProperty is PropertyInfo bpi && bpi.Name == nameof(Binding.Source))
             {
                 binding.Path = new PropertyPath(nameof(BindingValueProvider.Value));
                 binding.Mode = BindingMode.TwoWay;
