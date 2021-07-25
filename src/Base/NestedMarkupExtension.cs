@@ -201,7 +201,9 @@ namespace XAMLMarkupExtensions.Base
             {
                 targetObject = new BindingValueProvider();
                 targetProperty = BindingValueProvider.ValueProperty;
-                targetPropertyType = setter.Property.PropertyType;
+                // If Setter.TargetName is used then Setter.Property would be null.
+                // We cannot define which type used in this case.
+                targetPropertyType = setter.Property?.PropertyType ?? typeof(object);
 
                 overriddenResult = new Binding(nameof(BindingValueProvider.Value))
                 {
