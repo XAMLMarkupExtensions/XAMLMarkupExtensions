@@ -13,6 +13,12 @@ on:
       - '*.md'
       - 'docs/**'
 
+  workflow_dispatch:
+    branches: [ master, development ]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+
 jobs:
   build:
     runs-on: windows-latest
@@ -34,14 +40,14 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        key: ${{ runner.os }}-nugetv1-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-nuget-
+          ${{ runner.os }}-nugetv1-
 
     - name: Build
       working-directory: src
       run: |
-        dotnet restore --disable-parallel --locked-mode
+        dotnet restore --disable-parallel
         # dotnet build --disable-parallel --configuration Release
         # can't use pure dotnet build because gitversion issues
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1;net5.0-windows</TargetFrameworks>
     <UseWPF>True</UseWPF>
     <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
     <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
@@ -19,7 +19,7 @@
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>WPF markup extension nesting</PackageTags>
-    <NoWarn>NU5105</NoWarn>
+    <NoWarn>NU5105;NETSDK1138</NoWarn>
     
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
@@ -33,6 +33,8 @@
     <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
     <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
 
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
 	</PropertyGroup>
 
@@ -41,24 +43,28 @@
     <None Remove="packages.lock.json" />
     <None Remove="public.snk" />
   </ItemGroup>
-  
-	<Choose>
+
+  <Choose>
+    <When Condition="Exists('$(SolutionDir)\fullkey.snk')">
+      <PropertyGroup>
+        <PublicSign>false</PublicSign>
+        <AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <Choose>
 		<When Condition="'$(Configuration)' == 'Release'">
 			<PropertyGroup>
 				<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 			</PropertyGroup>
 		</When>
-		<Otherwise>
-			<PropertyGroup>
-				<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-			</PropertyGroup>
-		</Otherwise>
 	</Choose>
 
   <!--PackageReference for all framworks-->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="GitVersionTask" Version="5.3.7" PrivateAssets="All" />
+		<PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">

@@ -26,7 +26,7 @@ namespace XAMLMarkupExtensions.Base
     /// Based on <see href="https://github.com/SeriousM/WPFLocalizationExtension"/>
     /// </summary>
     [MarkupExtensionReturnType(typeof(object))]
-    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable
+    public abstract class NestedMarkupExtension : MarkupExtension, INestedMarkupExtension, IDisposable, IObjectDependency
     {
         /// <summary>
         /// Holds the collection of assigned dependency objects
@@ -85,7 +85,26 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// An action that is called when the first target is bound.
         /// </summary>
+        [Obsolete("Override 'OnFirstTargetAdded' method instead")]
         protected Action OnFirstTarget;
+
+        /// <summary>
+        /// An action that is called when the first target is bound.
+        /// </summary>
+        protected virtual void OnFirstTargetAdded()
+        {
+#pragma warning disable CS0618
+            OnFirstTarget?.Invoke();
+#pragma warning restore CS0618
+        }
+
+        /// <summary>
+        /// An action that is called when the last target is unbound.
+        /// </summary>
+        protected virtual void OnLastTargetRemoved()
+        {
+            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
+        }
 
         /// <summary>
         /// This function must be implemented by all child classes.
@@ -139,24 +158,31 @@ namespace XAMLMarkupExtensions.Base
             }
             else
             {
-                rootObjectHashCode = rootObject.RootObject.GetHashCode();
-
-                // We only sign up once to the Window Closed event to clear the listeners list of root object.
-                if (rootObject.RootObject != null && !EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
+                if (rootObject.RootObject == null)
                 {
-                    if (rootObject.RootObject is Window window)
-                    {
-                        window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
-                    }
-                    else if (rootObject.RootObject is FrameworkElement frameworkElement)
-                    {
-                        void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
-                        {
-                            frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
-                            EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
-                        }
+                    rootObjectHashCode = 0;
+                }
+                else
+                {
+                    rootObjectHashCode = rootObject.RootObject.GetHashCode();
 
-                        frameworkElement.Unloaded += frameworkElementUnloadedHandler;
+                    // We only sign up once to the Window Closed event to clear the listeners list of root object.
+                    if (!EndpointReachedEvent.ContainsRootObjectHash(rootObjectHashCode))
+                    {
+                        if (rootObject.RootObject is Window window)
+                        {
+                            window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                        }
+                        else if (rootObject.RootObject is FrameworkElement frameworkElement)
+                        {
+                            void frameworkElementUnloadedHandler(object sender, RoutedEventArgs args)
+                            {
+                                frameworkElement.Unloaded -= frameworkElementUnloadedHandler;
+                                EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
+                            }
+
+                            frameworkElement.Unloaded += frameworkElementUnloadedHandler;
+                        }
                     }
                 }
             }
@@ -238,9 +264,7 @@ namespace XAMLMarkupExtensions.Base
             {
                 // If it's the first object, call the appropriate action
                 if (targetObjects.Count == 0)
-                {
-                    OnFirstTarget?.Invoke();
-                }
+                    OnFirstTargetAdded();
 
                 // Add to the target object list
                 wr = targetObjects.AddTargetObject(targetObject);
@@ -540,9 +564,53 @@ namespace XAMLMarkupExtensions.Base
         /// </summary>
         public void Dispose()
         {
-            EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
-            targetObjects.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// <see langword="true" /> if calls from Dispose() method.
+        /// <see langword="false" /> if calls from finalizer.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            if (isDisposing)
+            {
+                // Remove strong reference from ObjectDependencyManager.
+                ObjectDependencyManager.CleanUp(this);
+
+                // Clean all targets.
+                var targetObjectsCount = targetObjects.Count;
+                targetObjects.Clear();
+
+                // Notify if targets was not empty.
+                if (targetObjectsCount > 0)
+                    OnLastTargetRemoved();
+            }
+        }
+
+        #region IObjectDependency
+
+        /// <inheritdoc />
+        void IObjectDependency.OnDependenciesRemoved(IEnumerable<WeakReference> deadDependencies)
+        {
+            targetObjects.ClearReferences(deadDependencies);
+            
+            if (targetObjects.Count == 0)
+                OnLastTargetRemoved();
+        }
+
+        /// <inheritdoc />
+        void IObjectDependency.OnAllDependenciesRemoved()
+        {
+            targetObjects.Clear();
+            OnLastTargetRemoved();
+        }
+
+        #endregion
 
         #region EndpointReachedEvent
         /// <summary>
@@ -632,7 +700,6 @@ namespace XAMLMarkupExtensions.Base
             /// <summary>
             /// Clears the listeners list for the given root object hash code <paramref name="rootObjectHashCode"/>.
             /// </summary>
-            /// <param name="rootObjectHashCode"></param>
             internal static void ClearListenersForRootObject(int rootObjectHashCode)
             {
                 lock (listenersLock)
@@ -640,7 +707,6 @@ namespace XAMLMarkupExtensions.Base
                     if (!listeners.ContainsKey(rootObjectHashCode))
                         return;
 
-                    listeners[rootObjectHashCode].Clear();
                     listeners.Remove(rootObjectHashCode);
                 }
             }
