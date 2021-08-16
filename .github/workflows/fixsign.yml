@@ -34,7 +34,10 @@ jobs:
     # Enable tmate debugging of manually-triggered workflows if the input option was provided
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
-      if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      #with:
+      #  limit-access-to-actor: true
+      # timeout-minutes: 10
 
     - name: Restore
       working-directory: src
