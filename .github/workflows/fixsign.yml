@@ -23,7 +23,7 @@ jobs:
       run: |
         git fetch --prune
     - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+      uses: microsoft/setup-msbuild@v1
 
     - name: Write Fullkey.snk
       uses: RollyPeres/base64-to-path@v1
