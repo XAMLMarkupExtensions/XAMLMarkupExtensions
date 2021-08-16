@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1;net5.0-windows</TargetFrameworks>
-    <UseWPF>True</UseWPF>
-    <AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
-    <AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
+		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+		<UseWPF>True</UseWPF>
+		<AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
+		<AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
 		<AssemblyName>XAMLMarkupExtensions</AssemblyName>
 		<RootNamespace>XAMLMarkupExtensions</RootNamespace>
 		<Version>$(GitVersion_NuGetVersion)</Version>
@@ -11,7 +11,7 @@
 		<Product>XAML Markup Extensions</Product>
 		<Authors>Uwe Mayer,Konrad Mattheis,Bernhard Millauer</Authors>
 		<RepositoryUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions.git</RepositoryUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<PackageProjectUrl>https://github.com/XAMLMarkupExtensions/XAMLMarkupExtensions</PackageProjectUrl>
 		<Copyright>Uwe Mayer, Konrad Mattheis, Bernhard Millauer</Copyright>
 		<Description>A base class for nested markup extensions and a collection of useful extensions for WPF 3.5, 4.x. and NetCore 3.x</Description>
@@ -19,8 +19,8 @@
 		<PackageReleaseNotes></PackageReleaseNotes>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageTags>WPF markup extension nesting</PackageTags>
-    <NoWarn>NU5105;NETSDK1138</NoWarn>
-    
+		<NoWarn>NU5105</NoWarn>
+
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -30,38 +30,32 @@
 		<DelaySign>false</DelaySign>
 		<PublicSign>true</PublicSign>
 		<AssemblyOriginatorKeyFile>public.snk</AssemblyOriginatorKeyFile>
-    <!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
-    <GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
+		<!--Workaround for Error	MSB4216	Could not run the "GenerateResource" -->
+		<GenerateResourceMSBuildArchitecture>CurrentArchitecture</GenerateResourceMSBuildArchitecture>
 
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\LICENSE" Pack="true" PackagePath=""/>
-    <None Remove="packages.lock.json" />
-    <None Remove="public.snk" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
 
-  <Choose>
-    <When Condition="Exists('$(SolutionDir)\fullkey.snk')">
-      <PropertyGroup>
-        <PublicSign>false</PublicSign>
-        <AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
-      </PropertyGroup>
-    </When>
-  </Choose>
+	<PropertyGroup Condition="Exists('$(SolutionDir)\fullkey.snk'">
+		<SignAssembly>true</SignAssembly>
+		<DelaySign>false</DelaySign>
+		<PublicSign>false</PublicSign>
+		<AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
 
-  <Choose>
-		<When Condition="'$(Configuration)' == 'Release'">
-			<PropertyGroup>
-				<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-			</PropertyGroup>
-		</When>
-	</Choose>
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
+		<None Remove="packages.lock.json" />
+		<None Remove="public.snk" />
+	</ItemGroup>
 
-  <!--PackageReference for all framworks-->
+	<!--PackageReference for all framworks-->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 		<PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="All" />
