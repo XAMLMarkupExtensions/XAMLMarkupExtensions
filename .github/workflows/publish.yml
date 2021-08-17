@@ -47,10 +47,10 @@ jobs:
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }} /property:UnSigned=true
 
     - name: Upload Release Assets
-      working-directory: src/bin/Release/
       uses: softprops/action-gh-release@v1
       with:
-        files: '*.nupkg'
+        files: |
+          'src/bin/Release/*.nupkg'
 
     # - name: Get Name of Nuget
     #   working-directory: src/bin/Release/
