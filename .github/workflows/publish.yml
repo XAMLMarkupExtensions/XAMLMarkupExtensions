@@ -61,3 +61,10 @@ jobs:
         asset_path: ./src/bin/Release/${{ env.NUPKG }}
         asset_name: ${{ env.NUPKG }}
         asset_content_type: application/zip
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      with:
+       limit-access-to-actor: true
+      # timeout-minutes: 10

@@ -61,6 +61,12 @@
 		<PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="All" />
 	</ItemGroup>
 
+	<Target Name="CheckSignKey" BeforeTargets="Build">
+	    <Message Importance="high" Text="CHECK Props $(SignAssembly)" />
+		<Message Importance="high" Text="CHECK Props $(PublicSign)" />
+		<Message Importance="high" Text="CHECK Props $(AssemblyOriginatorKeyFile)" />
+	</Target>
+
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
 		<ReadLinesFromFile Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')" File="$(SolutionDir)\..\..\nugetapikey.txt">
 			<Output TaskParameter="Lines" PropertyName="NugetAPIKey" />
