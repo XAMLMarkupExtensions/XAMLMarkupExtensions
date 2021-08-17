@@ -36,35 +36,43 @@ jobs:
       if: "github.event.release.prerelease"
       working-directory: src
       run: |
-        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
+        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release 
+        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:UnSigned=true
 
     - name: Build & Publish
       if: "!github.event.release.prerelease"
       working-directory: src
       run: |
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
+        msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }} /property:UnSigned=true
 
-    - name: Get Name of Nuget
+    - name: Upload Release Assets
       working-directory: src/bin/Release/
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-      shell: powershell
-      run: |
-        Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env name=NUPKG::$($_.Name)"}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: *.nupkg
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: '${{ github.event.release.upload_url }}'
-        asset_path: ./src/bin/Release/${{ env.NUPKG }}
-        asset_name: ${{ env.NUPKG }}
-        asset_content_type: application/zip
+    # - name: Get Name of Nuget
+    #   working-directory: src/bin/Release/
+    #   env:
+    #     ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+    #   shell: powershell
+    #   run: |
+    #     Get-ChildItem -Path *.nupkg  | ForEach-Object {Write-Output "::set-env name=NUPKG::$($_.Name)"}
+
+    # - name: Upload Release Asset
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: '${{ github.event.release.upload_url }}'
+    #     asset_path: ./src/bin/Release/${{ env.NUPKG }}
+    #     asset_name: ${{ env.NUPKG }}
+    #     asset_content_type: application/zip
         
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
-      with:
-       limit-access-to-actor: true
-      # timeout-minutes: 10
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
+    #   # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+    #   with:
+    #    limit-access-to-actor: true
+    #   # timeout-minutes: 10

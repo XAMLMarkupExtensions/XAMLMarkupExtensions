@@ -49,6 +49,21 @@
 		<AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="Exists('$(SolutionDir)\src\fullkey.snk')">
+		<SignAssembly>true</SignAssembly>
+		<DelaySign>false</DelaySign>
+		<PublicSign>false</PublicSign>
+		<AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(UnSigned)' == 'true'">
+		<SignAssembly>false</SignAssembly>
+		<DelaySign>false</DelaySign>
+		<PublicSign>false</PublicSign>
+		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+		<PackageId>$(AssemblyName).UnSigned</PackageId>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
 		<None Remove="packages.lock.json" />
@@ -65,7 +80,8 @@
 	    <Message Importance="high" Text="CHECK Props $(SignAssembly)" />
 		<Message Importance="high" Text="CHECK Props $(PublicSign)" />
 		<Message Importance="high" Text="CHECK Props $(AssemblyOriginatorKeyFile)" />
-	</Target>
+		<Message Importance="high" Text="CHECK Props $(PackageId)" />
+	</Target>	
 
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
 		<ReadLinesFromFile Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')" File="$(SolutionDir)\..\..\nugetapikey.txt">
