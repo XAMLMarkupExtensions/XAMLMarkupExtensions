@@ -50,7 +50,7 @@ jobs:
       working-directory: src/bin/Release/
       uses: softprops/action-gh-release@v1
       with:
-        files: *.nupkg
+        files: '*.nupkg'
 
     # - name: Get Name of Nuget
     #   working-directory: src/bin/Release/
