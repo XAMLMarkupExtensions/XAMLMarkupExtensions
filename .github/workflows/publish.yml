@@ -46,6 +46,13 @@ jobs:
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }} /property:UnSigned=true
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
+      with:
+       limit-access-to-actor: true
+      # timeout-minutes: 10
+
     - name: Upload Release Assets
       uses: softprops/action-gh-release@v1
       with:
@@ -70,9 +77,3 @@ jobs:
     #     asset_name: ${{ env.NUPKG }}
     #     asset_content_type: application/zip
         
-    # - name: Setup tmate session
-    #   uses: mxschmitt/action-tmate@v3
-    #   # if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.debug_enabled }}
-    #   with:
-    #    limit-access-to-actor: true
-    #   # timeout-minutes: 10
