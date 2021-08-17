@@ -42,7 +42,7 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="Exists('$(SolutionDir)\fullkey.snk')">
+	<PropertyGroup Condition="Exists('$(SolutionDir)\src\fullkey.snk')">
 		<SignAssembly>true</SignAssembly>
 		<DelaySign>false</DelaySign>
 		<PublicSign>false</PublicSign>
