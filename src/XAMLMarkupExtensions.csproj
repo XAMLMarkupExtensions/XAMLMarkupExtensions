@@ -43,22 +43,12 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="Exists('$(SolutionDir)\src\fullkey.snk')">
-		<SignAssembly>true</SignAssembly>
-		<DelaySign>false</DelaySign>
-		<PublicSign>false</PublicSign>
-		<AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="Exists('$(SolutionDir)\src\fullkey.snk')">
-		<SignAssembly>true</SignAssembly>
-		<DelaySign>false</DelaySign>
 		<PublicSign>false</PublicSign>
 		<AssemblyOriginatorKeyFile>fullkey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(UnSigned)' == 'true'">
 		<SignAssembly>false</SignAssembly>
-		<DelaySign>false</DelaySign>
 		<PublicSign>false</PublicSign>
 		<AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
 		<PackageId>$(AssemblyName).UnSigned</PackageId>
