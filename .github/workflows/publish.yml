@@ -54,10 +54,11 @@ jobs:
       # timeout-minutes: 10
 
     - name: Upload Release Assets
+      working-directory: src/bin/Release/
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          'src/bin/Release/*.nupkg'
+          '*.nupkg'
 
     # - name: Get Name of Nuget
     #   working-directory: src/bin/Release/
