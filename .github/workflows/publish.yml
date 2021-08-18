@@ -22,16 +22,18 @@ jobs:
         encodedString: ${{ secrets.SIGNKEY }}
 
     - name: Create msbuild params
-      outputs:
-        params:
-          value: ${{ github.event.repository.name }}.csproj -verbosity:minimal /p:Configuration=Release /property:DisableGitVersionTask=true /property:GitVersion_NuGetVersion=${{ github.event.release.tag_name }}
+      run: |    
+        description="${{ github.event.repository.name }}.csproj -verbosity:minimal /p:Configuration=Release /property:DisableGitVersionTask=true /property:GitVersion_NuGetVersion=${{ github.event.release.tag_name }}"
+        echo $description
+        echo "::set-output name=params::$description"
       id: msbuild
     
     - name: add nuget API Key for releases
       if: "!github.event.release.prerelease"
-      outputs:
-        params:
-          value: /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
+      run: |
+        description="/property:NugetAPIKey=${{ secrets.NugetAPIKey }}"
+        echo $description
+        echo "::set-output name=params::$description"      
       id: apikey
 
     - name: Restore
