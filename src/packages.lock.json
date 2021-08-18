@@ -1,40 +1,12 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v3.0": {
-      "GitVersionTask": {
-        "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
-      },
-      "Microsoft.SourceLink.GitHub": {
-        "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "aZyGyGg2nFSxix+xMkPmlmZSsnGQ3w+mIG23LTxJZHN+GPwTQ5FpPgDo7RMOq+Kcf5D4hFWfXkGhoGstawX13Q==",
-        "dependencies": {
-          "Microsoft.Build.Tasks.Git": "1.0.0",
-          "Microsoft.SourceLink.Common": "1.0.0"
-        }
-      },
-      "Microsoft.Build.Tasks.Git": {
-        "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "z2fpmmt+1Jfl+ZnBki9nSP08S1/tbEOxFdsK1rSR+LBehIJz1Xv9/6qOOoGNqlwnAGGVGis1Oj6S8Kt9COEYlQ=="
-      },
-      "Microsoft.SourceLink.Common": {
-        "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "G8DuQY8/DK5NN+3jm5wcMcd9QYD90UV7MiLmdljSJixi3U/vNaeBKmmXUqI4DJCOeWizIUEh4ALhSt58mR+5eg=="
-      }
-    },
     ".NETCoreApp,Version=v3.1": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -58,11 +30,11 @@
       }
     },
     ".NETFramework,Version=v4.0": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -86,11 +58,11 @@
       }
     },
     ".NETFramework,Version=v4.5.2": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -114,11 +86,11 @@
       }
     },
     ".NETFramework,Version=v4.6.2": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -142,11 +114,11 @@
       }
     },
     ".NETFramework,Version=v4.7.2": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -170,39 +142,11 @@
       }
     },
     ".NETFramework,Version=v4.8": {
-      "GitVersionTask": {
+      "GitVersion.MsBuild": {
         "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
-      },
-      "Microsoft.SourceLink.GitHub": {
-        "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "aZyGyGg2nFSxix+xMkPmlmZSsnGQ3w+mIG23LTxJZHN+GPwTQ5FpPgDo7RMOq+Kcf5D4hFWfXkGhoGstawX13Q==",
-        "dependencies": {
-          "Microsoft.Build.Tasks.Git": "1.0.0",
-          "Microsoft.SourceLink.Common": "1.0.0"
-        }
-      },
-      "Microsoft.Build.Tasks.Git": {
-        "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "z2fpmmt+1Jfl+ZnBki9nSP08S1/tbEOxFdsK1rSR+LBehIJz1Xv9/6qOOoGNqlwnAGGVGis1Oj6S8Kt9COEYlQ=="
-      },
-      "Microsoft.SourceLink.Common": {
-        "type": "Transitive",
-        "resolved": "1.0.0",
-        "contentHash": "G8DuQY8/DK5NN+3jm5wcMcd9QYD90UV7MiLmdljSJixi3U/vNaeBKmmXUqI4DJCOeWizIUEh4ALhSt58mR+5eg=="
-      }
-    },
-    ".NETCoreApp,Version=v5.0": {
-      "GitVersionTask": {
-        "type": "Direct",
-        "requested": "[5.5.1, )",
-        "resolved": "5.5.1",
-        "contentHash": "eU5PgmGGLh8qFEufW6Y+NxanA4Qp1mDGOIuM59jf/0XJrSSZSJ2RwLacKNTh3lufduaF3nv6PS47G6UUOxNOdQ=="
+        "requested": "[5.6.11, )",
+        "resolved": "5.6.11",
+        "contentHash": "/shfB5WcijlhK4eHU6wnIFCltd1J1kHpqp0lLGHjtyd6dVp4Xa8la2b2jazl0SfEoyZM4tVBaQLe6vFi6stoUw=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
