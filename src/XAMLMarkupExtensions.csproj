@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
-		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.1</TargetFrameworks>
 		<UseWPF>True</UseWPF>
 		<AutoGenerateBindingRedirects Condition="!$(TargetFramework.StartsWith('netcore'))">true</AutoGenerateBindingRedirects>
 		<AssemblyTitle>XAMLMarkupExtensions</AssemblyTitle>
@@ -65,23 +65,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="..\LICENSE" Pack="true" PackagePath=""/>
+		<None Include="..\LICENSE" Pack="true" PackagePath="" />
 		<None Remove="packages.lock.json" />
 		<None Remove="public.snk" />
 	</ItemGroup>
 
 	<!--PackageReference for all framworks-->
 	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.6.11" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="GitVersionTask" Version="5.5.1" PrivateAssets="All" />
 	</ItemGroup>
-
-	<Target Name="CheckSignKey" BeforeTargets="Build">
-	    <Message Importance="high" Text="CHECK Props $(SignAssembly)" />
-		<Message Importance="high" Text="CHECK Props $(PublicSign)" />
-		<Message Importance="high" Text="CHECK Props $(AssemblyOriginatorKeyFile)" />
-		<Message Importance="high" Text="CHECK Props $(PackageId)" />
-	</Target>	
 
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
 		<ReadLinesFromFile Condition="Exists('$(SolutionDir)\..\..\nugetapikey.txt')" File="$(SolutionDir)\..\..\nugetapikey.txt">
