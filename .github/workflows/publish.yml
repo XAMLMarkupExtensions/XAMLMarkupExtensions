@@ -37,7 +37,7 @@ jobs:
       working-directory: src
       run: |
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release
-        del /F /Q .\obj\Release
+        rm -R .\obj\Release
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:UnSigned=true
 
     - name: Build & Publish
@@ -45,7 +45,7 @@ jobs:
       working-directory: src
       run: |
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }}
-        del /F /Q .\obj\Release
+        rm -R .\obj\Release
         msbuild XAMLMarkupExtensions.csproj -verbosity:minimal /p:Configuration=Release /property:NugetAPIKey=${{ secrets.NugetAPIKey }} /property:UnSigned=true
 
     - name: Upload Release Assets
