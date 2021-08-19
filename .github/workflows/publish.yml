@@ -25,11 +25,11 @@ jobs:
       run: |
         echo "::set-output name=params::${{ github.event.repository.name }}.csproj -verbosity:minimal /p:Configuration=Release /property:DisableGitVersionTask=true /property:GitVersion_NuGetVersion=${{ github.event.release.tag_name }}"
       id: msbuild
-    
+
     - name: add nuget API Key for releases
       if: "!github.event.release.prerelease"
       run: |
-        echo "::set-output name=params::/property:NugetAPIKey=${{ secrets.NugetAPIKey }}"      
+        echo "::set-output name=params::/property:NugetAPIKey=${{ secrets.NugetAPIKey }}"
       id: apikey
 
     - name: Restore
