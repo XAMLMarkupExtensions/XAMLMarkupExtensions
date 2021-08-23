@@ -101,6 +101,10 @@ namespace XAMLMarkupExtensions.Base
         /// <summary>
         /// An action that is called when the last target is unbound.
         /// </summary>
+        /// <remarks>
+        /// This method can be called without <see cref="OnFirstTargetAdded" /> before
+        /// if extension disposed without adding targets.
+        /// </remarks>
         protected virtual void OnLastTargetRemoved()
         {
             EndpointReachedEvent.RemoveListener(rootObjectHashCode, this);
@@ -585,12 +589,8 @@ namespace XAMLMarkupExtensions.Base
                 ObjectDependencyManager.CleanUp(this);
 
                 // Clean all targets.
-                var targetObjectsCount = targetObjects.Count;
                 targetObjects.Clear();
-
-                // Notify if targets was not empty.
-                if (targetObjectsCount > 0)
-                    OnLastTargetRemoved();
+                OnLastTargetRemoved();
             }
         }
 

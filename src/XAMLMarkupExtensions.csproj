@@ -62,7 +62,7 @@
 
 	<!--PackageReference for all framworks-->
 	<ItemGroup>
-		<PackageReference Include="GitVersion.MsBuild" Version="5.6.11" PrivateAssets="All" />
+		<PackageReference Include="GitVersion.MsBuild" Version="5.7.0" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
