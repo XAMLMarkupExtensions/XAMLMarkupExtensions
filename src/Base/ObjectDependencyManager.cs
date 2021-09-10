@@ -58,9 +58,6 @@ namespace XAMLMarkupExtensions.Base
         [MethodImpl(MethodImplOptions.Synchronized)]
         public static bool AddObjectDependency(WeakReference weakRefDp, object objToHold)
         {
-            // run the clean up to ensure that only objects are watched they are realy still alive
-            CleanUp();
-
             // if the objToHold is null, we cannot handle this afterwards.
             if (objToHold == null)
             {
@@ -110,6 +107,9 @@ namespace XAMLMarkupExtensions.Base
                 }
             }
 
+            // run the clean up to ensure that only objects are watched they are realy still alive
+            CleanUp();
+            
             // return the status of the registration
             return itemRegistered;
         }
