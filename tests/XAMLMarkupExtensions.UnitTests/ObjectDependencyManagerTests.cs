@@ -221,6 +221,57 @@ namespace XAMLMarkupExtensions.UnitTests
             Assert.NotNull(secondTarget);
             Assert.NotNull(secondDependency);
         }
+
+        /// <summary>
+        /// Check that AddObjectDependency method calls CleanUp inside.
+        /// This case checked that <see cref="IObjectDependency.OnDependenciesRemoved" /> will be called instead <see cref="IObjectDependency.OnAllDependenciesRemoved" />,
+        /// if cleaning dependencies for passed target. 
+        /// </summary>
+        [Fact]
+        public void AddObjectDependency_OneTargetTwoDependenciesFirstIsDead_OnDependenciesRemovedIsCalled()
+        {
+            // ARRANGE.
+            var targetMock = new Mock<IObjectDependency>();
+            IReadOnlyList<WeakReference> actualWeakReferences = null;
+            targetMock
+                .Setup(t => t.OnDependenciesRemoved(It.IsAny<IEnumerable<WeakReference>>()))
+                // TODO Save collection with ToList() here, because ObjectDependencyManager cleans passed list.
+                .Callback<IEnumerable<WeakReference>>(deadDependencies => actualWeakReferences = deadDependencies.ToList());
+            var target = targetMock.Object;
+            
+            CreateWeakReference(out var firstDependency, out var firstDependencyWeakReference);
+            CreateWeakReference(out var secondDependency, out var secondDependencyWeakReference);
+
+            // ACT.
+            // Register first target and its dependency.
+            var isFirstRegistered = ObjectDependencyManager.AddObjectDependency(firstDependencyWeakReference, target);
+            
+            // Remove direct references to target and to the first dependency.
+            firstDependency = null;
+            
+            // Force collect first dependency.
+            GC.Collect();
+            
+            // First dependency is collected.
+            Assert.False(firstDependencyWeakReference.IsAlive);
+            
+            // Register second dependency.
+            var isSecondRegistered = ObjectDependencyManager.AddObjectDependency(secondDependencyWeakReference, target);
+
+            // ASSERT.
+            Assert.True(isFirstRegistered);
+            Assert.True(isSecondRegistered);
+            Assert.True(secondDependencyWeakReference.IsAlive);
+            
+            targetMock.Verify(t =>
+                t.OnDependenciesRemoved(It.IsAny<IEnumerable<WeakReference>>()),
+                Times.Once);
+            Assert.Equal(new [] { firstDependencyWeakReference }, actualWeakReferences);
+            targetMock.VerifyNoOtherCalls();
+            
+            // Prevent references optimization.
+            Assert.NotNull(secondDependency);
+        }
         
         #endregion
 
