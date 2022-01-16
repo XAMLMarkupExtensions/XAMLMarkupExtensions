@@ -143,19 +143,19 @@ namespace XAMLMarkupExtensions.Base
             var weakElement = element;
             var weakElementReference = weakElement.Target;
 
+            if (OnParentChangedList.ContainsKey(weakElement))
+            {
+                var list = OnParentChangedList[weakElement];
+                list.Clear();
+                OnParentChangedList.Remove(weakElement);
+            }
+
             if (weakElementReference == null || !weakElement.IsAlive)
                 return;
 
             try
             {
                 ((FrameworkElement)weakElementReference).ClearValue(ParentProperty);
-
-                if (OnParentChangedList.ContainsKey(weakElement))
-                {
-                    var list = OnParentChangedList[weakElement];
-                    list.Clear();
-                    OnParentChangedList.Remove(weakElement);
-                }
             }
             finally
             {
