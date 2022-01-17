@@ -122,6 +122,58 @@ namespace XAMLMarkupExtensions.Base
                 element.Dispatcher.Invoke(new Action(SetBinding));
         }
 
+        /// <summary>
+        /// Finalizer.
+        /// </summary>
+        ~ParentChangedNotifier()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// Disposes all used resources of the instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Dispose resources.
+        /// </summary>
+        /// <param name="isDisposing">
+        /// <see langword="true" /> if calls from Dispose() method.
+        /// <see langword="false" /> if calls from finalizer.
+        /// </param>
+        protected virtual void Dispose(bool isDisposing)
+        {
+            var weakElement = element;
+            var weakElementReference = weakElement.Target;
+
+            if (OnParentChangedList.ContainsKey(weakElement))
+            {
+                var list = OnParentChangedList[weakElement];
+                list.Clear();
+                OnParentChangedList.Remove(weakElement);
+            }
+
+            if (isDisposing)
+            {
+                if (weakElementReference == null || !weakElement.IsAlive)
+                    return;
+
+                try
+                {
+                    ((FrameworkElement)weakElementReference).ClearValue(ParentProperty);
+                }
+                finally
+                {
+                    element = null;
+                }
+            }
+        }
+
         private void SetBinding()
         {
             var binding = new Binding("Parent")
@@ -133,34 +185,6 @@ namespace XAMLMarkupExtensions.Base
                 }
             };
             BindingOperations.SetBinding((FrameworkElement)element.Target, ParentProperty, binding);
-        }
-
-        /// <summary>
-        /// Disposes all used resources of the instance.
-        /// </summary>
-        public void Dispose()
-        {
-            var weakElement = element;
-            var weakElementReference = weakElement.Target;
-
-            if (weakElementReference == null || !weakElement.IsAlive)
-                return;
-
-            try
-            {
-                ((FrameworkElement)weakElementReference).ClearValue(ParentProperty);
-
-                if (OnParentChangedList.ContainsKey(weakElement))
-                {
-                    var list = OnParentChangedList[weakElement];
-                    list.Clear();
-                    OnParentChangedList.Remove(weakElement);
-                }
-            }
-            finally
-            {
-                element = null;
-            }
         }
     }
 }
