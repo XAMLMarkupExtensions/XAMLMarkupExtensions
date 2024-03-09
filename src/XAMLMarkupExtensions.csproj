@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 	<PropertyGroup>
 		<TargetFrameworks>net40;net452;net462;net472;net48;netcoreapp3.1</TargetFrameworks>
 		<UseWPF>True</UseWPF>
@@ -63,7 +63,7 @@
 	<!--PackageReference for all framworks-->
 	<ItemGroup>
 		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<Target Name="PublishToNugetWithAPIKey" AfterTargets="GenerateNuspec">
