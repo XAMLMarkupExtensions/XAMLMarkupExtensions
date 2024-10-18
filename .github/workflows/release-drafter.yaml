@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -22,17 +22,17 @@ jobs:
         git fetch --prune
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.10
+      uses: gittools/actions/gitversion/setup@v3.0.0
       with:
          versionSpec: '5.6.x'
 
     - name: Use GitVersion
       id: gitversion
-      uses: gittools/actions/gitversion/execute@v0.9.10
+      uses: gittools/actions/gitversion/execute@v3.0.0
 
     - name: create release
       id: create_release
-      uses: release-drafter/release-drafter@v5
+      uses: release-drafter/release-drafter@v6
       with:
         tag: '${{ steps.gitversion.outputs.semVer }}'
         name: 'Release ${{ steps.gitversion.outputs.semVer }}'

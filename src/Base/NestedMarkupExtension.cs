@@ -175,7 +175,12 @@ namespace XAMLMarkupExtensions.Base
                     {
                         if (rootObject.RootObject is Window window)
                         {
-                            window.Closed += delegate (object sender, EventArgs args) { EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode); };
+                            EventHandler handler = (sender, args) =>
+                            {
+                                window.Closed -= handler;
+                                EndpointReachedEvent.ClearListenersForRootObject(rootObjectHashCode);
+                            };
+                            window.Closed += handler;
                         }
                         else if (rootObject.RootObject is FrameworkElement frameworkElement)
                         {
